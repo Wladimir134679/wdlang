@@ -19,9 +19,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Modules {
 
     private ConcurrentHashMap<String, Class<? extends Module>> map;
+    private ConcurrentHashMap<String, Module> mapObj;
 
     public Modules(){
         map = new ConcurrentHashMap<>();
+        mapObj = new ConcurrentHashMap<>();
         set("collections", collections.class);
         set("date", date.class);
         set("downloader", downloader.class);
@@ -40,9 +42,15 @@ public class Modules {
     public void set(String name, Class<? extends Module> m){
         map.put(name, m);
     }
+    public void set(String name, Module m){
+        mapObj.put(name, m);
+    }
 
     public Class<? extends Module> get(String name){
         return map.get(name);
+    }
+    public Module getObj(String name){
+        return mapObj.get(name);
     }
 
     public Module newInstance(String name){

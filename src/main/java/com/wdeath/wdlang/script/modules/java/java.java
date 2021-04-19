@@ -27,36 +27,36 @@ public final class java implements Module {
     public void init(ScriptProgram scriptProgram) {
         initConstants();
         scriptProgram.getVariables().define("null", NULL);
-        scriptProgram.getVariables().define("boolean.class", new ClassValue(boolean.class));
-        scriptProgram.getVariables().define("boolean[].class", new ClassValue(boolean[].class));
-        scriptProgram.getVariables().define("boolean[][].class", new ClassValue(boolean[][].class));
-        scriptProgram.getVariables().define("byte.class", new ClassValue(byte.class));
-        scriptProgram.getVariables().define("byte[].class", new ClassValue(byte[].class));
-        scriptProgram.getVariables().define("byte[][].class", new ClassValue(byte[][].class));
-        scriptProgram.getVariables().define("short.class", new ClassValue(short.class));
-        scriptProgram.getVariables().define("short[].class", new ClassValue(short[].class));
-        scriptProgram.getVariables().define("short[][].class", new ClassValue(short[][].class));
-        scriptProgram.getVariables().define("char.class", new ClassValue(char.class));
-        scriptProgram.getVariables().define("char[].class", new ClassValue(char[].class));
-        scriptProgram.getVariables().define("char[][].class", new ClassValue(char[][].class));
-        scriptProgram.getVariables().define("int.class", new ClassValue(int.class));
-        scriptProgram.getVariables().define("int[].class", new ClassValue(int[].class));
-        scriptProgram.getVariables().define("int[][].class", new ClassValue(int[][].class));
-        scriptProgram.getVariables().define("long.class", new ClassValue(long.class));
-        scriptProgram.getVariables().define("long[].class", new ClassValue(long[].class));
-        scriptProgram.getVariables().define("long[][].class", new ClassValue(long[][].class));
-        scriptProgram.getVariables().define("float.class", new ClassValue(float.class));
-        scriptProgram.getVariables().define("float[].class", new ClassValue(float[].class));
-        scriptProgram.getVariables().define("float[][].class", new ClassValue(float[][].class));
-        scriptProgram.getVariables().define("double.class", new ClassValue(double.class));
-        scriptProgram.getVariables().define("double[].class", new ClassValue(double[].class));
-        scriptProgram.getVariables().define("double[][].class", new ClassValue(double[][].class));
-        scriptProgram.getVariables().define("String.class", new ClassValue(String.class));
-        scriptProgram.getVariables().define("String[].class", new ClassValue(String[].class));
-        scriptProgram.getVariables().define("String[][].class", new ClassValue(String[][].class));
-        scriptProgram.getVariables().define("Object.class", new ClassValue(Object.class));
-        scriptProgram.getVariables().define("Object[].class", new ClassValue(Object[].class));
-        scriptProgram.getVariables().define("Object[][].class", new ClassValue(Object[][].class));
+        scriptProgram.getVariables().define("boolean.class", new ClassJavaValue(boolean.class));
+        scriptProgram.getVariables().define("boolean[].class", new ClassJavaValue(boolean[].class));
+        scriptProgram.getVariables().define("boolean[][].class", new ClassJavaValue(boolean[][].class));
+        scriptProgram.getVariables().define("byte.class", new ClassJavaValue(byte.class));
+        scriptProgram.getVariables().define("byte[].class", new ClassJavaValue(byte[].class));
+        scriptProgram.getVariables().define("byte[][].class", new ClassJavaValue(byte[][].class));
+        scriptProgram.getVariables().define("short.class", new ClassJavaValue(short.class));
+        scriptProgram.getVariables().define("short[].class", new ClassJavaValue(short[].class));
+        scriptProgram.getVariables().define("short[][].class", new ClassJavaValue(short[][].class));
+        scriptProgram.getVariables().define("char.class", new ClassJavaValue(char.class));
+        scriptProgram.getVariables().define("char[].class", new ClassJavaValue(char[].class));
+        scriptProgram.getVariables().define("char[][].class", new ClassJavaValue(char[][].class));
+        scriptProgram.getVariables().define("int.class", new ClassJavaValue(int.class));
+        scriptProgram.getVariables().define("int[].class", new ClassJavaValue(int[].class));
+        scriptProgram.getVariables().define("int[][].class", new ClassJavaValue(int[][].class));
+        scriptProgram.getVariables().define("long.class", new ClassJavaValue(long.class));
+        scriptProgram.getVariables().define("long[].class", new ClassJavaValue(long[].class));
+        scriptProgram.getVariables().define("long[][].class", new ClassJavaValue(long[][].class));
+        scriptProgram.getVariables().define("float.class", new ClassJavaValue(float.class));
+        scriptProgram.getVariables().define("float[].class", new ClassJavaValue(float[].class));
+        scriptProgram.getVariables().define("float[][].class", new ClassJavaValue(float[][].class));
+        scriptProgram.getVariables().define("double.class", new ClassJavaValue(double.class));
+        scriptProgram.getVariables().define("double[].class", new ClassJavaValue(double[].class));
+        scriptProgram.getVariables().define("double[][].class", new ClassJavaValue(double[][].class));
+        scriptProgram.getVariables().define("String.class", new ClassJavaValue(String.class));
+        scriptProgram.getVariables().define("String[].class", new ClassJavaValue(String[].class));
+        scriptProgram.getVariables().define("String[][].class", new ClassJavaValue(String[][].class));
+        scriptProgram.getVariables().define("Object.class", new ClassJavaValue(Object.class));
+        scriptProgram.getVariables().define("Object[].class", new ClassJavaValue(Object[].class));
+        scriptProgram.getVariables().define("Object[][].class", new ClassJavaValue(Object[][].class));
 
         scriptProgram.getFunctions().set("isNull", this::isNull);
         scriptProgram.getFunctions().set("newClass", this::newClass);
@@ -104,16 +104,16 @@ public final class java implements Module {
         }
     }
 
-    private static class ClassValue extends MapValue implements Instantiable {
+    public static class ClassJavaValue extends MapValue implements Instantiable {
 
         public static Value classOrNull(Class<?> clazz) {
             if (clazz == null) return NULL;
-            return new ClassValue(clazz);
+            return new ClassJavaValue(clazz);
         }
 
         private final Class<?> clazz;
 
-        public ClassValue(Class<?> clazz) {
+        public ClassJavaValue(Class<?> clazz) {
             super(25);
             this.clazz = clazz;
             init(clazz);
@@ -141,7 +141,7 @@ public final class java implements Module {
             set("getComponentType", new FunctionValue(v -> classOrNull(clazz.getComponentType()) ));
             set("getDeclaringClass", new FunctionValue(v -> classOrNull(clazz.getDeclaringClass()) ));
             set("getEnclosingClass", new FunctionValue(v -> classOrNull(clazz.getEnclosingClass()) ));
-            set("getSuperclass", new FunctionValue(v -> new ClassValue(clazz.getSuperclass()) ));
+            set("getSuperclass", new FunctionValue(v -> new ClassJavaValue(clazz.getSuperclass()) ));
 
             set("getClasses", new FunctionValue(v -> array(clazz.getClasses()) ));
             set("getDeclaredClasses", new FunctionValue(v -> array(clazz.getDeclaredClasses()) ));
@@ -155,12 +155,12 @@ public final class java implements Module {
 
         private Value asSubclass(Value[] args) {
             Arguments.check(1, args.length);
-            return new ClassValue(clazz.asSubclass( ((ClassValue)args[0]).clazz ));
+            return new ClassJavaValue(clazz.asSubclass( ((ClassJavaValue)args[0]).clazz ));
         }
 
         private Value isAssignableFrom(Value[] args) {
             Arguments.check(1, args.length);
-            return NumberValue.fromBoolean(clazz.isAssignableFrom( ((ClassValue)args[0]).clazz ));
+            return NumberValue.fromBoolean(clazz.isAssignableFrom( ((ClassJavaValue)args[0]).clazz ));
         }
 
         @Override
@@ -192,7 +192,7 @@ public final class java implements Module {
         }
     }
 
-    private static class ObjectValue extends MapValue {
+    public static class ObjectValue extends MapValue {
 
         public static Value objectOrNull(Object object) {
             if (object == null) return NULL;
@@ -241,7 +241,7 @@ public final class java implements Module {
 
         final String className = args[0].asString();
         try {
-            return new ClassValue(Class.forName(className));
+            return new ClassJavaValue(Class.forName(className));
         } catch (ClassNotFoundException ce) {
             throw new RuntimeException("Class " + className + " not found.", ce);
         }
@@ -376,7 +376,7 @@ public final class java implements Module {
     private static ArrayValue array(Class<?>[] classes) {
         final ArrayValue result = new ArrayValue(classes.length);
         for (int i = 0; i < classes.length; i++) {
-            result.set(i, ClassValue.classOrNull(classes[i]));
+            result.set(i, ClassJavaValue.classOrNull(classes[i]));
         }
         return result;
     }
@@ -494,8 +494,8 @@ public final class java implements Module {
         if (value instanceof ObjectValue) {
             return ((ObjectValue) value).object;
         }
-        if (value instanceof ClassValue) {
-            return ((ClassValue) value).clazz;
+        if (value instanceof ClassJavaValue) {
+            return ((ClassJavaValue) value).clazz;
         }
         return value.raw();
     }
