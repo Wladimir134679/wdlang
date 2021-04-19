@@ -3,6 +3,7 @@ package com.wdeath.wdlang.script;
 import com.wdeath.wdlang.script.lib.ClassDeclarations;
 import com.wdeath.wdlang.script.lib.Functions;
 import com.wdeath.wdlang.script.lib.Variables;
+import com.wdeath.wdlang.script.modules.Modules;
 import com.wdeath.wdlang.script.parser.Lexer;
 import com.wdeath.wdlang.script.parser.Parser;
 import com.wdeath.wdlang.script.parser.Token;
@@ -24,6 +25,7 @@ public class ScriptProgram {
     private ClassDeclarations classes;
     private Variables variables;
     private Functions functions;
+    private Modules modules;
 
     public ScriptProgram(){
 
@@ -33,6 +35,7 @@ public class ScriptProgram {
         classes = new ClassDeclarations();
         variables = new Variables();
         functions = new Functions();
+        modules = new Modules();
     }
 
     public void load(String input){

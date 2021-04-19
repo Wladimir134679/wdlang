@@ -11,6 +11,7 @@ public class MainLauncher {
     public static void main(String[] args) throws IOException {
         System.out.println("==== Start program ====");
         testProgram("./test1.wdl");
+        System.out.println("=========");
         testProgram("./test2.wdl");
     }
 

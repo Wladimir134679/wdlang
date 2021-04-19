@@ -17,12 +17,8 @@ import java.util.function.Supplier;
 
 public class collections implements Module {
 
-    public static void initConstants() {
-    }
-
     @Override
     public void init(ScriptProgram scriptProgram) {
-        initConstants();
         scriptProgram.getFunctions().set("hashMap", mapFunction(HashMap::new));
         scriptProgram.getFunctions().set("linkedHashMap", mapFunction(LinkedHashMap::new));
         scriptProgram.getFunctions().set("concurrentHashMap", mapFunction(ConcurrentHashMap::new));

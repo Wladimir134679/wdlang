@@ -40,7 +40,9 @@ public final class UseStatement extends InterruptableNode implements Statement {
 
     private void loadModule(String name) {
         try {
-            final Module module = (Module) Class.forName(String.format(PACKAGE, name, name)).newInstance();
+            final Module module = scriptProgram.getModules().newInstance(name);
+            if(module == null)
+                throw new RuntimeException("Unable to load module " + name);
             module.init(scriptProgram);
         } catch (Exception ex) {
             throw new RuntimeException("Unable to load module " + name, ex);
