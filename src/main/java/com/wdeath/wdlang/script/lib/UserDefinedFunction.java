@@ -1,0 +1,71 @@
+package com.wdeath.wdlang.script.lib;
+
+import com.wdeath.wdlang.script.ScriptProgram;
+import com.wdeath.wdlang.script.parser.ast.Argument;
+import com.wdeath.wdlang.script.parser.ast.Arguments;
+import com.wdeath.wdlang.script.exceptions.ArgumentsMismatchException;
+import com.wdeath.wdlang.script.parser.ast.ReturnStatement;
+import com.wdeath.wdlang.script.parser.ast.Statement;
+
+public class UserDefinedFunction implements Function {
+
+    public final ScriptProgram scriptProgram;
+    public final Arguments arguments;
+    public final Statement body;
+    
+    public UserDefinedFunction(ScriptProgram scriptProgram, Arguments arguments, Statement body) {
+        this.scriptProgram = scriptProgram;
+        this.arguments = arguments;
+        this.body = body;
+    }
+    
+    public int getArgsCount() {
+        return arguments.size();
+    }
+    
+    public String getArgsName(int index) {
+        if (index < 0 || index >= getArgsCount()) return "";
+        return arguments.get(index).getName();
+    }
+
+    @Override
+    public Value execute(Value... values) {
+        final int size = values.length;
+        final int requiredArgsCount = arguments.getRequiredArgumentsCount();
+        if (size < requiredArgsCount) {
+            throw new ArgumentsMismatchException(String.format(
+                    "Arguments count mismatch. Required %d, got %d", requiredArgsCount, size));
+        }
+        final int totalArgsCount = getArgsCount();
+        if (size > totalArgsCount) {
+            throw new ArgumentsMismatchException(String.format(
+                    "Arguments count mismatch. Total %d, got %d", totalArgsCount, size));
+        }
+
+        try {
+            scriptProgram.getVariables().push();
+            for (int i = 0; i < size; i++) {
+                scriptProgram.getVariables().define(getArgsName(i), values[i]);
+            }
+            // Optional args if exists
+            for (int i = size; i < totalArgsCount; i++) {
+                final Argument arg = arguments.get(i);
+                scriptProgram.getVariables().define(arg.getName(), arg.getValueExpr().eval());
+            }
+            body.execute();
+            return NumberValue.ZERO;
+        } catch (ReturnStatement rt) {
+            return rt.getResult();
+        } finally {
+            scriptProgram.getVariables().pop();
+        }
+    }
+
+    @Override
+    public String toString() {
+        if (body instanceof ReturnStatement) {
+            return String.format("def%s = %s", arguments, ((ReturnStatement)body).expression);
+        }
+        return String.format("def%s %s", arguments, body);
+    }
+}

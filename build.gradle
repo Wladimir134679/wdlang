@@ -13,6 +13,9 @@ repositories {
 
 dependencies {
 
+    implementation group: 'org.yaml', name: 'snakeyaml', version: '1.28'
+    implementation group: 'org.json', name: 'json', version: '20210307'
+
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
 
