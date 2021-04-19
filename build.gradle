@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'maven-publish'
 }
 
 mainClassName = 'com.wdeath.wdlang.MainLauncher'
@@ -8,7 +9,20 @@ group 'com.wdeath'
 version '1.0'
 
 repositories {
+    mavenLocal()
     mavenCentral()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'com.wdeath'
+            artifactId = 'wdlang'
+            version = '1.0'
+
+            from components.java
+        }
+    }
 }
 
 dependencies {
