@@ -1,6 +1,21 @@
-use ["std"]
+class C1{
+    var1 = "Var1"
 
-println "start"
+    def getVar(){
+        return var1 + "Class"
+    }
+}
 
-setTmp("1")
-println(getTmp())
+def init(){
+    println "InitProgram!"
+    use "std"
+    setTmp(1)
+}
+
+def main(){
+    println "MainProgram!"
+    println "Tmp: " + getTmp()
+
+    c1 = new C1()
+    println c1.getVar()
+}

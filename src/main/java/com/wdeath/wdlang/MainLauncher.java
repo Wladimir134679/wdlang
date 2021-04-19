@@ -18,8 +18,10 @@ public class MainLauncher {
     private static void testProgram(String path) throws IOException {
         String input = Files.readString(Paths.get(path));
         ScriptProgram scriptProgram = new ScriptProgram();
-        scriptProgram.init();
-        scriptProgram.load(input);
-        scriptProgram.executeRoot();
+        scriptProgram
+                .init()
+                .load(input);
+        scriptProgram.execute("init");
+        scriptProgram.execute("main");
     }
 }
