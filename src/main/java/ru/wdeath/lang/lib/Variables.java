@@ -30,6 +30,10 @@ public class Variables {
         return variables.get(name);
     }
 
+    public static void remove(String key) {
+        variables.remove(key);
+    }
+
     public static boolean isExists(String name){
         return variables.containsKey(name);
     }

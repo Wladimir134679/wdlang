@@ -1,6 +1,8 @@
 package ru.wdeath.lang.parser;
 
 import ru.wdeath.lang.ast.*;
+import ru.wdeath.lang.lib.NumberValue;
+import ru.wdeath.lang.lib.StringValue;
 import ru.wdeath.lang.lib.UserDefineFunction;
 
 import java.util.ArrayList;
@@ -137,6 +139,53 @@ public class Parser {
         return new IfStatement(condition, ifStatement, elseStatement);
     }
 
+    private MatchExpression match() {
+        // match expression {
+        //  case pattern1: result1
+        //  case pattern2 if extr: result2
+        // }
+        final Expression expression = expression();
+        consume(TokenType.LBRACE);
+        final List<MatchExpression.Pattern> patterns = new ArrayList<>();
+        do {
+            consume(TokenType.CASE);
+            MatchExpression.Pattern pattern = null;
+            final Token current = peek(0);
+            if (match(TokenType.NUMBER)) {
+                pattern = new MatchExpression.ConstantPattern(
+                        new NumberValue(Double.parseDouble(current.getText()))
+                );
+            } else if (match(TokenType.HEX_NUMBER)) {
+                pattern = new MatchExpression.ConstantPattern(
+                        new NumberValue(Long.parseLong(current.getText(), 16))
+                );
+            } else if (match(TokenType.TEXT)) {
+                pattern = new MatchExpression.ConstantPattern(
+                        new StringValue(current.getText())
+                );
+            } else if (match(TokenType.WORD)) {
+                pattern = new MatchExpression.VariablePattern(current.getText());
+            }
+
+            if (pattern == null) {
+                throw new ParseException("Wrong pattern in match expression: " + current);
+            }
+            if (match(TokenType.IF)) {
+                pattern.optCondition = expression();
+            }
+
+            consume(TokenType.COLON);
+            if (lookMatch(0, TokenType.LBRACE)) {
+                pattern.result = block();
+            } else {
+                pattern.result = new ReturnStatement(expression());
+            }
+            patterns.add(pattern);
+        } while (!match(TokenType.RBRACE));
+
+        return new MatchExpression(expression, patterns);
+    }
+
     private Statement assignmentStatement() {
         // WORD EQ
         if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.EQ)) {
@@ -196,6 +245,19 @@ public class Parser {
             consume(TokenType.RBRACKET);
         } while (lookMatch(0, TokenType.LBRACKET));
         return new ArrayAccessExpression(name, indices);
+    }
+
+    private ArrayAccessExpression object() {
+        // object.field1.field2
+        // Syntaxic sugar for object["field1"]["field2"]
+        final String variable = consume(TokenType.WORD).getText();
+        final List<Expression> indices = new ArrayList<>();
+        while (match(TokenType.DOT)) {
+            final String fieldName = consume(TokenType.WORD).getText();
+            final Expression key = new ValueExpression(fieldName);
+            indices.add(key);
+        }
+        return new ArrayAccessExpression(variable, indices);
     }
 
 
@@ -381,26 +443,17 @@ public class Parser {
 
     private Expression primary() {
         final var current = peek(0);
-        if (match(TokenType.NUMBER))
-            return new ValueExpression(Double.parseDouble(current.getText()));
-        if (match(TokenType.HEX_NUMBER))
-            return new ValueExpression(Long.parseLong(current.getText(), 16));
-        if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.LBRACKET))
-            return element();
-        if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.LPAREN))
-            return function();
-        if (lookMatch(0, TokenType.LBRACKET))
-            return array();
-        if (lookMatch(0, TokenType.LBRACE))
-            return map();
-        if (match(TokenType.WORD))
-            return new VariableExpression(current.getText());
-        if (match(TokenType.TEXT))
-            return new ValueExpression(current.getText());
+        if (match(TokenType.LPAREN)) {
+            Expression expression = expression();
+            match(TokenType.RPAREN);
+            return expression;
+        }
         if (match(TokenType.COLONCOLON)) {
             final String functionName = consume(TokenType.WORD).getText();
             return new FunctionReferenceExpression(functionName);
         }
+        if (match(TokenType.MATCH))
+            return match();
         if (match(TokenType.DEF)) {
             consume(TokenType.LPAREN);
             final var argsName = new ArrayList<String>();
@@ -416,11 +469,39 @@ public class Parser {
                 statement = statementOrBlock();
             return new ValueExpression(new UserDefineFunction(argsName, statement));
         }
-        if (match(TokenType.LPAREN)) {
-            Expression expression = expression();
-            match(TokenType.RPAREN);
-            return expression;
+        return variable();
+    }
+
+    private Expression variable() {
+        final var current = peek(0);
+        if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.LBRACKET)) {
+            return element();
         }
+        if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.LPAREN)) {
+            return function();
+        }
+        if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.DOT)) {
+            return object();
+        }
+        if (lookMatch(0, TokenType.LBRACKET)) {
+            return array();
+        }
+        if (lookMatch(0, TokenType.LBRACE)) {
+            return map();
+        }
+        if (match(TokenType.WORD))
+            return new VariableExpression(current.getText());
+        return value();
+    }
+
+    private Expression value() {
+        final var current = peek(0);
+        if (match(TokenType.TEXT))
+            return new ValueExpression(current.getText());
+        if (match(TokenType.NUMBER))
+            return new ValueExpression(Double.parseDouble(current.getText()));
+        if (match(TokenType.HEX_NUMBER))
+            return new ValueExpression(Long.parseLong(current.getText(), 16));
         throw new ParseException("unknown expression " + current);
     }
 

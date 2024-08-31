@@ -53,4 +53,6 @@ public interface Visitor {
     void visit(ForeachArrayStatement st);
 
     void visit(ForeachMapStatement st);
+
+    void visit(MatchExpression st);
 }

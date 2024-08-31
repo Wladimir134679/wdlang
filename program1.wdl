@@ -41,8 +41,18 @@ println(arr)
 arr = arr << arrSum
 println(arr)
 
-for(a : arr)
-    println("for a = " + a)
+mathFunc = def (var) = match var {
+    case 4: "Tut 4!!!"
+    case other: "Other: " + other
+}
 
-for(k, v : map)
+
+for(a : arr){
+    println("for a = " + a)
+    println("for a = func " + mathFunc(a))
+}
+
+for(k, v : map){
     println("for map = " + k + ": " + v)
+    println("for_map = " + k + ": " + map.key)
+}

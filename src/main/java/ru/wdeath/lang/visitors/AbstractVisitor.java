@@ -154,4 +154,9 @@ public abstract class AbstractVisitor implements Visitor {
         st.container.accept(this);
         st.body.accept(this);
     }
+
+    @Override
+    public void visit(MatchExpression st) {
+        st.expression.accept(this);
+    }
 }

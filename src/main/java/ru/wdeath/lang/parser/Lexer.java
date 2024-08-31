@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class Lexer {
 
-    private static final String OPERATION_CHARS = "+-*/()=<>!&|{},[]%?:~^";
+    private static final String OPERATION_CHARS = "+-*/()=<>!&|{},[]%?:~^.";
 
     private static final Map<String, TokenType> OPERATORS = new HashMap<>();
 
@@ -28,6 +28,7 @@ public class Lexer {
 
         OPERATORS.put("%", TokenType.PERCENT);
         OPERATORS.put(",", TokenType.COMMA);
+        OPERATORS.put(".", TokenType.DOT);
         OPERATORS.put("?", TokenType.QUESTION);
         OPERATORS.put(":", TokenType.COLON);
 
@@ -66,6 +67,8 @@ public class Lexer {
         KEYWORDS.put("continue", TokenType.CONTINUE);
         KEYWORDS.put("def", TokenType.DEF);
         KEYWORDS.put("return", TokenType.RETURN);
+        KEYWORDS.put("match", TokenType.MATCH);
+        KEYWORDS.put("case", TokenType.CASE);
     }
 
     private final String input;

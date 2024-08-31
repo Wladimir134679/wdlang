@@ -18,6 +18,7 @@ public enum TokenType {
     CONTINUE,
     DEF,
     RETURN,
+    MATCH, CASE,
 
     PLUS, // +
     MINUS, // -
@@ -57,6 +58,7 @@ public enum TokenType {
     COLON, // :
     COLONCOLON, // ::
     COMMA, // ,
+    DOT, // .
 
     EOF,
 }
