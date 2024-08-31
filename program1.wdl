@@ -13,5 +13,7 @@ println(!0)
 println(1^2)
 
 sum = def (a, b) return a + b
+div = def (a, b) = a / b
 
 println("sum = " + sum(10, 20))
+println("div = " + div(10, 20))

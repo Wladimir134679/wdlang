@@ -159,6 +159,10 @@ public class Parser {
             argsName.add(consume(TokenType.WORD).getText());
             match(TokenType.COMMA);
         }
+        if (lookMatch(0, TokenType.EQ)) {
+            match(TokenType.EQ);
+            return new FunctionDefineStatement(name, argsName, new ReturnStatement(expression()));
+        }
         final var body = statementOrBlock();
         return new FunctionDefineStatement(name, argsName, body);
     }
@@ -341,15 +345,20 @@ public class Parser {
             return new VariableExpression(current.getText());
         if (match(TokenType.TEXT))
             return new ValueExpression(current.getText());
-        if(match(TokenType.DEF)){
+        if (match(TokenType.DEF)) {
             consume(TokenType.LPAREN);
             final var argsName = new ArrayList<String>();
             while (!match(TokenType.RPAREN)) {
                 argsName.add(consume(TokenType.WORD).getText());
                 match(TokenType.COMMA);
             }
-            final var body = statementOrBlock();
-            return new ValueExpression(new UserDefineFunction(argsName, body));
+            Statement statement;
+            if (lookMatch(0, TokenType.EQ)) {
+                match(TokenType.EQ);
+                statement = new ReturnStatement(expression());
+            }else
+                statement = statementOrBlock();
+            return new ValueExpression(new UserDefineFunction(argsName, statement));
         }
         if (match(TokenType.LPAREN)) {
             Expression expression = expression();
