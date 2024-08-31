@@ -53,10 +53,25 @@ public class Lexer {
         OPERATORS.put("||", TokenType.BARBAR);
 
     }
+    private static final Map<String, TokenType> KEYWORDS;
+    static {
+        KEYWORDS = new HashMap<>();
+        KEYWORDS.put("print", TokenType.PRINT);
+        KEYWORDS.put("if", TokenType.IF);
+        KEYWORDS.put("else", TokenType.ELSE);
+        KEYWORDS.put("while", TokenType.WHILE);
+        KEYWORDS.put("for", TokenType.FOR);
+        KEYWORDS.put("do", TokenType.DO);
+        KEYWORDS.put("break", TokenType.BREAK);
+        KEYWORDS.put("continue", TokenType.CONTINUE);
+        KEYWORDS.put("def", TokenType.DEF);
+        KEYWORDS.put("return", TokenType.RETURN);
+    }
 
     private final String input;
     private final int length;
-    private List<Token> tokens;
+    private final List<Token> tokens;
+    private final StringBuilder buffer;
     private int pos;
     private int row, col;
 
@@ -65,6 +80,7 @@ public class Lexer {
         this.length = input.length();
         this.pos = 0;
         this.tokens = new ArrayList<>();
+        this.buffer = new StringBuilder();
         row = col = 1;
     }
 
@@ -88,7 +104,7 @@ public class Lexer {
     }
 
     private void tokenizeHexNumber() {
-        final StringBuilder buffer = new StringBuilder();
+        clearBuffer();
         char current = peek(0);
         while (Character.isDigit(current) || isHexNumber(current)) {
             buffer.append(current);
@@ -102,7 +118,7 @@ public class Lexer {
     }
 
     private void tokenizeNumber() {
-        final StringBuilder buffer = new StringBuilder();
+        clearBuffer();
         char current = peek(0);
         while (true) {
             if (current == '.') {
@@ -130,7 +146,7 @@ public class Lexer {
                 return;
             }
         }
-        final StringBuilder buffer = new StringBuilder();
+        clearBuffer();
         while(true){
             final var text = buffer.toString();
             if(!OPERATORS.containsKey(text + current) && !text.isEmpty()){
@@ -143,7 +159,7 @@ public class Lexer {
     }
 
     private void tokenizeWorld() {
-        final StringBuilder buffer = new StringBuilder();
+        clearBuffer();
         char current = peek(0);
         while (true) {
             if (!Character.isLetterOrDigit(current) && (current != '_') && (current != '$'))
@@ -151,25 +167,17 @@ public class Lexer {
             buffer.append(current);
             current = next();
         }
-        String toString = buffer.toString();
-        switch (toString) {
-            case "print" -> addToken(TokenType.PRINT);
-            case "if" -> addToken(TokenType.IF);
-            case "else" -> addToken(TokenType.ELSE);
-            case "for" -> addToken(TokenType.FOR);
-            case "while" -> addToken(TokenType.WHILE);
-            case "do" -> addToken(TokenType.DO);
-            case "break" -> addToken(TokenType.BREAK);
-            case "continue" -> addToken(TokenType.CONTINUE);
-            case "def" -> addToken(TokenType.DEF);
-            case "return" -> addToken(TokenType.RETURN);
-            default -> addToken(TokenType.WORD, toString);
+        String word = buffer.toString();
+        if (KEYWORDS.containsKey(word)) {
+            addToken(KEYWORDS.get(word));
+        } else {
+            addToken(TokenType.WORD, word);
         }
     }
 
     private void tokenizeText() {
         next();// Skip "
-        final StringBuilder buffer = new StringBuilder();
+        clearBuffer();
         char current = peek(0);
         while (true) {
             if (current == '\0') throw error("Reached end of file while parsing text string.");
@@ -183,6 +191,14 @@ public class Lexer {
                     case 'n':
                         current = next();
                         buffer.append('\n');
+                        continue;
+                    case 'b':
+                        current = next();
+                        buffer.append('\b');
+                        continue;
+                    case 'f':
+                        current = next();
+                        buffer.append('\f');
                         continue;
                     case 't':
                         current = next();
@@ -236,6 +252,10 @@ public class Lexer {
 
     private LexerException error(String text) {
         return new LexerException(row, col, text);
+    }
+
+    private void clearBuffer() {
+        buffer.setLength(0);
     }
 
     private void addToken(TokenType type) {
