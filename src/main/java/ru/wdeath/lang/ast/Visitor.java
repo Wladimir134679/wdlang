@@ -45,4 +45,6 @@ public interface Visitor {
     void visit(WhileStatement st);
 
     void visit(TernaryExpression st);
+
+    void visit(MapExpression st);
 }

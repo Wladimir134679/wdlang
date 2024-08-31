@@ -4,7 +4,9 @@ import ru.wdeath.lang.ast.*;
 import ru.wdeath.lang.lib.UserDefineFunction;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Parser {
 
@@ -137,6 +139,19 @@ public class Parser {
             match(TokenType.COMMA);
         }
         return new ArrayExpression(elements);
+    }
+
+    private Expression map() {
+        consume(TokenType.LBRACE);
+        final Map<Expression, Expression> elements = new HashMap<>();
+        while (!match(TokenType.RBRACE)) {
+            final Expression key = expression();
+            consume(TokenType.COLON);
+            final Expression value = expression();
+            elements.put(key, value);
+            match(TokenType.COMMA);
+        }
+        return new MapExpression(elements);
     }
 
     private ArrayAccessExpression element() {
@@ -341,6 +356,8 @@ public class Parser {
             return function();
         if (lookMatch(0, TokenType.LBRACKET))
             return array();
+        if (lookMatch(0, TokenType.LBRACE))
+            return map();
         if (match(TokenType.WORD))
             return new VariableExpression(current.getText());
         if (match(TokenType.TEXT))
@@ -356,7 +373,7 @@ public class Parser {
             if (lookMatch(0, TokenType.EQ)) {
                 match(TokenType.EQ);
                 statement = new ReturnStatement(expression());
-            }else
+            } else
                 statement = statementOrBlock();
             return new ValueExpression(new UserDefineFunction(argsName, statement));
         }

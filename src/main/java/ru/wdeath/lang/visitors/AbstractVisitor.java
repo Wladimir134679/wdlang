@@ -129,4 +129,12 @@ public abstract class AbstractVisitor implements Visitor {
         st.trueExpr.accept(this);
         st.falseExpr.accept(this);
     }
+
+    @Override
+    public void visit(MapExpression st) {
+        for (Expression key : st.elements.keySet()) {
+            key.accept(this);
+            st.elements.get(key).accept(this);
+        }
+    }
 }

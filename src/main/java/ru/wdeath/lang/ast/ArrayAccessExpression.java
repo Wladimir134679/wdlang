@@ -1,6 +1,7 @@
 package ru.wdeath.lang.ast;
 
 import ru.wdeath.lang.lib.ArrayValue;
+import ru.wdeath.lang.lib.MapValue;
 import ru.wdeath.lang.lib.Value;
 import ru.wdeath.lang.lib.Variables;
 
@@ -18,7 +19,11 @@ public class ArrayAccessExpression implements Expression {
 
     @Override
     public Value eval() {
-        return getArray().get(lastIndex());
+        Value container = Variables.get(name);
+        if (container instanceof ArrayValue) {
+            return getArray().get(lastIndex());
+        }
+        return consumeMap(container).get(indexes.getFirst().eval());
     }
 
     public ArrayValue getArray(){
@@ -36,6 +41,14 @@ public class ArrayAccessExpression implements Expression {
 
     private int index(int i) {
         return (int) indexes.get(i).eval().asDouble();
+    }
+
+    private MapValue consumeMap(Value value) {
+        if (value instanceof MapValue) {
+            return (MapValue) value;
+        } else {
+            throw new RuntimeException("Map expected");
+        }
     }
 
     private ArrayValue consumeArray(Value value){

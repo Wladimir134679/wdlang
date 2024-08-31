@@ -17,3 +17,7 @@ div = def (a, b) = a / b
 
 println("sum = " + sum(10, 20))
 println("div = " + div(10, 20))
+
+map = {"key": "val1", "key2": 1234}
+println(map["key"])
+println(map["key2"])
