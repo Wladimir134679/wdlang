@@ -31,18 +31,7 @@ public class FunctionExpression implements Expression {
             listValue[i] = arguments.get(i).eval();
         }
 
-        Function function = getFunction(name);
-        if (function instanceof UserDefineFunction usersDef) {
-            if (arguments.size() != usersDef.getArgsCount()) throw new RuntimeException("Args count mismatch");
-            Variables.push();
-            for (int i = 0; i < arguments.size(); i++) {
-                Variables.set(usersDef.getArgsName(i), listValue[i]);
-            }
-            final var result = function.execute(listValue);
-            Variables.pop();
-            return result;
-        }
-        return function.execute(listValue);
+        return getFunction(name).execute(listValue);
     }
 
     private Function getFunction(String name) {
