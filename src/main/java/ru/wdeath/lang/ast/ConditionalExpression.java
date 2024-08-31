@@ -7,11 +7,28 @@ import ru.wdeath.lang.lib.Value;
 public class ConditionalExpression implements Expression {
 
     public enum Operator {
-        PLUS, MINUS, MULTIPLY, DIVIDE,
-        EQUALS, NOT_EQUALS,
-        LT, LTEQ,
-        GT, GTEQ,
-        AND, OR,
+        EQUALS("=="),
+        NOT_EQUALS("!="),
+
+        LT("<"),
+        LTEQ("<="),
+        GT(">"),
+        GTEQ(">="),
+
+        AND("&&"),
+        OR("||"),
+
+        NULL_COALESCE("??");
+
+        private final String name;
+
+        Operator(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
     }
 
     public final Expression expr1, expr2;
@@ -44,9 +61,10 @@ public class ConditionalExpression implements Expression {
 
             case AND -> (n1 != 0) && (n2 != 0);
             case OR -> (n1 != 0) || (n2 != 0);
-            default -> n1 == n2;
+            default ->
+                    throw new RuntimeException("Operation " + operation + " is not supported");
         };
-        return new NumberValue(result);
+        return NumberValue.fromBoolean(result);
     }
 
     @Override

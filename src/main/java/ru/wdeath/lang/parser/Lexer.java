@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class Lexer {
 
-    private static final String OPERATION_CHARS = "+-*/()=<>!&|{},[]";
+    private static final String OPERATION_CHARS = "+-*/()=<>!&|{},[]%?:~^";
 
     private static final Map<String, TokenType> OPERATORS = new HashMap<>();
 
@@ -26,7 +26,10 @@ public class Lexer {
         OPERATORS.put("<", TokenType.LT);
         OPERATORS.put(">", TokenType.GT);
 
+        OPERATORS.put("%", TokenType.PERCENT);
         OPERATORS.put(",", TokenType.COMMA);
+        OPERATORS.put("?", TokenType.QUESTION);
+        OPERATORS.put(":", TokenType.COLON);
 
         OPERATORS.put("!", TokenType.EXCL);
         OPERATORS.put("&", TokenType.AMP);
@@ -37,6 +40,13 @@ public class Lexer {
         OPERATORS.put("<=", TokenType.LTEQ);
         OPERATORS.put(">=", TokenType.GTEQ);
 
+        OPERATORS.put("~", TokenType.TILDE);
+        OPERATORS.put("^", TokenType.CARET);
+        OPERATORS.put("^^", TokenType.CARETCARET);
+        OPERATORS.put(">>", TokenType.LTLT);
+        OPERATORS.put("<<", TokenType.GTGT);
+        OPERATORS.put(">>>", TokenType.GTGTGT);
+
         OPERATORS.put("&&", TokenType.AMPAMP);
         OPERATORS.put("||", TokenType.BARBAR);
 
@@ -46,12 +56,14 @@ public class Lexer {
     private final int length;
     private List<Token> tokens;
     private int pos;
+    private int row, col;
 
     public Lexer(String input) {
         this.input = input;
         this.length = input.length();
         this.pos = 0;
         this.tokens = new ArrayList<>();
+        row = col = 1;
     }
 
     public List<Token> tokenize() {
@@ -92,7 +104,7 @@ public class Lexer {
         char current = peek(0);
         while (true) {
             if (current == '.') {
-                if (buffer.indexOf(".") != -1) throw new RuntimeException("Invalid number format");
+                if (buffer.indexOf(".") != -1) throw error("Invalid float number");;
             } else if (!Character.isDigit(current))
                 break;
             buffer.append(current);
@@ -158,6 +170,7 @@ public class Lexer {
         final StringBuilder buffer = new StringBuilder();
         char current = peek(0);
         while (true) {
+            if (current == '\0') throw error("Reached end of file while parsing text string.");
             if (current == '\\') {
                 current = next();
                 switch (current) {
@@ -188,7 +201,7 @@ public class Lexer {
     private void tokenizeMultilineComment() {
         char current = peek(0);
         while (true) {
-            if (current == '\0') throw new RuntimeException("Missing close tag");
+            if (current == '\0') throw error("Missing close tag");
             if (current == '*' && peek(1) == '/') break;
             current = next();
         }
@@ -205,7 +218,12 @@ public class Lexer {
 
     private char next() {
         pos++;
-        return peek(0);
+        final char result = peek(0);
+        if (result == '\n') {
+            row++;
+            col = 1;
+        } else col++;
+        return result;
     }
 
     private char peek(int relativePosition) {
@@ -214,11 +232,15 @@ public class Lexer {
         return input.charAt(position);
     }
 
+    private LexerException error(String text) {
+        return new LexerException(row, col, text);
+    }
+
     private void addToken(TokenType type) {
         this.addToken(type, "");
     }
 
     private void addToken(TokenType type, String text) {
-        tokens.add(new Token(type, text));
+        tokens.add(new Token(type, text, row, col));
     }
 }

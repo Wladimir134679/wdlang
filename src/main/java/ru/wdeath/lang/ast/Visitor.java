@@ -43,4 +43,6 @@ public interface Visitor {
     void visit(VariableExpression st);
 
     void visit(WhileStatement st);
+
+    void visit(TernaryExpression st);
 }

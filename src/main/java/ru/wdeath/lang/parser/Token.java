@@ -4,13 +4,21 @@ public class Token {
 
     private TokenType type;
     private String text;
+    private final int row, col;
 
-    public Token() {
-    }
-
-    public Token(TokenType type, String text) {
+    public Token(TokenType type, String text, int row, int col) {
         this.type = type;
         this.text = text;
+        this.row = row;
+        this.col = col;
+    }
+
+    public int getCol() {
+        return col;
+    }
+
+    public int getRow() {
+        return row;
     }
 
     public TokenType getType() {
@@ -34,6 +42,8 @@ public class Token {
         return "Token{" +
                 "type=" + type +
                 ", text='" + text + '\'' +
+                ", row=" + row +
+                ", col=" + col +
                 '}';
     }
 }

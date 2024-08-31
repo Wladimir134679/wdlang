@@ -19,10 +19,12 @@ public enum TokenType {
     DEF,
     RETURN,
 
-    STAR,
-    PLUS,
-    MINUS,
-    SLASH,
+    PLUS, // +
+    MINUS, // -
+    STAR, // *
+    SLASH, // /
+    PERCENT,// %
+
     EQ,
     EQEQ,
     EXCL,
@@ -32,10 +34,17 @@ public enum TokenType {
     GT,
     GTEQ,
 
-    BAR,
-    BARBAR,
-    AMP,
-    AMPAMP,
+    BAR, // |
+    BARBAR, // ||
+    AMP, // &
+    AMPAMP, // &&
+
+    TILDE, // ~
+    CARET, // ^
+    CARETCARET, // ^^
+    LTLT, // <<
+    GTGT, // >>
+    GTGTGT, // >>>
 
     LPAREN,// (
     RPAREN,// )
@@ -44,6 +53,8 @@ public enum TokenType {
     LBRACE, // {
     RBRACE, // }
 
+    QUESTION, // ?
+    COLON, // :
     COMMA, // ,
 
     EOF,

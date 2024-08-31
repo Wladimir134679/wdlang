@@ -122,4 +122,11 @@ public abstract class AbstractVisitor implements Visitor {
         st.condition.accept(this);
         st.body.accept(this);
     }
+
+    @Override
+    public void visit(TernaryExpression st) {
+        st.condition.accept(this);
+        st.trueExpr.accept(this);
+        st.falseExpr.accept(this);
+    }
 }

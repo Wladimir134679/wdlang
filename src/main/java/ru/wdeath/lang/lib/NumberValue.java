@@ -1,7 +1,13 @@
 package ru.wdeath.lang.lib;
 
-public class NumberValue implements Value{
+public class NumberValue implements Value {
+
     public static final NumberValue ZERO = new NumberValue(0);
+    public static final NumberValue ONE = new NumberValue(1);
+
+    public static NumberValue fromBoolean(boolean b) {
+        return b ? ONE : ZERO;
+    }
 
     private final double value;
 
