@@ -313,6 +313,8 @@ public class Parser {
                 expr = new BinaryExpression(BinaryExpression.Operator.ADD, expr, multiplicative());
             else if (match(TokenType.MINUS))
                 expr = new BinaryExpression(BinaryExpression.Operator.SUBTRACT, expr, multiplicative());
+            else if (match(TokenType.COLONCOLON))
+                expr = new BinaryExpression(BinaryExpression.Operator.PUSH, expr, multiplicative());
             else break;
         }
         return expr;

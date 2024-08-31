@@ -45,8 +45,8 @@ public class Lexer {
         OPERATORS.put("~", TokenType.TILDE);
         OPERATORS.put("^", TokenType.CARET);
         OPERATORS.put("^^", TokenType.CARETCARET);
-        OPERATORS.put(">>", TokenType.LTLT);
-        OPERATORS.put("<<", TokenType.GTGT);
+        OPERATORS.put(">>", TokenType.GTGT);
+        OPERATORS.put("<<", TokenType.LTLT);
         OPERATORS.put(">>>", TokenType.GTGTGT);
 
         OPERATORS.put("&&", TokenType.AMPAMP);

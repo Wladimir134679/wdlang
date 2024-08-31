@@ -31,3 +31,11 @@ def af(){
 def run(_func){
     _func()
 }
+
+arr = [1,2,3,4]
+arrSum = [6, 7, 8]
+println(arr)
+arr = arr::5
+println(arr)
+arr = arr << arrSum
+println(arr)
