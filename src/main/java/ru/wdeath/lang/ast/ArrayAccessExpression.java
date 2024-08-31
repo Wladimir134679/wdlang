@@ -43,7 +43,7 @@ public class ArrayAccessExpression implements Expression {
         return (int) indexes.get(i).eval().asDouble();
     }
 
-    private MapValue consumeMap(Value value) {
+    public MapValue consumeMap(Value value) {
         if (value instanceof MapValue) {
             return (MapValue) value;
         } else {

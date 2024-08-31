@@ -17,7 +17,12 @@ public class ArrayAssignmentStatement implements Statement {
 
     @Override
     public void execute() {
-        array.getArray().set(array.lastIndex(), expression.eval());
+        final Value container = Variables.get(array.name);
+        if (container instanceof ArrayValue) {
+            array.getArray().set(array.lastIndex(), expression.eval());
+            return;
+        }
+        array.consumeMap(container).set(array.indexes.getFirst().eval(), expression.eval());
     }
 
     @Override

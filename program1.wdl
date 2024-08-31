@@ -20,6 +20,7 @@ println("div = " + div(10, 20))
 
 map = {"key": "val1", "key2": 1234}
 println(map["key"])
+map["key2"] = "val2"
 println(map["key2"])
 
 run(::af)
