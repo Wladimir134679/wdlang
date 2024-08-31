@@ -49,4 +49,8 @@ public interface Visitor {
     void visit(MapExpression st);
 
     void visit(FunctionReferenceExpression st);
+
+    void visit(ForeachArrayStatement st);
+
+    void visit(ForeachMapStatement st);
 }

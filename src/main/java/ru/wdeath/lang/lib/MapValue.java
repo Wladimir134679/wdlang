@@ -1,10 +1,11 @@
 package ru.wdeath.lang.lib;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 
-public class MapValue implements Value {
+public class MapValue implements Value, Iterable<Map.Entry<Value, Value>> {
 
     private final Map<Value, Value> map;
 
@@ -48,5 +49,10 @@ public class MapValue implements Value {
         int hash = 5;
         hash = 37 * hash + Objects.hashCode(this.map);
         return hash;
+    }
+
+    @Override
+    public Iterator<Map.Entry<Value, Value>> iterator() {
+        return map.entrySet().iterator();
     }
 }

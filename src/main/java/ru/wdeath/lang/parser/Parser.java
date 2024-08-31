@@ -83,15 +83,48 @@ public class Parser {
     }
 
     private Statement forStatement() {
-        match(TokenType.LPAREN);
+        int foreachIndex = lookMatch(0, TokenType.LPAREN) ? 1 : 0;
+        if (lookMatch(foreachIndex, TokenType.WORD) && lookMatch(foreachIndex + 1, TokenType.COLON)) {
+            // for v : arr || for (v : arr)
+            return foreachArrayStatement();
+        }
+        if (lookMatch(foreachIndex, TokenType.WORD) && lookMatch(foreachIndex + 1, TokenType.COMMA)
+                && lookMatch(foreachIndex + 2, TokenType.WORD) && lookMatch(foreachIndex + 3, TokenType.COLON)) {
+            // for key, value : arr || for (key, value : arr)
+            return foreachMapStatement();
+        }
+
+        boolean openParen = match(TokenType.LPAREN); // необязательные скобки
         final var init = assignmentStatement();
         consume(TokenType.COMMA);
         final var termination = expression();
         consume(TokenType.COMMA);
         final var increment = assignmentStatement();
-        match(TokenType.RPAREN);
+        if (openParen) consume(TokenType.RPAREN); // скобки
         final var body = statementOrBlock();
         return new ForStatement(init, termination, increment, body);
+    }
+
+    private ForeachArrayStatement foreachArrayStatement() {
+        boolean openParen = match(TokenType.LPAREN); // необязательные скобки
+        final String variable = consume(TokenType.WORD).getText();
+        consume(TokenType.COLON);
+        final Expression container = expression();
+        if (openParen) consume(TokenType.RPAREN); // скобки
+        final Statement statement = statementOrBlock();
+        return new ForeachArrayStatement(variable, container, statement);
+    }
+
+    private ForeachMapStatement foreachMapStatement() {
+        boolean openParen = match(TokenType.LPAREN); // необязательные скобки
+        final String key = consume(TokenType.WORD).getText();
+        consume(TokenType.COMMA);
+        final String value = consume(TokenType.WORD).getText();
+        consume(TokenType.COLON);
+        final Expression container = expression();
+        if (openParen) consume(TokenType.RPAREN); // скобки
+        final Statement statement = statementOrBlock();
+        return new ForeachMapStatement(key, value, container, statement);
     }
 
     private Statement isElse() {

@@ -142,4 +142,16 @@ public abstract class AbstractVisitor implements Visitor {
     public void visit(FunctionReferenceExpression st) {
 
     }
+
+    @Override
+    public void visit(ForeachArrayStatement st) {
+        st.container.accept(this);
+        st.body.accept(this);
+    }
+
+    @Override
+    public void visit(ForeachMapStatement st) {
+        st.container.accept(this);
+        st.body.accept(this);
+    }
 }

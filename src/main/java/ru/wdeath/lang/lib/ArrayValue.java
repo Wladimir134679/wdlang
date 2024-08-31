@@ -1,8 +1,9 @@
 package ru.wdeath.lang.lib;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
-public class ArrayValue implements Value{
+public class ArrayValue implements Value, Iterable<Value>{
 
     public static ArrayValue add(ArrayValue array, Value value) {
         final int last = array.elements.length;
@@ -78,5 +79,10 @@ public class ArrayValue implements Value{
             return false;
         final ArrayValue other = (ArrayValue) obj;
         return Arrays.deepEquals(this.elements, other.elements);
+    }
+
+    @Override
+    public Iterator<Value> iterator() {
+        return Arrays.asList(elements).iterator();
     }
 }

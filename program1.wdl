@@ -40,3 +40,9 @@ arr = arr::5
 println(arr)
 arr = arr << arrSum
 println(arr)
+
+for(a : arr)
+    println("for a = " + a)
+
+for(k, v : map)
+    println("for map = " + k + ": " + v)
