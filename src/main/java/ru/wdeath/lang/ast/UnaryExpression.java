@@ -5,8 +5,8 @@ import ru.wdeath.lang.lib.Value;
 
 public class UnaryExpression implements Expression {
 
-    private final Expression expr;
-    private final char operation;
+    public final Expression expr;
+    public final char operation;
 
     public UnaryExpression(char operation, Expression expr) {
         this.expr = expr;
@@ -21,6 +21,11 @@ public class UnaryExpression implements Expression {
             default -> throw new IllegalStateException("Unexpected value: " + operation);
         };
         return new NumberValue(result);
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 
     @Override

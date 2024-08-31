@@ -14,9 +14,9 @@ public class ConditionalExpression implements Expression {
         AND, OR,
     }
 
-    private final Expression expr1, expr2;
+    public final Expression expr1, expr2;
 
-    private final Operator operation;
+    public final Operator operation;
 
     public ConditionalExpression(Operator operation, Expression expr1, Expression expr2) {
         this.expr1 = expr1;
@@ -47,6 +47,11 @@ public class ConditionalExpression implements Expression {
             default -> n1 == n2;
         };
         return new NumberValue(result);
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 
     @Override

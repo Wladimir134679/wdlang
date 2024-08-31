@@ -2,8 +2,8 @@ package ru.wdeath.lang.ast;
 
 public class IfStatement implements Statement {
 
-    private final Expression condition;
-    private final Statement ifStatement, elseStatement;
+    public final Expression condition;
+    public final Statement ifStatement, elseStatement;
 
     public IfStatement(Expression condition, Statement ifStatement, Statement elseStatement) {
         this.condition = condition;
@@ -18,6 +18,11 @@ public class IfStatement implements Statement {
             ifStatement.execute();
         else if (elseStatement != null)
             elseStatement.execute();
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 
     @Override

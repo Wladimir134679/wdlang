@@ -8,8 +8,8 @@ import java.util.List;
 
 public class ArrayAccessExpression implements Expression {
 
-    private final String name;
-    private final List<Expression> indexes;
+    public final String name;
+    public final List<Expression> indexes;
 
     public ArrayAccessExpression(String name, List<Expression> indexes) {
         this.name = name;
@@ -43,6 +43,11 @@ public class ArrayAccessExpression implements Expression {
             return arr;
         }
         throw new RuntimeException("Not array variable");
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 
     @Override

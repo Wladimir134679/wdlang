@@ -2,7 +2,7 @@ package ru.wdeath.lang.ast;
 
 public class PrintStatement implements Statement{
 
-    private final Expression expression;
+    public final Expression expression;
 
     public PrintStatement(Expression expression) {
         this.expression = expression;
@@ -11,6 +11,11 @@ public class PrintStatement implements Statement{
     @Override
     public void execute() {
         System.out.print(expression.eval().asString());
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 
     @Override

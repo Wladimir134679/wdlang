@@ -6,7 +6,7 @@ import ru.wdeath.lang.lib.Value;
 
 public class ValueExpression implements Expression {
 
-    private final Value value;
+    public final Value value;
 
     public ValueExpression(double value) {
         this.value = new NumberValue(value);
@@ -19,6 +19,11 @@ public class ValueExpression implements Expression {
     @Override
     public Value eval() {
         return value;
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 
     @Override

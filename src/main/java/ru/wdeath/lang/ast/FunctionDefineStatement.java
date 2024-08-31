@@ -7,9 +7,9 @@ import java.util.List;
 
 public class FunctionDefineStatement implements Statement{
 
-    private final String name;
-    private final List<String> argsName;
-    private final Statement body;
+    public final String name;
+    public final List<String> argsName;
+    public final Statement body;
 
     public FunctionDefineStatement(String name, List<String> argsName, Statement body) {
         this.name = name;
@@ -20,6 +20,11 @@ public class FunctionDefineStatement implements Statement{
     @Override
     public void execute() {
         Functions.addFunction(name, new UserDefineFunction(argsName, body));
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 
     @Override

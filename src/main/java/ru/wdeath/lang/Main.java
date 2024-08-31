@@ -1,10 +1,9 @@
 package ru.wdeath.lang;
 
-import ru.wdeath.lang.ast.Expression;
-import ru.wdeath.lang.ast.Statement;
 import ru.wdeath.lang.parser.Lexer;
 import ru.wdeath.lang.parser.Parser;
 import ru.wdeath.lang.parser.Token;
+import ru.wdeath.lang.visitors.FunctionAdder;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,7 +13,7 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) throws IOException {
-        final var input = Files.readString(Path.of("./program.wdl"));
+        final var input = Files.readString(Path.of("./program1.wdl"));
         Lexer lexer = new Lexer(input);
         List<Token> tokenize = lexer.tokenize();
         for (int i = 0; i < tokenize.size(); i++) {
@@ -25,6 +24,7 @@ public class Main {
         final var blockProgram = parser.parse();
         System.out.println(blockProgram);
         System.out.println("==Run==");
+        blockProgram.accept(new FunctionAdder());
         blockProgram.execute();
         System.out.println("==End==");
     }

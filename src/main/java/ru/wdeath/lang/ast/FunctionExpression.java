@@ -7,8 +7,8 @@ import java.util.List;
 
 public class FunctionExpression implements Expression {
 
-    private final String name;
-    private final List<Expression> arguments;
+    public final String name;
+    public final List<Expression> arguments;
 
     public FunctionExpression(String name) {
         this.name = name;
@@ -43,6 +43,11 @@ public class FunctionExpression implements Expression {
             return result;
         }
         return function.execute(listValue);
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 
     @Override

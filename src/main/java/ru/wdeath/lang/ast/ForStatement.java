@@ -2,10 +2,10 @@ package ru.wdeath.lang.ast;
 
 public class ForStatement implements Statement {
 
-    private final Statement init;
-    private final Expression termination;
-    private final Statement increment;
-    private final Statement block;
+    public final Statement init;
+    public final Expression termination;
+    public final Statement increment;
+    public final Statement block;
 
     public ForStatement(Statement init, Expression termination, Statement increment, Statement block) {
         this.init = init;
@@ -26,6 +26,11 @@ public class ForStatement implements Statement {
                 //continue;
             }
         }
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 
     @Override

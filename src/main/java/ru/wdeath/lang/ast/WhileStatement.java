@@ -2,8 +2,8 @@ package ru.wdeath.lang.ast;
 
 public class WhileStatement implements Statement {
 
-    private final Expression condition;
-    private final Statement body;
+    public final Expression condition;
+    public final Statement body;
 
     public WhileStatement(Expression condition, Statement body) {
         this.condition = condition;
@@ -21,6 +21,11 @@ public class WhileStatement implements Statement {
                 //continue;
             }
         }
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 
     @Override

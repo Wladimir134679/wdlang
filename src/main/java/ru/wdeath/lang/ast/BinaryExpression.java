@@ -7,9 +7,9 @@ import ru.wdeath.lang.lib.Value;
 
 public class BinaryExpression implements Expression {
 
-    private final Expression expr1, expr2;
+    public final Expression expr1, expr2;
 
-    private final char operation;
+    public final char operation;
 
     public BinaryExpression(char operation, Expression expr1, Expression expr2) {
         this.expr1 = expr1;
@@ -41,6 +41,11 @@ public class BinaryExpression implements Expression {
             default -> n1 + n2;
         };
         return new NumberValue(result);
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 
     @Override

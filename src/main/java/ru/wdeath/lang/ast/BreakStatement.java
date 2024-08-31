@@ -7,6 +7,12 @@ public class BreakStatement extends RuntimeException implements Statement{
         throw this;
     }
 
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
+    }
+
     @Override
     public String toString() {
         return "BS{}";
