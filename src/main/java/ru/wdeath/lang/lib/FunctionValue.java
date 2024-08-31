@@ -23,6 +23,12 @@ public class FunctionValue implements Value{
     public Function getFunction() {
         return function;
     }
+
+    @Override
+    public int type() {
+        return Types.FUNCTION;
+    }
+
     @Override
     public int hashCode() {
         int hash = 7;

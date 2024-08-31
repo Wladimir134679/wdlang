@@ -30,11 +30,17 @@ public class NumberValue implements Value {
     }
 
     @Override
+    public int type() {
+        return Types.NUMBER;
+    }
+
+    @Override
     public String toString() {
         return "NV{" +
                 "v=" + value +
                 '}';
     }
+
     @Override
     public int hashCode() {
         int hash = 3;

@@ -1,9 +1,6 @@
 package ru.wdeath.lang.ast;
 
-import ru.wdeath.lang.lib.ArrayValue;
-import ru.wdeath.lang.lib.NumberValue;
-import ru.wdeath.lang.lib.StringValue;
-import ru.wdeath.lang.lib.Value;
+import ru.wdeath.lang.lib.*;
 
 public class BinaryExpression implements Expression {
 
@@ -41,10 +38,10 @@ public class BinaryExpression implements Expression {
         final Value value1 = expr1.eval();
         final Value value2 = expr2.eval();
 
-        if (value1 instanceof StringValue) {
+        if (value1.type() == Types.STRING) {
             return eval((StringValue) value1, value2);
         }
-        if (value1 instanceof ArrayValue) {
+        if (value1.type() == Types.ARRAY) {
             return eval((ArrayValue) value1, value2);
         }
         return eval(value1, value2);
@@ -70,7 +67,7 @@ public class BinaryExpression implements Expression {
     private Value eval(ArrayValue value1, Value value2) {
         switch (operation) {
             case LSHIFT:
-                if (!(value2 instanceof ArrayValue))
+                if (!(value2.type() == Types.ARRAY))
                     throw new RuntimeException("Cannot merge non array value to array");
                 return ArrayValue.merge(value1, (ArrayValue) value2);
             case PUSH:

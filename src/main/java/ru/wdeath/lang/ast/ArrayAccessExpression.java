@@ -1,9 +1,6 @@
 package ru.wdeath.lang.ast;
 
-import ru.wdeath.lang.lib.ArrayValue;
-import ru.wdeath.lang.lib.MapValue;
-import ru.wdeath.lang.lib.Value;
-import ru.wdeath.lang.lib.Variables;
+import ru.wdeath.lang.lib.*;
 
 import java.util.List;
 
@@ -20,7 +17,7 @@ public class ArrayAccessExpression implements Expression {
     @Override
     public Value eval() {
         Value container = Variables.get(name);
-        if (container instanceof ArrayValue) {
+        if (container.type() == Types.ARRAY) {
             return getArray().get(lastIndex());
         }
         return consumeMap(container).get(indexes.getFirst().eval());
@@ -44,7 +41,7 @@ public class ArrayAccessExpression implements Expression {
     }
 
     public MapValue consumeMap(Value value) {
-        if (value instanceof MapValue) {
+        if (value.type() == Types.MAP) {
             return (MapValue) value;
         } else {
             throw new RuntimeException("Map expected");
@@ -52,8 +49,8 @@ public class ArrayAccessExpression implements Expression {
     }
 
     private ArrayValue consumeArray(Value value){
-        if(value instanceof ArrayValue arr){
-            return arr;
+        if(value.type() == Types.ARRAY){
+            return (ArrayValue) value;
         }
         throw new RuntimeException("Not array variable");
     }

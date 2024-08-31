@@ -2,6 +2,7 @@ package ru.wdeath.lang.ast;
 
 import ru.wdeath.lang.lib.NumberValue;
 import ru.wdeath.lang.lib.StringValue;
+import ru.wdeath.lang.lib.Types;
 import ru.wdeath.lang.lib.Value;
 
 public class ConditionalExpression implements Expression {
@@ -44,12 +45,14 @@ public class ConditionalExpression implements Expression {
     @Override
     public Value eval() {
         double n1, n2;
-        if (expr1.eval() instanceof StringValue) {
-            n1 = expr1.eval().asString().compareTo(expr2.eval().asString());
+        Value eval1 = expr1.eval();
+        Value eval2 = expr2.eval();
+        if (eval1.type() == Types.STRING) {
+            n1 = eval1.asString().compareTo(eval2.asString());
             n2 = 0;
         } else {
-            n1 = expr1.eval().asDouble();
-            n2 = expr2.eval().asDouble();
+            n1 = eval1.asDouble();
+            n2 = eval2.asDouble();
         }
         final var result = switch (operation) {
             case EQUALS -> n1 == n2;

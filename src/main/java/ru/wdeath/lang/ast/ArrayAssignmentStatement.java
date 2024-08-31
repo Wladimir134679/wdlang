@@ -1,6 +1,7 @@
 package ru.wdeath.lang.ast;
 
 import ru.wdeath.lang.lib.ArrayValue;
+import ru.wdeath.lang.lib.Types;
 import ru.wdeath.lang.lib.Value;
 import ru.wdeath.lang.lib.Variables;
 
@@ -18,7 +19,7 @@ public class ArrayAssignmentStatement implements Statement {
     @Override
     public void execute() {
         final Value container = Variables.get(array.name);
-        if (container instanceof ArrayValue) {
+        if (container.type() == Types.ARRAY) {
             array.getArray().set(array.lastIndex(), expression.eval());
             return;
         }

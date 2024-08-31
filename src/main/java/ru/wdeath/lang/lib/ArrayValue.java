@@ -58,6 +58,11 @@ public class ArrayValue implements Value, Iterable<Value>{
     }
 
     @Override
+    public int type() {
+        return Types.ARRAY;
+    }
+
+    @Override
     public String toString() {
         return "ArrayValue{" +
                 "e=" + Arrays.toString(elements) +

@@ -31,6 +31,11 @@ public class MapValue implements Value, Iterable<Map.Entry<Value, Value>> {
     }
 
     @Override
+    public int type() {
+        return Types.MAP;
+    }
+
+    @Override
     public String asString() {
         return map.toString();
     }

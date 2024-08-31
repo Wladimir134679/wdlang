@@ -25,6 +25,11 @@ public class StringValue implements Value {
     }
 
     @Override
+    public int type() {
+        return Types.STRING;
+    }
+
+    @Override
     public String toString() {
         return "SV{" +
                 "v='" + value + '\'' +

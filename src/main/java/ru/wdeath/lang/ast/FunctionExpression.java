@@ -35,11 +35,11 @@ public class FunctionExpression implements Expression {
     }
 
     private Function getFunction(String name) {
-        if(Functions.isExists(name)) return Functions.getFunction(name);
-        if(Variables.isExists(name)){
+        if (Functions.isExists(name)) return Functions.getFunction(name);
+        if (Variables.isExists(name)) {
             final var value = Variables.get(name);
-            if(value instanceof FunctionValue func)
-                return func.getFunction();
+            if (value.type() == Types.FUNCTION)
+                return ((FunctionValue) value).getFunction();
         }
         throw new RuntimeException("Function '" + name + "' not found");
     }
