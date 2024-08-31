@@ -101,13 +101,17 @@ public class Parser {
 
     private Statement assignmentStatement() {
         // WORD EQ
-        final var current = peek(0);
-        if (match(TokenType.WORD) && peek(0).getType() == TokenType.EQ) {
-            final String name = current.getText();
+        if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.EQ)) {
+            final String name = consume(TokenType.WORD).getText();
             consume(TokenType.EQ);
             return new AssignmentStatement(name, expression());
         }
-        throw new RuntimeException("Unknown statement " + current);
+        if(lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.LBRACKET)) {
+            ArrayAccessExpression array = element();
+            consume(TokenType.EQ);
+            return new ArrayAssignmentStatement(array, expression());
+        }
+        throw new RuntimeException("Unknown statement " + peek(0) + ": " + pos);
     }
 
 
@@ -120,6 +124,27 @@ public class Parser {
             match(TokenType.COMMA);
         }
         return functionExpression;
+    }
+
+    private Expression array(){
+        consume(TokenType.LBRACKET);
+        final List<Expression> elements = new ArrayList<>();
+        while (!match(TokenType.RBRACKET)) {
+            elements.add(expression());
+            match(TokenType.COMMA);
+        }
+        return new ArrayExpression(elements);
+    }
+
+    private ArrayAccessExpression element(){
+        final String name = consume(TokenType.WORD).getText();
+        List<Expression> indices = new ArrayList<>();
+        do {
+            consume(TokenType.LBRACKET);
+            indices.add(expression());
+            consume(TokenType.RBRACKET);
+        }while (lookMatch(0, TokenType.LBRACKET));
+        return new ArrayAccessExpression(name, indices);
     }
 
 
@@ -227,8 +252,12 @@ public class Parser {
             return new ValueExpression(Double.parseDouble(current.getText()));
         if (match(TokenType.HEX_NUMBER))
             return new ValueExpression(Long.parseLong(current.getText(), 16));
-        if (peek(0).getType() == TokenType.WORD && peek(1).getType() == TokenType.LPAREN)
+        if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.LBRACKET))
+            return element();
+        if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.LPAREN))
             return function();
+        if(lookMatch(0, TokenType.LBRACKET))
+            return array();
         if (match(TokenType.WORD))
             return new VariableExpression(current.getText());
         if (match(TokenType.TEXT))
@@ -247,6 +276,10 @@ public class Parser {
             throw new RuntimeException("Token " + type + " does not match expected " + current);
         pos++;
         return current;
+    }
+
+    private boolean lookMatch(int pos, TokenType type) {
+        return peek(pos).getType() == type;
     }
 
     private boolean match(TokenType type) {

@@ -1,5 +1,6 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.lib.ArrayValue;
 import ru.wdeath.lang.lib.NumberValue;
 import ru.wdeath.lang.lib.StringValue;
 import ru.wdeath.lang.lib.Value;
@@ -18,7 +19,7 @@ public class BinaryExpression implements Expression {
 
     @Override
     public Value eval() {
-        if(expr1.eval() instanceof StringValue) {
+        if(expr1.eval() instanceof StringValue || expr1.eval() instanceof ArrayValue) {
             final String s1 = expr1.eval().asString();
             final var result = switch (operation) {
                 case '*' -> {
