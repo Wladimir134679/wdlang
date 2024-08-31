@@ -1,12 +1,14 @@
 package ru.wdeath.lang.ast;
 
-import ru.wdeath.lang.lib.NumberValue;
-import ru.wdeath.lang.lib.StringValue;
-import ru.wdeath.lang.lib.Value;
+import ru.wdeath.lang.lib.*;
 
 public class ValueExpression implements Expression {
 
     public final Value value;
+
+    public ValueExpression(Function value) {
+        this.value = new FunctionValue(value);
+    }
 
     public ValueExpression(double value) {
         this.value = new NumberValue(value);

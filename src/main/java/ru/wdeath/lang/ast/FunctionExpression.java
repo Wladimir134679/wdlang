@@ -31,7 +31,7 @@ public class FunctionExpression implements Expression {
             listValue[i] = arguments.get(i).eval();
         }
 
-        Function function = Functions.getFunction(name);
+        Function function = getFunction(name);
         if (function instanceof UserDefineFunction usersDef) {
             if (arguments.size() != usersDef.getArgsCount()) throw new RuntimeException("Args count mismatch");
             Variables.push();
@@ -43,6 +43,16 @@ public class FunctionExpression implements Expression {
             return result;
         }
         return function.execute(listValue);
+    }
+
+    private Function getFunction(String name) {
+        if(Functions.isExists(name)) return Functions.getFunction(name);
+        if(Variables.isExists(name)){
+            final var value = Variables.get(name);
+            if(value instanceof FunctionValue func)
+                return func.getFunction();
+        }
+        throw new RuntimeException("Function '" + name + "' not found");
     }
 
     @Override

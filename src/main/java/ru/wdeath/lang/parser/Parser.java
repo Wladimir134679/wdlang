@@ -1,6 +1,7 @@
 package ru.wdeath.lang.parser;
 
 import ru.wdeath.lang.ast.*;
+import ru.wdeath.lang.lib.UserDefineFunction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -340,6 +341,16 @@ public class Parser {
             return new VariableExpression(current.getText());
         if (match(TokenType.TEXT))
             return new ValueExpression(current.getText());
+        if(match(TokenType.DEF)){
+            consume(TokenType.LPAREN);
+            final var argsName = new ArrayList<String>();
+            while (!match(TokenType.RPAREN)) {
+                argsName.add(consume(TokenType.WORD).getText());
+                match(TokenType.COMMA);
+            }
+            final var body = statementOrBlock();
+            return new ValueExpression(new UserDefineFunction(argsName, body));
+        }
         if (match(TokenType.LPAREN)) {
             Expression expression = expression();
             match(TokenType.RPAREN);
