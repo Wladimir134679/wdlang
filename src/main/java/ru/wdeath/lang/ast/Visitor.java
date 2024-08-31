@@ -47,4 +47,6 @@ public interface Visitor {
     void visit(TernaryExpression st);
 
     void visit(MapExpression st);
+
+    void visit(FunctionReferenceExpression st);
 }

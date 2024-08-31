@@ -55,6 +55,7 @@ public enum TokenType {
 
     QUESTION, // ?
     COLON, // :
+    COLONCOLON, // ::
     COMMA, // ,
 
     EOF,

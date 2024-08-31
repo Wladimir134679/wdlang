@@ -137,4 +137,9 @@ public abstract class AbstractVisitor implements Visitor {
             st.elements.get(key).accept(this);
         }
     }
+
+    @Override
+    public void visit(FunctionReferenceExpression st) {
+
+    }
 }

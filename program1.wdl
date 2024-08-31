@@ -21,3 +21,13 @@ println("div = " + div(10, 20))
 map = {"key": "val1", "key2": 1234}
 println(map["key"])
 println(map["key2"])
+
+run(::af)
+
+def af(){
+    println("AF")
+}
+
+def run(_func){
+    _func()
+}

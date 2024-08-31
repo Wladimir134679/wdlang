@@ -40,6 +40,8 @@ public class Lexer {
         OPERATORS.put("<=", TokenType.LTEQ);
         OPERATORS.put(">=", TokenType.GTEQ);
 
+        OPERATORS.put("::", TokenType.COLONCOLON);
+
         OPERATORS.put("~", TokenType.TILDE);
         OPERATORS.put("^", TokenType.CARET);
         OPERATORS.put("^^", TokenType.CARETCARET);
@@ -70,7 +72,7 @@ public class Lexer {
         while (pos < length) {
             final var current = peek(0);
             if (Character.isDigit(current)) tokenizeNumber();
-            else if (Character.isLetter(current)) tokenizeWorld();
+            else if (Character.isJavaIdentifierStart(current)) tokenizeWorld();
             else if (current == '#') {
                 next();
                 tokenizeHexNumber();
