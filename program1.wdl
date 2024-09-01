@@ -57,7 +57,35 @@ for(a : arr){
     println("for a = func " + mathFunc(a))
 }
 
+map["f"] = ::fact
+
 for(k, v : map){
     println("for map = " + k + ": " + v)
-    println("for_map = " + k + ": " + map.key)
 }
+
+class = {
+  "add": def(a, b) = a + b,
+  "sub": def(a, b) = a - b,
+  "mul": def(a, b) = a * b,
+  "div": def(a, b) = a / b
+}
+
+println(class.add(2, class.mul(2, 2)))
+
+mTest = "Ttt"
+
+match mTest {
+    case "awd": println("daw")
+    case "ttT": println("awdawd")
+    case "Ttt": println("Good!")
+    case _: println("NOT!")
+}
+
+def f1(){
+    def f2(){
+        println(map.f(10))
+    }
+    f2()
+}
+f1()
+f2()

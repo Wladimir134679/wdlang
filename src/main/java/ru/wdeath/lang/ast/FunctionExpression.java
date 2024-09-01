@@ -1,6 +1,7 @@
 package ru.wdeath.lang.ast;
 
 import ru.wdeath.lang.exception.UnknownFunctionException;
+import ru.wdeath.lang.exception.VariableDoesNotExistsException;
 import ru.wdeath.lang.lib.*;
 
 import java.util.ArrayList;
@@ -8,16 +9,16 @@ import java.util.List;
 
 public class FunctionExpression implements Expression {
 
-    public final String name;
+    public final Expression expression;
     public final List<Expression> arguments;
 
-    public FunctionExpression(String name) {
-        this.name = name;
+    public FunctionExpression(Expression expression) {
+        this.expression = expression;
         this.arguments = new ArrayList<>();
     }
 
-    public FunctionExpression(String name, List<Expression> arguments) {
-        this.name = name;
+    public FunctionExpression(Expression expression, List<Expression> arguments) {
+        this.expression = expression;
         this.arguments = arguments;
     }
 
@@ -32,7 +33,11 @@ public class FunctionExpression implements Expression {
             listValue[i] = arguments.get(i).eval();
         }
 
-        return getFunction(name).execute(listValue);
+        final Function f = consumeFunction(expression);
+        CallStack.enter(expression.toString(), f);
+        final Value result = f.execute(listValue);
+        CallStack.exit();
+        return result;
     }
 
     private Function getFunction(String name) {
@@ -45,6 +50,18 @@ public class FunctionExpression implements Expression {
         throw new UnknownFunctionException(name);
     }
 
+    private Function consumeFunction(Expression expr) {
+        try {
+            final Value value = expr.eval();
+            if (value.type() == Types.FUNCTION) {
+                return ((FunctionValue) value).getFunction();
+            }
+            return getFunction(value.asString());
+        } catch (VariableDoesNotExistsException ex) {
+            return getFunction(ex.getVariable());
+        }
+    }
+
     @Override
     public void accept(Visitor visitor) {
         visitor.visit(this);
@@ -53,7 +70,7 @@ public class FunctionExpression implements Expression {
     @Override
     public String toString() {
         return "FuncE{" +
-                "n='" + name + '\'' +
+                "e='" + expression + '\'' +
                 ", args=" + arguments +
                 '}';
     }

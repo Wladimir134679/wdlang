@@ -1,10 +1,10 @@
 package ru.wdeath.lang.ast;
 
-public class FunctionStatement implements Statement{
+public class ExprStatement implements Statement{
 
     public final Expression function;
 
-    public FunctionStatement(Expression function) {
+    public ExprStatement(Expression function) {
         this.function = function;
     }
 

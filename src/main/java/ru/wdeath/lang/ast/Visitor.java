@@ -6,7 +6,7 @@ public interface Visitor {
 
     void visit(FunctionDefineStatement st);
 
-    void visit(FunctionStatement st);
+    void visit(ExprStatement st);
 
     void visit(ArrayExpression st);
 

@@ -15,7 +15,7 @@ public abstract class AbstractVisitor implements Visitor {
     }
 
     @Override
-    public void visit(FunctionStatement st) {
+    public void visit(ExprStatement st) {
         st.function.accept(this);
     }
 
@@ -81,6 +81,7 @@ public abstract class AbstractVisitor implements Visitor {
 
     @Override
     public void visit(FunctionExpression st) {
+        st.expression.accept(this);
         st.arguments.forEach(s -> s.accept(this));
     }
 

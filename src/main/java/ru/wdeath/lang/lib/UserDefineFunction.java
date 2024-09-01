@@ -43,4 +43,12 @@ public class UserDefineFunction implements Function{
             Variables.pop();
         }
     }
+
+    @Override
+    public String toString() {
+        return "UserDefineFunction{" +
+                "a=" + argsName +
+                ", b=" + body +
+                '}';
+    }
 }

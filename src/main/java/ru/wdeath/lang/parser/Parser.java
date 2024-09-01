@@ -64,8 +64,10 @@ public class Parser {
             return new ContinueStatement();
         if (match(TokenType.RETURN))
             return new ReturnStatement(expression());
+        if (match(TokenType.MATCH))
+            return new ExprStatement(match());
         if (peek(0).getType() == TokenType.WORD && peek(1).getType() == TokenType.LPAREN)
-            return new FunctionStatement(function());
+            return new ExprStatement(function(qualifiedName()));
         if (match(TokenType.DEF))
             return functionDefine();
 
@@ -203,10 +205,10 @@ public class Parser {
     }
 
 
-    private Expression function() {
-        final var name = consume(TokenType.WORD).getText();
+    private Expression function(Expression qualifiedName) {
+//        final var name = consume(TokenType.WORD).getText();
         consume(TokenType.LPAREN);
-        final var functionExpression = new FunctionExpression(name);
+        final var functionExpression = new FunctionExpression(qualifiedName);
         while (!match(TokenType.RPAREN)) {
             functionExpression.addArgument(expression());
             match(TokenType.COMMA);
@@ -475,14 +477,16 @@ public class Parser {
 
     private Expression variable() {
         final var current = peek(0);
-        if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.LBRACKET)) {
-            return element();
-        }
         if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.LPAREN)) {
-            return function();
+            return function(new ValueExpression(consume(TokenType.WORD).getText()));
         }
-        if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.DOT)) {
-            return object();
+        final Expression qualifiedNameExpr = qualifiedName();
+        if (qualifiedNameExpr != null) {
+            // variable(args) || arr["key"](args) || obj.key(args)
+            if (lookMatch(0, TokenType.LPAREN)) {
+                return function(qualifiedNameExpr);
+            }
+            return qualifiedNameExpr;
         }
         if (lookMatch(0, TokenType.LBRACKET)) {
             return array();
@@ -490,8 +494,6 @@ public class Parser {
         if (lookMatch(0, TokenType.LBRACE)) {
             return map();
         }
-        if (match(TokenType.WORD))
-            return new VariableExpression(current.getText());
         return value();
     }
 
@@ -504,6 +506,20 @@ public class Parser {
         if (match(TokenType.HEX_NUMBER))
             return new ValueExpression(Long.parseLong(current.getText(), 16));
         throw new ParseException("unknown expression " + current);
+    }
+
+    private Expression qualifiedName() {
+        final Token current = peek(0);
+        if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.LBRACKET)) {
+            return element();
+        }
+        if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.DOT)) {
+            return object();
+        }
+        if (match(TokenType.WORD)) {
+            return new VariableExpression(current.getText());
+        }
+        return null;
     }
 
     private Token consume(TokenType type) {
