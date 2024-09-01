@@ -1,5 +1,6 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.exception.TypeException;
 import ru.wdeath.lang.lib.*;
 
 import java.util.List;
@@ -44,7 +45,7 @@ public class ArrayAccessExpression implements Expression {
         if (value.type() == Types.MAP) {
             return (MapValue) value;
         } else {
-            throw new RuntimeException("Map expected");
+            throw new TypeException("Map expected");
         }
     }
 
@@ -52,7 +53,7 @@ public class ArrayAccessExpression implements Expression {
         if(value.type() == Types.ARRAY){
             return (ArrayValue) value;
         }
-        throw new RuntimeException("Not array variable");
+        throw new TypeException("Not array variable");
     }
 
     @Override

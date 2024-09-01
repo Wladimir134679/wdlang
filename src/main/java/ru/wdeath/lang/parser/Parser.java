@@ -1,6 +1,7 @@
 package ru.wdeath.lang.parser;
 
 import ru.wdeath.lang.ast.*;
+import ru.wdeath.lang.exception.ParseException;
 import ru.wdeath.lang.lib.NumberValue;
 import ru.wdeath.lang.lib.StringValue;
 import ru.wdeath.lang.lib.UserDefineFunction;

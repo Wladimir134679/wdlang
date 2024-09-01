@@ -1,5 +1,7 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.exception.ArgumentsMismatchException;
+import ru.wdeath.lang.exception.PatternMatchingException;
 import ru.wdeath.lang.lib.NumberValue;
 import ru.wdeath.lang.lib.Value;
 import ru.wdeath.lang.lib.Variables;
@@ -21,14 +23,12 @@ public class MatchExpression implements Expression{
     public Value eval() {
         final Value value = expression.eval();
         for (Pattern p : patterns) {
-            if (p instanceof ConstantPattern) {
-                final ConstantPattern pattern = (ConstantPattern) p;
+            if (p instanceof ConstantPattern pattern) {
                 if (match(value, pattern.constant) && optMatches(p)) {
                     return evalResult(p.result);
                 }
             }
-            if (p instanceof VariablePattern) {
-                final VariablePattern pattern = (VariablePattern) p;
+            if (p instanceof VariablePattern pattern) {
                 if (pattern.variable.equals("_")) return evalResult(p.result);
 
                 if (Variables.isExists(pattern.variable)) {
@@ -46,7 +46,7 @@ public class MatchExpression implements Expression{
                 }
             }
         }
-        throw new RuntimeException("No pattern were matched");
+        throw new PatternMatchingException("No pattern were matched");
     }
 
     private boolean match(Value value, Value constant) {

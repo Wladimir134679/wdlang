@@ -1,5 +1,7 @@
 package ru.wdeath.lang.parser;
 
+import ru.wdeath.lang.exception.LexerException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

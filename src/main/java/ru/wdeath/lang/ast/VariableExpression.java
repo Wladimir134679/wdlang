@@ -1,5 +1,6 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.exception.VariableDoesNotExistsException;
 import ru.wdeath.lang.lib.Value;
 import ru.wdeath.lang.lib.Variables;
 
@@ -13,7 +14,7 @@ public class VariableExpression implements Expression {
 
     @Override
     public Value eval() {
-        if(!Variables.isExists(name)) throw new RuntimeException("Variable does not exists: " + name);
+        if(!Variables.isExists(name)) throw new VariableDoesNotExistsException(name);
         return Variables.get(name);
     }
 

@@ -1,5 +1,7 @@
 package ru.wdeath.lang.lib;
 
+import ru.wdeath.lang.exception.TypeException;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -27,7 +29,7 @@ public class MapValue implements Value, Iterable<Map.Entry<Value, Value>> {
 
     @Override
     public double asDouble() {
-        throw new RuntimeException("Not implemented");
+        throw new TypeException("Not implemented");
     }
 
     @Override

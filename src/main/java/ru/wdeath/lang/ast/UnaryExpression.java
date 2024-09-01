@@ -1,5 +1,6 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.exception.OperationIsNotSupportedException;
 import ru.wdeath.lang.lib.NumberValue;
 import ru.wdeath.lang.lib.Value;
 
@@ -42,7 +43,7 @@ public class UnaryExpression implements Expression {
             case NEGATE -> -expr.eval().asDouble();
             case COMPLEMENT -> ~(int) expr.eval().asDouble();
             case NOT -> expr.eval().asDouble() != 0 ? 0 : 1;
-            default -> throw new IllegalStateException("Unexpected value: " + operation);
+            default -> throw new OperationIsNotSupportedException(operation);
         };
         return new NumberValue(result);
     }

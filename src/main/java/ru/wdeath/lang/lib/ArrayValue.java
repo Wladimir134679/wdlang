@@ -1,5 +1,7 @@
 package ru.wdeath.lang.lib;
 
+import ru.wdeath.lang.exception.TypeException;
+
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -49,7 +51,7 @@ public class ArrayValue implements Value, Iterable<Value>{
 
     @Override
     public double asDouble() {
-        throw new RuntimeException("Cannot cast array to number");
+        throw new TypeException("Cannot cast array to number");
     }
 
     @Override

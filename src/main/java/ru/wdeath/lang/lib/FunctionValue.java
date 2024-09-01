@@ -1,5 +1,7 @@
 package ru.wdeath.lang.lib;
 
+import ru.wdeath.lang.exception.TypeException;
+
 import java.util.Objects;
 
 public class FunctionValue implements Value{
@@ -12,7 +14,7 @@ public class FunctionValue implements Value{
 
     @Override
     public double asDouble() {
-        throw new RuntimeException("Not implemented");
+        throw new TypeException("Not implemented");
     }
 
     @Override

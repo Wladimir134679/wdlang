@@ -2,6 +2,7 @@ package ru.wdeath.lang.lib;
 
 import ru.wdeath.lang.ast.ReturnStatement;
 import ru.wdeath.lang.ast.Statement;
+import ru.wdeath.lang.exception.ArgumentsMismatchException;
 
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class UserDefineFunction implements Function{
     @Override
     public Value execute(Value... values) {
         final int size = values.length;
-        if (size != getArgsCount()) throw new RuntimeException("Args count mismatch");
+        if (size != getArgsCount()) throw new ArgumentsMismatchException("Args count mismatch");
         try {
             Variables.push();
             for (int i = 0; i < size; i++) {

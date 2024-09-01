@@ -1,5 +1,6 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.exception.OperationIsNotSupportedException;
 import ru.wdeath.lang.lib.NumberValue;
 import ru.wdeath.lang.lib.StringValue;
 import ru.wdeath.lang.lib.Types;
@@ -64,8 +65,7 @@ public class ConditionalExpression implements Expression {
 
             case AND -> (n1 != 0) && (n2 != 0);
             case OR -> (n1 != 0) || (n2 != 0);
-            default ->
-                    throw new RuntimeException("Operation " + operation + " is not supported");
+            default -> throw new OperationIsNotSupportedException(operation);
         };
         return NumberValue.fromBoolean(result);
     }

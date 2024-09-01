@@ -46,6 +46,11 @@ mathFunc = def (var) = match var {
     case other: "Other: " + other
 }
 
+def fact(n) = match n {
+    case 0 : 1
+    case _ : n * fact(n - 1)
+}
+println(fact(10))
 
 for(a : arr){
     println("for a = " + a)

@@ -1,5 +1,7 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.exception.OperationIsNotSupportedException;
+import ru.wdeath.lang.exception.TypeException;
 import ru.wdeath.lang.lib.*;
 
 public class BinaryExpression implements Expression {
@@ -68,7 +70,7 @@ public class BinaryExpression implements Expression {
         switch (operation) {
             case LSHIFT:
                 if (!(value2.type() == Types.ARRAY))
-                    throw new RuntimeException("Cannot merge non array value to array");
+                    throw new TypeException("Cannot merge non array value to array");
                 return ArrayValue.merge(value1, (ArrayValue) value2);
             case PUSH:
             default:
@@ -92,7 +94,7 @@ public class BinaryExpression implements Expression {
             case LSHIFT -> (int) number1 << (int) number2;
             case RSHIFT -> (int) number1 >> (int) number2;
             case URSHIFT -> (int) number1 >>> (int) number2;
-            default -> throw new RuntimeException("Operation " + operation + " is not supported");
+            default -> throw new OperationIsNotSupportedException(operation);
         };
         return new NumberValue(result);
     }

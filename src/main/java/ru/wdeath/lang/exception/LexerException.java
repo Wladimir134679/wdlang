@@ -1,4 +1,4 @@
-package ru.wdeath.lang.parser;
+package ru.wdeath.lang.exception;
 
 public class LexerException extends RuntimeException{
 

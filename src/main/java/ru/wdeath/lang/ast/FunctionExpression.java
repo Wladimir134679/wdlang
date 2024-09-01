@@ -1,5 +1,6 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.exception.UnknownFunctionException;
 import ru.wdeath.lang.lib.*;
 
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ public class FunctionExpression implements Expression {
             if (value.type() == Types.FUNCTION)
                 return ((FunctionValue) value).getFunction();
         }
-        throw new RuntimeException("Function '" + name + "' not found");
+        throw new UnknownFunctionException(name);
     }
 
     @Override

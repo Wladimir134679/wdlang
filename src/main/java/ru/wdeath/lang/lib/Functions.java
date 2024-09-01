@@ -1,5 +1,7 @@
 package ru.wdeath.lang.lib;
 
+import ru.wdeath.lang.exception.UnknownFunctionException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,7 +50,7 @@ public class Functions {
     }
 
     public static Function getFunction(String name) {
-        if (!isExists(name)) throw new RuntimeException("Function not found");
+        if (!isExists(name)) throw new UnknownFunctionException("Function not found");
         return functions.get(name);
     }
 
