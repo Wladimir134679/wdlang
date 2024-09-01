@@ -63,14 +63,15 @@ for(k, v : map){
     println("for map = " + k + ": " + v)
 }
 
-class = {
-  "add": def(a, b) = a + b,
+classss = {
+  "val": 123,
+  "add": def(a, b) return a + b,
   "sub": def(a, b) = a - b,
   "mul": def(a, b) = a * b,
   "div": def(a, b) = a / b
 }
 
-println(class.add(2, class.mul(2, 2)))
+println(classss["add"](2, classss["sub"](2, 2)))
 
 mTest = "Ttt"
 
@@ -96,3 +97,7 @@ def funcWithOptionalArgs(str, count = 5, prefix = "<", suffix = ">") = prefix + 
 println(funcWithOptionalArgs("*"))
 println(funcWithOptionalArgs("+", 2))
 println(funcWithOptionalArgs("*", 10, "<!"))
+
+for (i = 0, i < 10, i+=1){
+    println("new += for i " + i)
+}

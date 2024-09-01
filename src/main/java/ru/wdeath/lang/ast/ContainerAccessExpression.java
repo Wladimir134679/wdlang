@@ -5,7 +5,7 @@ import ru.wdeath.lang.lib.*;
 
 import java.util.List;
 
-public class ContainerAccessExpression implements Expression {
+public class ContainerAccessExpression implements Expression, Accessible {
 
     public final String name;
     public final List<Expression> indexes;
@@ -17,6 +17,11 @@ public class ContainerAccessExpression implements Expression {
 
     @Override
     public Value eval() {
+        return get();
+    }
+
+    @Override
+    public Value get() {
         final Value container = getContainer();
         final Value lastIndex = lastIndex();
         switch (container.type()) {
@@ -29,6 +34,25 @@ public class ContainerAccessExpression implements Expression {
 
             default:
                 throw new TypeException("Array or map expected");
+        }
+    }
+
+    @Override
+    public Value set(Value value) {
+        final Value container = getContainer();
+        final Value lastIndex = lastIndex();
+        switch (container.type()) {
+            case Types.ARRAY:
+                final int arrayIndex = (int) lastIndex.asDouble();
+                ((ArrayValue) container).set(arrayIndex, value);
+                return value;
+
+            case Types.MAP:
+                ((MapValue) container).set(lastIndex, value);
+                return value;
+
+            default:
+                throw new TypeException("Array or map expected. Got " + container.type());
         }
     }
 

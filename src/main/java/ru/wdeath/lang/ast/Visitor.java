@@ -2,7 +2,7 @@ package ru.wdeath.lang.ast;
 
 public interface Visitor {
 
-    void visit(AssignmentStatement st);
+    void visit(AssignmentExpression st);
 
     void visit(FunctionDefineStatement st);
 
@@ -11,8 +11,6 @@ public interface Visitor {
     void visit(ArrayExpression st);
 
     void visit(ContainerAccessExpression st);
-
-    void visit(ContainerAssignmentStatement st);
 
     void visit(BinaryExpression st);
 

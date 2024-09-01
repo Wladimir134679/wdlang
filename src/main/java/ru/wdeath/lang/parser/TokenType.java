@@ -47,6 +47,19 @@ public enum TokenType {
     GTGT, // >>
     GTGTGT, // >>>
 
+    PLUSEQ, // +=
+    MINUSEQ, // -=
+    STAREQ, // *=
+    SLASHEQ, // /=
+    PERCENTEQ, // %=
+    AMPEQ, // &=
+    CARETEQ, // ^=
+    BAREQ, // |=
+    COLONCOLONEQ, // ::=
+    LTLTEQ, // <<=
+    GTGTEQ, // >>=
+    GTGTGTEQ, // >>>=
+
     LPAREN,// (
     RPAREN,// )
     LBRACKET,// [

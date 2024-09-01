@@ -5,7 +5,7 @@ import ru.wdeath.lang.ast.*;
 public abstract class AbstractVisitor implements Visitor {
 
     @Override
-    public void visit(AssignmentStatement st) {
+    public void visit(AssignmentExpression st) {
         st.expression.accept(this);
     }
 
@@ -29,12 +29,6 @@ public abstract class AbstractVisitor implements Visitor {
     @Override
     public void visit(ContainerAccessExpression st) {
         st.indexes.forEach(index -> index.accept(this));
-    }
-
-    @Override
-    public void visit(ContainerAssignmentStatement st) {
-        st.expression.accept(this);
-        st.containerExpr.accept(this);
     }
 
     @Override

@@ -4,7 +4,7 @@ import ru.wdeath.lang.exception.VariableDoesNotExistsException;
 import ru.wdeath.lang.lib.Value;
 import ru.wdeath.lang.lib.Variables;
 
-public class VariableExpression implements Expression {
+public class VariableExpression implements Expression, Accessible {
 
     public final String name;
 
@@ -14,8 +14,19 @@ public class VariableExpression implements Expression {
 
     @Override
     public Value eval() {
+        return get();
+    }
+
+    @Override
+    public Value get() {
         if(!Variables.isExists(name)) throw new VariableDoesNotExistsException(name);
         return Variables.get(name);
+    }
+
+    @Override
+    public Value set(Value value) {
+        Variables.set(name, value);
+        return value;
     }
 
     @Override
@@ -27,4 +38,5 @@ public class VariableExpression implements Expression {
     public String toString() {
         return "VE{n='" + name + "'}";
     }
+
 }

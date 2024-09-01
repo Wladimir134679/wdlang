@@ -15,6 +15,25 @@ public class Parser {
 
     private static final Token EOF = new Token(TokenType.EOF, "", 0, 0);
 
+
+    private static final Map<TokenType, BinaryExpression.Operator> assignOperator;
+    static {
+        assignOperator = new HashMap<>(BinaryExpression.Operator.values().length + 1);
+        assignOperator.put(TokenType.EQ, null);
+        assignOperator.put(TokenType.PLUSEQ, BinaryExpression.Operator.ADD);
+        assignOperator.put(TokenType.MINUSEQ, BinaryExpression.Operator.SUBTRACT);
+        assignOperator.put(TokenType.STAREQ, BinaryExpression.Operator.MULTIPLY);
+        assignOperator.put(TokenType.SLASHEQ, BinaryExpression.Operator.DIVIDE);
+        assignOperator.put(TokenType.PERCENTEQ, BinaryExpression.Operator.REMAINDER);
+        assignOperator.put(TokenType.AMPEQ, BinaryExpression.Operator.AND);
+        assignOperator.put(TokenType.CARETEQ, BinaryExpression.Operator.XOR);
+        assignOperator.put(TokenType.BAREQ, BinaryExpression.Operator.OR);
+        assignOperator.put(TokenType.COLONCOLONEQ, BinaryExpression.Operator.PUSH);
+        assignOperator.put(TokenType.LTLTEQ, BinaryExpression.Operator.LSHIFT);
+        assignOperator.put(TokenType.GTGTEQ, BinaryExpression.Operator.RSHIFT);
+        assignOperator.put(TokenType.GTGTGTEQ, BinaryExpression.Operator.URSHIFT);
+    }
+
     private final List<Token> tokens;
     private final int size;
     private int pos;
@@ -190,24 +209,15 @@ public class Parser {
     }
 
     private Statement assignmentStatement() {
-        // WORD EQ
-        if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.EQ)) {
-            final String name = consume(TokenType.WORD).getText();
-            consume(TokenType.EQ);
-            return new AssignmentStatement(name, expression());
-        }
-        final Expression qualifiedNameExpr = qualifiedName();
-        if (lookMatch(0, TokenType.EQ) && (qualifiedNameExpr instanceof ContainerAccessExpression)) {
-            consume(TokenType.EQ);
-            final ContainerAccessExpression containerExpr = (ContainerAccessExpression) qualifiedNameExpr;
-            return new ContainerAssignmentStatement(containerExpr, expression());
+        final Expression assignment = assignmentStrict();
+        if (assignment != null) {
+            return new ExprStatement(assignment);
         }
         throw new ParseException("Unknown statement " + peek(0));
     }
 
 
     private Expression function(Expression qualifiedName) {
-//        final var name = consume(TokenType.WORD).getText();
         consume(TokenType.LPAREN);
         final var functionExpression = new FunctionExpression(qualifiedName);
         while (!match(TokenType.RPAREN)) {
@@ -279,7 +289,35 @@ public class Parser {
 
 
     private Expression expression() {
+        return assignment();
+    }
+
+    private Expression assignment() {
+        final Expression assignment = assignmentStrict();
+        if (assignment != null) {
+            return assignment;
+        }
         return ternary();
+    }
+
+    private Expression assignmentStrict() {
+        final int position = pos;
+        final Expression targetExpr = qualifiedName();
+        if ((targetExpr == null) || !(targetExpr instanceof Accessible)) {
+            pos = position;
+            return null;
+        }
+        final TokenType currentType = peek(0).getType();
+        if (!assignOperator.containsKey(currentType)) {
+            pos = position;
+            return null;
+        }
+        match(currentType);
+
+        final BinaryExpression.Operator op = assignOperator.get(currentType);
+        final Expression expression = expression();
+
+        return new AssignmentExpression(op, (Accessible) targetExpr, expression);
     }
 
     private Expression ternary() {

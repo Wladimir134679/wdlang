@@ -45,6 +45,19 @@ public class Lexer {
 
         OPERATORS.put("::", TokenType.COLONCOLON);
 
+        OPERATORS.put("+=", TokenType.PLUSEQ);
+        OPERATORS.put("-=", TokenType.MINUSEQ);
+        OPERATORS.put("*=", TokenType.STAREQ);
+        OPERATORS.put("/=", TokenType.SLASHEQ);
+        OPERATORS.put("%=", TokenType.PERCENTEQ);
+        OPERATORS.put("&=", TokenType.AMPEQ);
+        OPERATORS.put("^=", TokenType.CARETEQ);
+        OPERATORS.put("|=", TokenType.BAREQ);
+        OPERATORS.put("::=", TokenType.COLONCOLONEQ);
+        OPERATORS.put("<<=", TokenType.LTLTEQ);
+        OPERATORS.put(">>=", TokenType.GTGTEQ);
+        OPERATORS.put(">>>=", TokenType.GTGTGTEQ);
+
         OPERATORS.put("~", TokenType.TILDE);
         OPERATORS.put("^", TokenType.CARET);
         OPERATORS.put("^^", TokenType.CARETCARET);

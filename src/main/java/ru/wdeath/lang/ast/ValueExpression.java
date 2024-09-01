@@ -10,6 +10,10 @@ public class ValueExpression implements Expression {
         this.value = new FunctionValue(value);
     }
 
+    public ValueExpression(Value value) {
+        this.value = value;
+    }
+
     public ValueExpression(double value) {
         this.value = new NumberValue(value);
     }
