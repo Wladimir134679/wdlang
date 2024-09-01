@@ -37,19 +37,52 @@ public class Parser {
     private final List<Token> tokens;
     private final int size;
     private int pos;
+    private final ParseErrors parseErrors;
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
         this.size = tokens.size();
         this.pos = 0;
+        parseErrors = new ParseErrors();
+    }
+
+    public ParseErrors getParseErrors() {
+        return parseErrors;
     }
 
     public Statement parse() {
+        parseErrors.clear();
         final BlockStatement result = new BlockStatement();
         while (!match(TokenType.EOF)) {
-            result.addStatement(statement());
+            try {
+                result.addStatement(statement());
+            } catch (Exception ex) {
+                parseErrors.add(ex, getErrorLine());
+                recover();
+            }
         }
         return result;
+    }
+
+    private int getErrorLine() {
+        if (size == 0) return 0;
+        if (pos >= size) return tokens.get(size - 1).getRow();
+        return tokens.get(pos).getRow();
+    }
+
+    private void recover() {
+        int preRecoverPosition = pos;
+        for (int i = preRecoverPosition; i < size; i++) {
+            pos = i;
+            try {
+                statement();
+                // successfully parsed,
+                pos = i; // restore position
+                return;
+            } catch (Exception ex) {
+                // fail
+            }
+        }
     }
 
     private Statement statementOrBlock() {

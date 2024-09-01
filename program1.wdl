@@ -94,7 +94,7 @@ f2()
 
 def funcWithOptionalArgs(str, count = 5, prefix = "<", suffix = ">") = prefix + (str * count) + suffix
 
-println(funcWithOptionalArgs("*"))
+println funcWithOptionalArgs("*")
 println(funcWithOptionalArgs("+", 2))
 println(funcWithOptionalArgs("*", 10, "<!"))
 

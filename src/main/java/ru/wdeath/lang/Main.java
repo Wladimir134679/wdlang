@@ -25,6 +25,10 @@ public class Main {
             System.out.println("======");
             final var parser = new Parser(tokenize);
             final var blockProgram = parser.parse();
+            if (parser.getParseErrors().hasErrors()) {
+                System.out.println(parser.getParseErrors());
+                return;
+            }
             System.out.println(blockProgram);
             System.out.println("==Run==");
             blockProgram.accept(new FunctionAdder());
