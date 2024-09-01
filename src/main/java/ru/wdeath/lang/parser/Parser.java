@@ -4,7 +4,7 @@ import ru.wdeath.lang.ast.*;
 import ru.wdeath.lang.exception.ParseException;
 import ru.wdeath.lang.lib.NumberValue;
 import ru.wdeath.lang.lib.StringValue;
-import ru.wdeath.lang.lib.UserDefineFunction;
+import ru.wdeath.lang.lib.UserDefinedFunction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -242,19 +242,39 @@ public class Parser {
 
 
     private FunctionDefineStatement functionDefine() {
-        final var name = consume(TokenType.WORD).getText();
+        final String name = consume(TokenType.WORD).getText();
+        final Arguments arguments = arguments();
+        final Statement body = statementBody();
+        return new FunctionDefineStatement(name, arguments, body);
+    }
+
+
+    private Arguments arguments() {
+        // (arg1, arg2, arg3 = expr1, arg4 = expr2)
+        final Arguments arguments = new Arguments();
+        boolean startsOptionalArgs = false;
         consume(TokenType.LPAREN);
-        final var argsName = new ArrayList<String>();
         while (!match(TokenType.RPAREN)) {
-            argsName.add(consume(TokenType.WORD).getText());
+            final String name = consume(TokenType.WORD).getText();
+            if (match(TokenType.EQ)) {
+                startsOptionalArgs = true;
+                arguments.addOptional(name, variable());
+            } else if (!startsOptionalArgs) {
+                arguments.addRequired(name);
+            } else {
+                throw new ParseException("Required argument cannot be after optional");
+            }
             match(TokenType.COMMA);
         }
-        if (lookMatch(0, TokenType.EQ)) {
-            match(TokenType.EQ);
-            return new FunctionDefineStatement(name, argsName, new ReturnStatement(expression()));
+        return arguments;
+    }
+
+
+    private Statement statementBody() {
+        if (match(TokenType.EQ)) {
+            return new ReturnStatement(expression());
         }
-        final var body = statementOrBlock();
-        return new FunctionDefineStatement(name, argsName, body);
+        return statementOrBlock();
     }
 
 
@@ -435,19 +455,9 @@ public class Parser {
         if (match(TokenType.MATCH))
             return match();
         if (match(TokenType.DEF)) {
-            consume(TokenType.LPAREN);
-            final var argsName = new ArrayList<String>();
-            while (!match(TokenType.RPAREN)) {
-                argsName.add(consume(TokenType.WORD).getText());
-                match(TokenType.COMMA);
-            }
-            Statement statement;
-            if (lookMatch(0, TokenType.EQ)) {
-                match(TokenType.EQ);
-                statement = new ReturnStatement(expression());
-            } else
-                statement = statementOrBlock();
-            return new ValueExpression(new UserDefineFunction(argsName, statement));
+            final Arguments arguments = arguments();
+            final Statement statement = statementBody();
+            return new ValueExpression(new UserDefinedFunction(arguments, statement));
         }
         return variable();
     }
