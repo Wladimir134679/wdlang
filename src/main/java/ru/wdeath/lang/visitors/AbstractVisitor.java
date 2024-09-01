@@ -27,14 +27,14 @@ public abstract class AbstractVisitor implements Visitor {
     }
 
     @Override
-    public void visit(ArrayAccessExpression st) {
+    public void visit(ContainerAccessExpression st) {
         st.indexes.forEach(index -> index.accept(this));
     }
 
     @Override
-    public void visit(ArrayAssignmentStatement st) {
+    public void visit(ContainerAssignmentStatement st) {
         st.expression.accept(this);
-        st.array.accept(this);
+        st.containerExpr.accept(this);
     }
 
     @Override

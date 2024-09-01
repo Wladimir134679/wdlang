@@ -10,9 +10,9 @@ public interface Visitor {
 
     void visit(ArrayExpression st);
 
-    void visit(ArrayAccessExpression st);
+    void visit(ContainerAccessExpression st);
 
-    void visit(ArrayAssignmentStatement st);
+    void visit(ContainerAssignmentStatement st);
 
     void visit(BinaryExpression st);
 

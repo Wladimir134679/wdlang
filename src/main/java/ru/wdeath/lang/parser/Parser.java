@@ -196,10 +196,11 @@ public class Parser {
             consume(TokenType.EQ);
             return new AssignmentStatement(name, expression());
         }
-        if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.LBRACKET)) {
-            ArrayAccessExpression array = element();
+        final Expression qualifiedNameExpr = qualifiedName();
+        if (lookMatch(0, TokenType.EQ) && (qualifiedNameExpr instanceof ContainerAccessExpression)) {
             consume(TokenType.EQ);
-            return new ArrayAssignmentStatement(array, expression());
+            final ContainerAccessExpression containerExpr = (ContainerAccessExpression) qualifiedNameExpr;
+            return new ContainerAssignmentStatement(containerExpr, expression());
         }
         throw new ParseException("Unknown statement " + peek(0));
     }
@@ -237,30 +238,6 @@ public class Parser {
             match(TokenType.COMMA);
         }
         return new MapExpression(elements);
-    }
-
-    private ArrayAccessExpression element() {
-        final String name = consume(TokenType.WORD).getText();
-        List<Expression> indices = new ArrayList<>();
-        do {
-            consume(TokenType.LBRACKET);
-            indices.add(expression());
-            consume(TokenType.RBRACKET);
-        } while (lookMatch(0, TokenType.LBRACKET));
-        return new ArrayAccessExpression(name, indices);
-    }
-
-    private ArrayAccessExpression object() {
-        // object.field1.field2
-        // Syntaxic sugar for object["field1"]["field2"]
-        final String variable = consume(TokenType.WORD).getText();
-        final List<Expression> indices = new ArrayList<>();
-        while (match(TokenType.DOT)) {
-            final String fieldName = consume(TokenType.WORD).getText();
-            final Expression key = new ValueExpression(fieldName);
-            indices.add(key);
-        }
-        return new ArrayAccessExpression(variable, indices);
     }
 
 
@@ -510,16 +487,33 @@ public class Parser {
 
     private Expression qualifiedName() {
         final Token current = peek(0);
-        if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.LBRACKET)) {
-            return element();
-        }
-        if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.DOT)) {
-            return object();
-        }
-        if (match(TokenType.WORD)) {
+        if (!match(TokenType.WORD)) return null;
+
+        final List<Expression> indices = variableSuffix();
+        if ((indices == null) || indices.isEmpty()) {
             return new VariableExpression(current.getText());
         }
-        return null;
+        return new ContainerAccessExpression(current.getText(), indices);
+    }
+
+    private List<Expression> variableSuffix() {
+        // .key1.arr1[expr1][expr2].key2
+        if (!lookMatch(0, TokenType.DOT) && !lookMatch(0, TokenType.LBRACKET)) {
+            return null;
+        }
+        final List<Expression> indices = new ArrayList<>();
+        while (lookMatch(0, TokenType.DOT) || lookMatch(0, TokenType.LBRACKET)) {
+            if (match(TokenType.DOT)) {
+                final String fieldName = consume(TokenType.WORD).getText();
+                final Expression key = new ValueExpression(fieldName);
+                indices.add(key);
+            }
+            if (match(TokenType.LBRACKET)) {
+                indices.add(expression());
+                consume(TokenType.RBRACKET);
+            }
+        }
+        return indices;
     }
 
     private Token consume(TokenType type) {
