@@ -20,8 +20,7 @@ public class Main {
             final var input = Files.readString(Path.of("./program1.wdl"));
             final TimeMeasurement measurement = new TimeMeasurement();
             measurement.start("Tokenize time");
-            Lexer lexer = new Lexer(input);
-            List<Token> tokenize = lexer.tokenize();
+            List<Token> tokenize = Lexer.tokenize(input);
             measurement.stop("Tokenize time");
             for (int i = 0; i < tokenize.size(); i++) {
                 System.out.println(i + " " + tokenize.get(i));

@@ -1,5 +1,5 @@
 word = 2 + 2
-word2 = PI + word
+word2 = 5 + word
 print word
 print "\n"
 /*
@@ -17,7 +17,7 @@ print "\n"
 if (1 <= 2) print "1 = 1"
 else print "1 != 1"
 print "\n"
-print sin(PI/2)
+print sin(3/2)
 
 if(40 < 50 && 50 <= 60) {
     print "true \n"
@@ -56,7 +56,7 @@ println(sum(10, 5))
 arr = ["daw", sum(5, 5), "WOLF", [], [1, 2, 3, 3 + 1]]
 println(arr + "\n")
 arr[0] = 100
-println(arr * 4)
+println(arr)
 println(arr[0] + arr[1])
 println(arr[4][0])
 arr[4][0] = 124

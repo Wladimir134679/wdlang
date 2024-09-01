@@ -73,7 +73,9 @@ public class Lexer {
         OPERATORS.put("||", TokenType.BARBAR);
 
     }
+
     private static final Map<String, TokenType> KEYWORDS;
+
     static {
         KEYWORDS = new HashMap<>();
         KEYWORDS.put("print", TokenType.PRINT);
@@ -89,6 +91,11 @@ public class Lexer {
         KEYWORDS.put("match", TokenType.MATCH);
         KEYWORDS.put("case", TokenType.CASE);
     }
+
+    public static List<Token> tokenize(String input) {
+        return new Lexer(input).tokenize();
+    }
+
 
     private final String input;
     private final int length;
@@ -125,15 +132,19 @@ public class Lexer {
         return tokens;
     }
 
-
     private void tokenizeHexNumber() {
         clearBuffer();
         char current = peek(0);
-        while (Character.isDigit(current) || isHexNumber(current)) {
-            buffer.append(current);
+        while (isHexNumber(current) || (current == '_')) {
+            if (current != '_') {
+                // allow _ symbol
+                buffer.append(current);
+            }
             current = next();
         }
-        addToken(TokenType.HEX_NUMBER, buffer.toString());
+        if (!buffer.isEmpty()) {
+            addToken(TokenType.HEX_NUMBER, buffer.toString());
+        }
     }
 
     private static boolean isHexNumber(char current) {
@@ -145,9 +156,16 @@ public class Lexer {
     private void tokenizeNumber() {
         clearBuffer();
         char current = peek(0);
+        if (current == '0' && (peek(1) == 'x' || (peek(1) == 'X'))) {
+            next();
+            next();
+            tokenizeHexNumber();
+            return;
+        }
         while (true) {
             if (current == '.') {
-                if (buffer.indexOf(".") != -1) throw error("Invalid float number");;
+                if (buffer.indexOf(".") != -1) throw error("Invalid float number");
+                ;
             } else if (!Character.isDigit(current))
                 break;
             buffer.append(current);
@@ -172,9 +190,9 @@ public class Lexer {
             }
         }
         clearBuffer();
-        while(true){
+        while (true) {
             final var text = buffer.toString();
-            if(!OPERATORS.containsKey(text + current) && !text.isEmpty()){
+            if (!OPERATORS.containsKey(text + current) && !text.isEmpty()) {
                 addToken(OPERATORS.get(text));
                 return;
             }
