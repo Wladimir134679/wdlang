@@ -11,29 +11,38 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
         try {
             final var input = Files.readString(Path.of("./program1.wdl"));
+            final TimeMeasurement measurement = new TimeMeasurement();
+            measurement.start("Tokenize time");
             Lexer lexer = new Lexer(input);
             List<Token> tokenize = lexer.tokenize();
+            measurement.stop("Tokenize time");
             for (int i = 0; i < tokenize.size(); i++) {
                 System.out.println(i + " " + tokenize.get(i));
             }
             System.out.println("======");
+            measurement.start("Parse time");
             final var parser = new Parser(tokenize);
             final var blockProgram = parser.parse();
+            measurement.stop("Parse time");
             if (parser.getParseErrors().hasErrors()) {
                 System.out.println(parser.getParseErrors());
                 return;
             }
             System.out.println(blockProgram);
+            measurement.start("Execution time");
             System.out.println("==Run==");
             blockProgram.accept(new FunctionAdder());
             blockProgram.execute();
             System.out.println("==End==");
+            measurement.stop("Execution time");
+            System.out.println(measurement.summary(TimeUnit.MILLISECONDS, true));
         }catch (Exception ex){
             handleException(Thread.currentThread(), ex);
         }
