@@ -41,7 +41,7 @@ public class MatchExpression implements Expression, Statement{
                         return evalResult(p.result);
                     }
                 } else {
-                    Variables.set(pattern.variable, value);
+                    Variables.define(pattern.variable, value);
                     if (optMatches(p)) {
                         final Value result = evalResult(p.result);;
                         Variables.remove(pattern.variable);
