@@ -75,9 +75,12 @@ public class BinaryExpression implements Expression {
                 return add((NumberValue) value1, value2);
             case Types.ARRAY:
                 return ArrayValue.add((ArrayValue) value1, value2);
-            case Types.MAP: /* TODO: merge maps */
+            case Types.MAP:
+                if (value2.type() != Types.MAP)
+                    throw new TypeException("Cannot merge non map value to map");
+                return MapValue.merge((MapValue) value1, (MapValue) value2);
             case Types.FUNCTION: /* TODO: combining functions */
-            case Types.STRING:
+            case Types.STRING: return new StringValue(value1.asString() + value2.asString());
             default:
                 // Concatenation strings
                 return new StringValue(value1.asString() + value2.asString());

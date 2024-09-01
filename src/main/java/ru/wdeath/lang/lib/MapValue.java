@@ -11,6 +11,13 @@ public class MapValue implements Value, Iterable<Map.Entry<Value, Value>> {
 
     private final Map<Value, Value> map;
 
+    public static MapValue merge(MapValue map1, MapValue map2) {
+        final MapValue result = new MapValue(map1.size() + map2.size());
+        result.map.putAll(map1.map);
+        result.map.putAll(map2.map);
+        return result;
+    }
+
     public MapValue(int size) {
         map = new HashMap<>(size);
     }
@@ -25,6 +32,10 @@ public class MapValue implements Value, Iterable<Map.Entry<Value, Value>> {
 
     public void set(Value key, Value value) {
         map.put(key, value);
+    }
+
+    public int size() {
+        return map.size();
     }
 
     @Override
