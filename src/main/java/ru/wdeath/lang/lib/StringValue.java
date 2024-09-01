@@ -22,6 +22,11 @@ public class StringValue implements Value {
     }
 
     @Override
+    public Object raw() {
+        return value;
+    }
+
+    @Override
     public int asInt() {
         try {
             return Integer.parseInt(value);

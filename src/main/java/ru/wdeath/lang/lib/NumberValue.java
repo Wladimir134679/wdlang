@@ -17,7 +17,10 @@ public class NumberValue implements Value {
 
     public NumberValue(Number value) {
         this.value = value;
-    } public Number raw() {
+    }
+
+    @Override
+    public Number raw() {
         return value;
     }
 

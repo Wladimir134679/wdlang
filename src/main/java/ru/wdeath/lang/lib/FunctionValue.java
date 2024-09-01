@@ -13,6 +13,11 @@ public class FunctionValue implements Value{
     }
 
     @Override
+    public Object raw() {
+        return function;
+    }
+
+    @Override
     public int asInt() {
         throw new TypeException("Cannot cast array to integer");
     }
