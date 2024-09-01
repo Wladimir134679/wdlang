@@ -97,6 +97,7 @@ def funcWithOptionalArgs(str, count = 5, prefix = "<", suffix = ">") = prefix + 
 println(funcWithOptionalArgs("*"))
 println(funcWithOptionalArgs("+", 2))
 println(funcWithOptionalArgs("*", 10, "<!"))
+println()
 
 for (i = 0.5, i < 10, i++){
     println("new += for i " + i)

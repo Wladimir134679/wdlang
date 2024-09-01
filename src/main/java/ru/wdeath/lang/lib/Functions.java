@@ -12,16 +12,19 @@ public class Functions {
     static {
         functions = new HashMap<>();
         functions.put("println", v -> {
-            if (v.length != 1) throw new RuntimeException("Error args");
-            System.out.println(v[0].asString());
+            Arguments.checkOrOr(0, 1, v.length);
+            if (v.length == 1)
+                System.out.println(v[0].asString());
+            else
+                System.out.println();
             return NumberValue.ZERO;
         });
         functions.put("sin", v -> {
-            if (v.length != 1) throw new RuntimeException("Error args");
+            Arguments.check(1, v.length);
             return new NumberValue(Math.sin(v[0].asDouble()));
         });
         functions.put("cos", v -> {
-            if (v.length != 1) throw new RuntimeException("Error args");
+            Arguments.check(1, v.length);
             return new NumberValue(Math.sin(v[0].asDouble()));
         });
         functions.put("newarray", v ->
