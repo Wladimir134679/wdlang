@@ -73,7 +73,7 @@ public class Parser {
 
     private void recover() {
         int preRecoverPosition = pos;
-        for (int i = preRecoverPosition; i < size; i++) {
+        for (int i = preRecoverPosition; i <= size; i++) {
             pos = i;
             try {
                 statement();
