@@ -17,6 +17,7 @@ public class Parser {
 
 
     private static final Map<TokenType, BinaryExpression.Operator> assignOperator;
+
     static {
         assignOperator = new HashMap<>(BinaryExpression.Operator.values().length + 1);
         assignOperator.put(TokenType.EQ, null);
@@ -572,9 +573,9 @@ public class Parser {
         if (match(TokenType.TEXT))
             return new ValueExpression(current.getText());
         if (match(TokenType.NUMBER))
-            return new ValueExpression(Double.parseDouble(current.getText()));
+            return new ValueExpression(createNumber(current.getText(), 10));
         if (match(TokenType.HEX_NUMBER))
-            return new ValueExpression(Long.parseLong(current.getText(), 16));
+            return new ValueExpression(createNumber(current.getText(), 16));
         throw new ParseException("unknown expression " + current);
     }
 
@@ -607,6 +608,19 @@ public class Parser {
             }
         }
         return indices;
+    }
+
+    private Number createNumber(String text, int radix) {
+        // Double
+        if (text.contains(".")) {
+            return Double.parseDouble(text);
+        }
+        // Integer
+        try {
+            return Integer.parseInt(text, radix);
+        } catch (NumberFormatException nfe) {
+            return Long.parseLong(text, radix);
+        }
     }
 
     private Token consume(TokenType type) {

@@ -12,7 +12,7 @@ public class WhileStatement implements Statement {
 
     @Override
     public void execute() {
-        while (condition.eval().asDouble() != 0) {
+        while (condition.eval().asInt() != 0) {
             try {
                 body.execute();
             } catch (BreakStatement bs) {

@@ -2,6 +2,8 @@ package ru.wdeath.lang.ast;
 
 import ru.wdeath.lang.exception.OperationIsNotSupportedException;
 import ru.wdeath.lang.lib.NumberValue;
+import ru.wdeath.lang.lib.StringValue;
+import ru.wdeath.lang.lib.Types;
 import ru.wdeath.lang.lib.Value;
 
 public class UnaryExpression implements Expression, Statement {
@@ -45,40 +47,108 @@ public class UnaryExpression implements Expression, Statement {
     @Override
     public Value eval() {
         Value value = expr.eval();
-        final var result = switch (operation) {
-            case INCREMENT_PREFIX -> {
-                if (expr instanceof Accessible) {
-                    yield ((Accessible) expr).set(new NumberValue(value.asDouble() + 1)).asDouble();
+        switch (operation) {
+            case INCREMENT_PREFIX: {
+                if (expr instanceof Accessible expr1) {
+                    return expr1.set(increment(value));
                 }
-                yield value.asDouble() + 1;
+                return increment(value);
             }
-            case DECREMENT_PREFIX -> {
-                if (expr instanceof Accessible) {
-                    yield ((Accessible) expr).set(new NumberValue(value.asDouble() - 1)).asDouble();
+            case DECREMENT_PREFIX: {
+                if (expr instanceof Accessible expr1) {
+                    return expr1.set(decrement(value));
                 }
-                yield value.asDouble() - 1;
+                return decrement(value);
             }
-            case INCREMENT_POSTFIX -> {
-                if (expr instanceof Accessible) {
-                    ((Accessible) expr).set(new NumberValue(value.asDouble() + 1));
-                    yield value.asDouble();
+            case INCREMENT_POSTFIX: {
+                if (expr instanceof Accessible expr1) {
+                    expr1.set(increment(value));
+                    return value;
                 }
-                yield value.asDouble() + 1;
+                return increment(value);
             }
-            case DECREMENT_POSTFIX -> {
-                if (expr instanceof Accessible) {
-                    ((Accessible) expr).set(new NumberValue(value.asDouble() - 1));
-                    yield value.asDouble();
+            case DECREMENT_POSTFIX: {
+                if (expr instanceof Accessible expr1) {
+                    expr1.set(decrement(value));
+                    return value;
                 }
-                yield value.asDouble() - 1;
+                return decrement(value);
             }
+            case NEGATE:
+                return negate(value);
+            case COMPLEMENT:
+                return complement(value);
+            case NOT:
+                return not(value);
+            default:
+                throw new OperationIsNotSupportedException(operation);
+        }
+    }
 
-            case NEGATE -> -value.asDouble();
-            case COMPLEMENT -> ~(int) value.asDouble();
-            case NOT -> value.asDouble() != 0 ? 0 : 1;
-            default -> throw new OperationIsNotSupportedException(operation);
-        };
-        return new NumberValue(result);
+    private Value increment(Value value) {
+        if (value.type() == Types.NUMBER) {
+            final Number number = ((NumberValue) value).raw();
+            if (number instanceof Double) {
+                return new NumberValue(number.doubleValue() + 1);
+            }
+            if (number instanceof Float) {
+                return new NumberValue(number.floatValue() + 1);
+            }
+            if (number instanceof Long) {
+                return new NumberValue(number.longValue() + 1);
+            }
+        }
+        return new NumberValue(value.asInt() + 1);
+    }
+
+    private Value decrement(Value value) {
+        if (value.type() == Types.NUMBER) {
+            final Number number = ((NumberValue) value).raw();
+            if (number instanceof Double) {
+                return new NumberValue(number.doubleValue() - 1);
+            }
+            if (number instanceof Float) {
+                return new NumberValue(number.floatValue() - 1);
+            }
+            if (number instanceof Long) {
+                return new NumberValue(number.longValue() - 1);
+            }
+        }
+        return new NumberValue(value.asInt() - 1);
+    }
+
+    private Value negate(Value value) {
+        if (value.type() == Types.STRING) {
+            final StringBuilder sb = new StringBuilder(value.asString());
+            return new StringValue(sb.reverse().toString());
+        }
+        if (value.type() == Types.NUMBER) {
+            final Number number = ((NumberValue) value).raw();
+            if (number instanceof Double) {
+                return new NumberValue(-number.doubleValue());
+            }
+            if (number instanceof Float) {
+                return new NumberValue(-number.floatValue());
+            }
+            if (number instanceof Long) {
+                return new NumberValue(-number.longValue());
+            }
+        }
+        return new NumberValue(-value.asInt());
+    }
+
+    private Value complement(Value value) {
+        if (value.type() == Types.NUMBER) {
+            final Number number = ((NumberValue) value).raw();
+            if (number instanceof Long) {
+                return new NumberValue(~number.longValue());
+            }
+        }
+        return new NumberValue(~value.asInt());
+    }
+
+    private Value not(Value value) {
+        return NumberValue.fromBoolean(value.asInt() == 0);
     }
 
     @Override

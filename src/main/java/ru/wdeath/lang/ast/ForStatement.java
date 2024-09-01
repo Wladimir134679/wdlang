@@ -17,7 +17,7 @@ public class ForStatement implements Statement {
 
     @Override
     public void execute() {
-        for (init.execute(); termination.eval().asDouble() != 0; increment.execute()) {
+        for (init.execute(); termination.eval().asInt() != 0; increment.execute()) {
             try {
                 block.execute();
             } catch (BreakStatement bs) {

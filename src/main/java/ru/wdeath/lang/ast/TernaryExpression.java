@@ -15,7 +15,7 @@ public class TernaryExpression implements Expression{
 
     @Override
     public Value eval() {
-        if(condition.eval().asDouble() != 0){
+        if(condition.eval().asInt() != 0){
             return trueExpr.eval();
         }else {
             return falseExpr.eval();

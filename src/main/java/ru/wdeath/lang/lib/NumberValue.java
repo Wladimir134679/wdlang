@@ -9,24 +9,50 @@ public class NumberValue implements Value {
         return b ? ONE : ZERO;
     }
 
-    private final double value;
+    private final Number value;
 
     public NumberValue(boolean value) {
         this.value = value ? 1 : 0;
     }
 
-    public NumberValue(double value) {
+    public NumberValue(Number value) {
         this.value = value;
+    } public Number raw() {
+        return value;
+    }
+
+    public boolean asBoolean() {
+        return value.intValue() != 0;
+    }
+
+    public byte asByte() {
+        return value.byteValue();
+    }
+
+    public short asShort() {
+        return value.shortValue();
     }
 
     @Override
+    public int asInt() {
+        return value.intValue();
+    }
+
+    public long asLong() {
+        return value.longValue();
+    }
+
+    public float asFloat() {
+        return value.floatValue();
+    }
+
     public double asDouble() {
-        return value;
+        return value.doubleValue();
     }
 
     @Override
     public String asString() {
-        return Double.toString(value);
+        return value.toString();
     }
 
     @Override
@@ -44,7 +70,7 @@ public class NumberValue implements Value {
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 71 * hash + Long.hashCode(Double.doubleToLongBits(this.value));
+        hash = 71 * hash + value.hashCode();
         return hash;
     }
 
@@ -54,7 +80,16 @@ public class NumberValue implements Value {
         if (obj == null) return false;
         if (getClass() != obj.getClass())
             return false;
-        final NumberValue other = (NumberValue) obj;
-        return Double.doubleToLongBits(this.value) == Double.doubleToLongBits(other.value);
+        final Number other = ((NumberValue) obj).value;
+        if (value instanceof Double || other instanceof Double) {
+            return Double.compare(value.doubleValue(), other.doubleValue()) == 0;
+        }
+        if (value instanceof Float || other instanceof Float) {
+            return Float.compare(value.floatValue(), other.floatValue()) == 0;
+        }
+        if (value instanceof Long || other instanceof Long) {
+            return value.longValue() == other.longValue();
+        }
+        return value.intValue() == other.intValue();
     }
 }

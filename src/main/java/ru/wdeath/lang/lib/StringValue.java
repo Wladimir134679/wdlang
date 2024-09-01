@@ -1,5 +1,7 @@
 package ru.wdeath.lang.lib;
 
+import ru.wdeath.lang.exception.TypeException;
+
 import java.util.Objects;
 
 public class StringValue implements Value {
@@ -14,6 +16,15 @@ public class StringValue implements Value {
     public double asDouble() {
         try {
             return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    @Override
+    public int asInt() {
+        try {
+            return Integer.parseInt(value);
         } catch (NumberFormatException e) {
             return 0;
         }
