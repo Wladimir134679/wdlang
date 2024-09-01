@@ -4,7 +4,7 @@ import ru.wdeath.lang.exception.OperationIsNotSupportedException;
 import ru.wdeath.lang.lib.NumberValue;
 import ru.wdeath.lang.lib.Value;
 
-public class UnaryExpression implements Expression {
+public class UnaryExpression implements Expression, Statement {
 
     public final Expression expr;
     public final Operator operation;
@@ -38,11 +38,44 @@ public class UnaryExpression implements Expression {
     }
 
     @Override
+    public void execute() {
+        eval();
+    }
+
+    @Override
     public Value eval() {
+        Value value = expr.eval();
         final var result = switch (operation) {
-            case NEGATE -> -expr.eval().asDouble();
-            case COMPLEMENT -> ~(int) expr.eval().asDouble();
-            case NOT -> expr.eval().asDouble() != 0 ? 0 : 1;
+            case INCREMENT_PREFIX -> {
+                if (expr instanceof Accessible) {
+                    yield ((Accessible) expr).set(new NumberValue(value.asDouble() + 1)).asDouble();
+                }
+                yield value.asDouble() + 1;
+            }
+            case DECREMENT_PREFIX -> {
+                if (expr instanceof Accessible) {
+                    yield ((Accessible) expr).set(new NumberValue(value.asDouble() - 1)).asDouble();
+                }
+                yield value.asDouble() - 1;
+            }
+            case INCREMENT_POSTFIX -> {
+                if (expr instanceof Accessible) {
+                    ((Accessible) expr).set(new NumberValue(value.asDouble() + 1));
+                    yield value.asDouble();
+                }
+                yield value.asDouble() + 1;
+            }
+            case DECREMENT_POSTFIX -> {
+                if (expr instanceof Accessible) {
+                    ((Accessible) expr).set(new NumberValue(value.asDouble() - 1));
+                    yield value.asDouble();
+                }
+                yield value.asDouble() - 1;
+            }
+
+            case NEGATE -> -value.asDouble();
+            case COMPLEMENT -> ~(int) value.asDouble();
+            case NOT -> value.asDouble() != 0 ? 0 : 1;
             default -> throw new OperationIsNotSupportedException(operation);
         };
         return new NumberValue(result);

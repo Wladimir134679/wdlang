@@ -58,6 +58,10 @@ public class Lexer {
         OPERATORS.put(">>=", TokenType.GTGTEQ);
         OPERATORS.put(">>>=", TokenType.GTGTGTEQ);
 
+        OPERATORS.put("++", TokenType.PLUSPLUS);
+        OPERATORS.put("--", TokenType.MINUSMINUS);
+
+
         OPERATORS.put("~", TokenType.TILDE);
         OPERATORS.put("^", TokenType.CARET);
         OPERATORS.put("^^", TokenType.CARETCARET);

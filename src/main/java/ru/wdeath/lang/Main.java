@@ -40,6 +40,6 @@ public class Main {
         for (CallStack.CallInfo call : CallStack.getCalls()) {
             System.err.printf("\tat %s\n", call);
         }
-//        throwable.printStackTrace();
+        throwable.printStackTrace();
     }
 }

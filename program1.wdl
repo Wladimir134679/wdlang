@@ -98,6 +98,6 @@ println(funcWithOptionalArgs("*"))
 println(funcWithOptionalArgs("+", 2))
 println(funcWithOptionalArgs("*", 10, "<!"))
 
-for (i = 0, i < 10, i+=1){
+for (i = 0, i < 10, i++){
     println("new += for i " + i)
 }

@@ -21,4 +21,12 @@ public class Argument {
     public Expression getValueExpr() {
         return valueExpr;
     }
+
+    @Override
+    public String toString() {
+        return "Argument{" +
+                "n='" + name + '\'' +
+                ", v=" + valueExpr +
+                '}';
+    }
 }

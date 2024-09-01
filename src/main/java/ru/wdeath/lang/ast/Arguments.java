@@ -39,4 +39,12 @@ public class Arguments implements Iterable<Argument> {
     public Iterator<Argument> iterator() {
         return arguments.iterator();
     }
+
+    @Override
+    public String toString() {
+        return "Arguments{" +
+                "a=" + arguments +
+                ", r=" + requiredArgumentsCount +
+                '}';
+    }
 }

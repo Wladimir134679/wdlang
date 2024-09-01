@@ -8,7 +8,7 @@ import ru.wdeath.lang.lib.Variables;
 
 import java.util.List;
 
-public class MatchExpression implements Expression{
+public class MatchExpression implements Expression, Statement{
 
 
     public final Expression expression;
@@ -17,6 +17,11 @@ public class MatchExpression implements Expression{
     public MatchExpression(Expression expression, List<Pattern> patterns) {
         this.expression = expression;
         this.patterns = patterns;
+    }
+
+    @Override
+    public void execute() {
+        eval();
     }
 
     @Override

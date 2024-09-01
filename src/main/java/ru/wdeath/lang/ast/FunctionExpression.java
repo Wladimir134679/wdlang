@@ -7,7 +7,7 @@ import ru.wdeath.lang.lib.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FunctionExpression implements Expression {
+public class FunctionExpression implements Expression, Statement{
 
     public final Expression expression;
     public final List<Expression> arguments;
@@ -24,6 +24,12 @@ public class FunctionExpression implements Expression {
 
     public void addArgument(Expression argument) {
         arguments.add(argument);
+    }
+
+
+    @Override
+    public void execute() {
+        eval();
     }
 
     @Override

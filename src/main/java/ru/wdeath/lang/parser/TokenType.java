@@ -60,6 +60,9 @@ public enum TokenType {
     GTGTEQ, // >>=
     GTGTGTEQ, // >>>=
 
+    PLUSPLUS, // ++
+    MINUSMINUS, // --
+
     LPAREN,// (
     RPAREN,// )
     LBRACKET,// [

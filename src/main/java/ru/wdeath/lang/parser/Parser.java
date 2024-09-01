@@ -209,9 +209,9 @@ public class Parser {
     }
 
     private Statement assignmentStatement() {
-        final Expression assignment = assignmentStrict();
-        if (assignment != null) {
-            return new ExprStatement(assignment);
+        final Expression expression = expression();
+        if (expression instanceof Statement) {
+            return (Statement) expression;
         }
         throw new ParseException("Unknown statement " + peek(0));
     }
@@ -468,6 +468,10 @@ public class Parser {
     }
 
     private Expression unary() {
+        if (match(TokenType.PLUSPLUS))
+            return new UnaryExpression(UnaryExpression.Operator.INCREMENT_PREFIX, primary());
+        if (match(TokenType.MINUSMINUS))
+            return new UnaryExpression(UnaryExpression.Operator.DECREMENT_PREFIX, primary());
         if (match(TokenType.MINUS))
             return new UnaryExpression(UnaryExpression.Operator.NEGATE, primary());
         if (match(TokenType.EXCL))
@@ -480,7 +484,6 @@ public class Parser {
     }
 
     private Expression primary() {
-        final var current = peek(0);
         if (match(TokenType.LPAREN)) {
             Expression expression = expression();
             match(TokenType.RPAREN);
@@ -501,18 +504,27 @@ public class Parser {
     }
 
     private Expression variable() {
-        final var current = peek(0);
+        // function(...
         if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.LPAREN)) {
             return function(new ValueExpression(consume(TokenType.WORD).getText()));
         }
+
         final Expression qualifiedNameExpr = qualifiedName();
         if (qualifiedNameExpr != null) {
             // variable(args) || arr["key"](args) || obj.key(args)
             if (lookMatch(0, TokenType.LPAREN)) {
                 return function(qualifiedNameExpr);
             }
+            // postfix increment/decrement
+            if (match(TokenType.PLUSPLUS)) {
+                return new UnaryExpression(UnaryExpression.Operator.INCREMENT_POSTFIX, qualifiedNameExpr);
+            }
+            if (match(TokenType.MINUSMINUS)) {
+                return new UnaryExpression(UnaryExpression.Operator.DECREMENT_POSTFIX, qualifiedNameExpr);
+            }
             return qualifiedNameExpr;
         }
+
         if (lookMatch(0, TokenType.LBRACKET)) {
             return array();
         }
