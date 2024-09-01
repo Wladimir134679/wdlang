@@ -1,4 +1,4 @@
-package ru.wdeath.lang;
+package ru.wdeath.lang.utils;
 
 import java.util.HashMap;
 import java.util.Map;

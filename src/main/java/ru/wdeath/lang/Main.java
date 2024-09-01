@@ -1,10 +1,10 @@
 package ru.wdeath.lang;
 
-import ru.wdeath.lang.ast.ExprStatement;
 import ru.wdeath.lang.lib.CallStack;
 import ru.wdeath.lang.parser.Lexer;
 import ru.wdeath.lang.parser.Parser;
 import ru.wdeath.lang.parser.Token;
+import ru.wdeath.lang.utils.TimeMeasurement;
 import ru.wdeath.lang.visitors.FunctionAdder;
 
 import java.io.IOException;
