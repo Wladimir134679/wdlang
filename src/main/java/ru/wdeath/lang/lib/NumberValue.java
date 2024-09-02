@@ -2,8 +2,34 @@ package ru.wdeath.lang.lib;
 
 public class NumberValue implements Value {
 
-    public static final NumberValue ZERO = new NumberValue(0);
-    public static final NumberValue ONE = new NumberValue(1);
+    public static final NumberValue ZERO, ONE, MINUS_ONE;
+
+    private static final int CACHE_MIN = -128, CACHE_MAX = 127;
+    private static final NumberValue[] NUMBER_CACHE;
+    static {
+        final int length = CACHE_MAX - CACHE_MIN + 1;
+        NUMBER_CACHE = new NumberValue[length];
+        int value = CACHE_MIN;
+        for (int i = 0; i < length; i++) {
+            NUMBER_CACHE[i] = new NumberValue(value++);
+        }
+
+        final int zeroIndex = -CACHE_MIN;
+        MINUS_ONE = NUMBER_CACHE[zeroIndex - 1];
+        ZERO = NUMBER_CACHE[zeroIndex];
+        ONE = NUMBER_CACHE[zeroIndex + 1];
+    }
+
+    public static NumberValue of(int value) {
+        if (CACHE_MIN <= value && value <= CACHE_MAX) {
+            return NUMBER_CACHE[-CACHE_MIN + value];
+        }
+        return new NumberValue(value);
+    }
+
+    public static NumberValue of(Number value) {
+        return new NumberValue(value);
+    }
 
     public static NumberValue fromBoolean(boolean b) {
         return b ? ONE : ZERO;
@@ -11,11 +37,7 @@ public class NumberValue implements Value {
 
     private final Number value;
 
-    public NumberValue(boolean value) {
-        this.value = value ? 1 : 0;
-    }
-
-    public NumberValue(Number value) {
+    private NumberValue(Number value) {
         this.value = value;
     }
 

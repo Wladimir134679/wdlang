@@ -21,11 +21,11 @@ public class Functions {
         });
         functions.put("sin", v -> {
             Arguments.check(1, v.length);
-            return new NumberValue(Math.sin(v[0].asDouble()));
+            return NumberValue.of(Math.sin(v[0].asDouble()));
         });
         functions.put("cos", v -> {
             Arguments.check(1, v.length);
-            return new NumberValue(Math.sin(v[0].asDouble()));
+            return NumberValue.of(Math.sin(v[0].asDouble()));
         });
         functions.put("newarray", v ->
                 createArray(v, 0)

@@ -209,11 +209,11 @@ public class Parser {
             final Token current = peek(0);
             if (match(TokenType.NUMBER)) {
                 pattern = new MatchExpression.ConstantPattern(
-                        new NumberValue(Double.parseDouble(current.getText()))
+                        NumberValue.of(Double.parseDouble(current.getText()))
                 );
             } else if (match(TokenType.HEX_NUMBER)) {
                 pattern = new MatchExpression.ConstantPattern(
-                        new NumberValue(Long.parseLong(current.getText(), 16))
+                        NumberValue.of(Long.parseLong(current.getText(), 16))
                 );
             } else if (match(TokenType.TEXT)) {
                 pattern = new MatchExpression.ConstantPattern(

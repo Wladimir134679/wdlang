@@ -93,27 +93,27 @@ public class BinaryExpression implements Expression {
             // number1 + number2
             final Number number2 = ((NumberValue) value2).raw();
             if (number1 instanceof Double || number2 instanceof Double) {
-                return new NumberValue(number1.doubleValue() + number2.doubleValue());
+                return NumberValue.of(number1.doubleValue() + number2.doubleValue());
             }
             if (number1 instanceof Float || number2 instanceof Float) {
-                return new NumberValue(number1.floatValue() + number2.floatValue());
+                return NumberValue.of(number1.floatValue() + number2.floatValue());
             }
             if (number1 instanceof Long || number2 instanceof Long) {
-                return new NumberValue(number1.longValue() + number2.longValue());
+                return NumberValue.of(number1.longValue() + number2.longValue());
             }
-            return new NumberValue(number1.intValue() + number2.intValue());
+            return NumberValue.of(number1.intValue() + number2.intValue());
         }
         // number1 + other
         if (number1 instanceof Double) {
-            return new NumberValue(number1.doubleValue() + value2.asDouble());
+            return NumberValue.of(number1.doubleValue() + value2.asDouble());
         }
         if (number1 instanceof Float) {
-            return new NumberValue(number1.floatValue() + value2.asDouble());
+            return NumberValue.of(number1.floatValue() + value2.asDouble());
         }
         if (number1 instanceof Long) {
-            return new NumberValue(number1.longValue() + value2.asInt());
+            return NumberValue.of(number1.longValue() + value2.asInt());
         }
-        return new NumberValue(number1.intValue() + value2.asInt());
+        return NumberValue.of(number1.intValue() + value2.asInt());
     }
 
     private Value subtract(Value value1, Value value2) {
@@ -131,27 +131,27 @@ public class BinaryExpression implements Expression {
             // number1 - number2
             final Number number2 = ((NumberValue) value2).raw();
             if (number1 instanceof Double || number2 instanceof Double) {
-                return new NumberValue(number1.doubleValue() - number2.doubleValue());
+                return NumberValue.of(number1.doubleValue() - number2.doubleValue());
             }
             if (number1 instanceof Float || number2 instanceof Float) {
-                return new NumberValue(number1.floatValue() - number2.floatValue());
+                return NumberValue.of(number1.floatValue() - number2.floatValue());
             }
             if (number1 instanceof Long || number2 instanceof Long) {
-                return new NumberValue(number1.longValue() - number2.longValue());
+                return NumberValue.of(number1.longValue() - number2.longValue());
             }
-            return new NumberValue(number1.intValue() - number2.intValue());
+            return NumberValue.of(number1.intValue() - number2.intValue());
         }
         // number1 - other
         if (number1 instanceof Double) {
-            return new NumberValue(number1.doubleValue() - value2.asDouble());
+            return NumberValue.of(number1.doubleValue() - value2.asDouble());
         }
         if (number1 instanceof Float) {
-            return new NumberValue(number1.floatValue() - value2.asDouble());
+            return NumberValue.of(number1.floatValue() - value2.asDouble());
         }
         if (number1 instanceof Long) {
-            return new NumberValue(number1.longValue() - value2.asInt());
+            return NumberValue.of(number1.longValue() - value2.asInt());
         }
-        return new NumberValue(number1.intValue() - value2.asInt());
+        return NumberValue.of(number1.intValue() - value2.asInt());
     }
 
 
@@ -179,27 +179,27 @@ public class BinaryExpression implements Expression {
             // number1 * number2
             final Number number2 = ((NumberValue) value2).raw();
             if (number1 instanceof Double || number2 instanceof Double) {
-                return new NumberValue(number1.doubleValue() * number2.doubleValue());
+                return NumberValue.of(number1.doubleValue() * number2.doubleValue());
             }
             if (number1 instanceof Float || number2 instanceof Float) {
-                return new NumberValue(number1.floatValue() * number2.floatValue());
+                return NumberValue.of(number1.floatValue() * number2.floatValue());
             }
             if (number1 instanceof Long || number2 instanceof Long) {
-                return new NumberValue(number1.longValue() * number2.longValue());
+                return NumberValue.of(number1.longValue() * number2.longValue());
             }
-            return new NumberValue(number1.intValue() * number2.intValue());
+            return NumberValue.of(number1.intValue() * number2.intValue());
         }
         // number1 * other
         if (number1 instanceof Double) {
-            return new NumberValue(number1.doubleValue() * value2.asDouble());
+            return NumberValue.of(number1.doubleValue() * value2.asDouble());
         }
         if (number1 instanceof Float) {
-            return new NumberValue(number1.floatValue() * value2.asDouble());
+            return NumberValue.of(number1.floatValue() * value2.asDouble());
         }
         if (number1 instanceof Long) {
-            return new NumberValue(number1.longValue() * value2.asInt());
+            return NumberValue.of(number1.longValue() * value2.asInt());
         }
-        return new NumberValue(number1.intValue() * value2.asInt());
+        return NumberValue.of(number1.intValue() * value2.asInt());
     }
 
     private Value divide(Value value1, Value value2) {
@@ -217,27 +217,27 @@ public class BinaryExpression implements Expression {
             // number1 / number2
             final Number number2 = ((NumberValue) value2).raw();
             if (number1 instanceof Double || number2 instanceof Double) {
-                return new NumberValue(number1.doubleValue() / number2.doubleValue());
+                return NumberValue.of(number1.doubleValue() / number2.doubleValue());
             }
             if (number1 instanceof Float || number2 instanceof Float) {
-                return new NumberValue(number1.floatValue() / number2.floatValue());
+                return NumberValue.of(number1.floatValue() / number2.floatValue());
             }
             if (number1 instanceof Long || number2 instanceof Long) {
-                return new NumberValue(number1.longValue() / number2.longValue());
+                return NumberValue.of(number1.longValue() / number2.longValue());
             }
-            return new NumberValue(number1.intValue() / number2.intValue());
+            return NumberValue.of(number1.intValue() / number2.intValue());
         }
         // number1 / other
         if (number1 instanceof Double) {
-            return new NumberValue(number1.doubleValue() / value2.asDouble());
+            return NumberValue.of(number1.doubleValue() / value2.asDouble());
         }
         if (number1 instanceof Float) {
-            return new NumberValue(number1.floatValue() / value2.asDouble());
+            return NumberValue.of(number1.floatValue() / value2.asDouble());
         }
         if (number1 instanceof Long) {
-            return new NumberValue(number1.longValue() / value2.asInt());
+            return NumberValue.of(number1.longValue() / value2.asInt());
         }
-        return new NumberValue(number1.intValue() / value2.asInt());
+        return NumberValue.of(number1.intValue() / value2.asInt());
     }
 
     private Value remainder(Value value1, Value value2) {
@@ -255,27 +255,27 @@ public class BinaryExpression implements Expression {
             // number1 % number2
             final Number number2 = ((NumberValue) value2).raw();
             if (number1 instanceof Double || number2 instanceof Double) {
-                return new NumberValue(number1.doubleValue() % number2.doubleValue());
+                return NumberValue.of(number1.doubleValue() % number2.doubleValue());
             }
             if (number1 instanceof Float || number2 instanceof Float) {
-                return new NumberValue(number1.floatValue() % number2.floatValue());
+                return NumberValue.of(number1.floatValue() % number2.floatValue());
             }
             if (number1 instanceof Long || number2 instanceof Long) {
-                return new NumberValue(number1.longValue() % number2.longValue());
+                return NumberValue.of(number1.longValue() % number2.longValue());
             }
-            return new NumberValue(number1.intValue() % number2.intValue());
+            return NumberValue.of(number1.intValue() % number2.intValue());
         }
         // number1 % other
         if (number1 instanceof Double) {
-            return new NumberValue(number1.doubleValue() % value2.asDouble());
+            return NumberValue.of(number1.doubleValue() % value2.asDouble());
         }
         if (number1 instanceof Float) {
-            return new NumberValue(number1.floatValue() % value2.asDouble());
+            return NumberValue.of(number1.floatValue() % value2.asDouble());
         }
         if (number1 instanceof Long) {
-            return new NumberValue(number1.longValue() % value2.asInt());
+            return NumberValue.of(number1.longValue() % value2.asInt());
         }
-        return new NumberValue(number1.intValue() % value2.asInt());
+        return NumberValue.of(number1.intValue() % value2.asInt());
     }
 
     private Value push(Value value1, Value value2) {
@@ -302,15 +302,15 @@ public class BinaryExpression implements Expression {
             // number1 & number2
             final Number number2 = ((NumberValue) value2).raw();
             if (number1 instanceof Long || number2 instanceof Long) {
-                return new NumberValue(number1.longValue() & number2.longValue());
+                return NumberValue.of(number1.longValue() & number2.longValue());
             }
-            return new NumberValue(number1.intValue() & number2.intValue());
+            return NumberValue.of(number1.intValue() & number2.intValue());
         }
         // number1 & other
         if (number1 instanceof Long) {
-            return new NumberValue(number1.longValue() & value2.asInt());
+            return NumberValue.of(number1.longValue() & value2.asInt());
         }
-        return new NumberValue(number1.intValue() & value2.asInt());
+        return NumberValue.of(number1.intValue() & value2.asInt());
     }
 
     private Value or(Value value1, Value value2) {
@@ -328,15 +328,15 @@ public class BinaryExpression implements Expression {
             // number1 | number2
             final Number number2 = ((NumberValue) value2).raw();
             if (number1 instanceof Long || number2 instanceof Long) {
-                return new NumberValue(number1.longValue() | number2.longValue());
+                return NumberValue.of(number1.longValue() | number2.longValue());
             }
-            return new NumberValue(number1.intValue() | number2.intValue());
+            return NumberValue.of(number1.intValue() | number2.intValue());
         }
         // number1 | other
         if (number1 instanceof Long) {
-            return new NumberValue(number1.longValue() | value2.asInt());
+            return NumberValue.of(number1.longValue() | value2.asInt());
         }
-        return new NumberValue(number1.intValue() | value2.asInt());
+        return NumberValue.of(number1.intValue() | value2.asInt());
     }
 
     private Value xor(Value value1, Value value2) {
@@ -354,15 +354,15 @@ public class BinaryExpression implements Expression {
             // number1 ^ number2
             final Number number2 = ((NumberValue) value2).raw();
             if (number1 instanceof Long || number2 instanceof Long) {
-                return new NumberValue(number1.longValue() ^ number2.longValue());
+                return NumberValue.of(number1.longValue() ^ number2.longValue());
             }
-            return new NumberValue(number1.intValue() ^ number2.intValue());
+            return NumberValue.of(number1.intValue() ^ number2.intValue());
         }
         // number1 ^ other
         if (number1 instanceof Long) {
-            return new NumberValue(number1.longValue() ^ value2.asInt());
+            return NumberValue.of(number1.longValue() ^ value2.asInt());
         }
-        return new NumberValue(number1.intValue() ^ value2.asInt());
+        return NumberValue.of(number1.intValue() ^ value2.asInt());
     }
 
     private Value lshift(Value value1, Value value2) {
@@ -385,15 +385,15 @@ public class BinaryExpression implements Expression {
             // number1 << number2
             final Number number2 = ((NumberValue) value2).raw();
             if (number1 instanceof Long || number2 instanceof Long) {
-                return new NumberValue(number1.longValue() << number2.longValue());
+                return NumberValue.of(number1.longValue() << number2.longValue());
             }
-            return new NumberValue(number1.intValue() << number2.intValue());
+            return NumberValue.of(number1.intValue() << number2.intValue());
         }
         // number1 << other
         if (number1 instanceof Long) {
-            return new NumberValue(number1.longValue() << value2.asInt());
+            return NumberValue.of(number1.longValue() << value2.asInt());
         }
-        return new NumberValue(number1.intValue() << value2.asInt());
+        return NumberValue.of(number1.intValue() << value2.asInt());
     }
 
     private Value rshift(Value value1, Value value2) {
@@ -411,15 +411,15 @@ public class BinaryExpression implements Expression {
             // number1 >> number2
             final Number number2 = ((NumberValue) value2).raw();
             if (number1 instanceof Long || number2 instanceof Long) {
-                return new NumberValue(number1.longValue() >> number2.longValue());
+                return NumberValue.of(number1.longValue() >> number2.longValue());
             }
-            return new NumberValue(number1.intValue() >> number2.intValue());
+            return NumberValue.of(number1.intValue() >> number2.intValue());
         }
         // number1 >> other
         if (number1 instanceof Long) {
-            return new NumberValue(number1.longValue() >> value2.asInt());
+            return NumberValue.of(number1.longValue() >> value2.asInt());
         }
-        return new NumberValue(number1.intValue() >> value2.asInt());
+        return NumberValue.of(number1.intValue() >> value2.asInt());
     }
 
     private Value urshift(Value value1, Value value2) {
@@ -437,15 +437,15 @@ public class BinaryExpression implements Expression {
             // number1 >>> number2
             final Number number2 = ((NumberValue) value2).raw();
             if (number1 instanceof Long || number2 instanceof Long) {
-                return new NumberValue(number1.longValue() >>> number2.longValue());
+                return NumberValue.of(number1.longValue() >>> number2.longValue());
             }
-            return new NumberValue(number1.intValue() >>> number2.intValue());
+            return NumberValue.of(number1.intValue() >>> number2.intValue());
         }
         // number1 >>> other
         if (number1 instanceof Long) {
-            return new NumberValue(number1.longValue() >>> value2.asInt());
+            return NumberValue.of(number1.longValue() >>> value2.asInt());
         }
-        return new NumberValue(number1.intValue() >>> value2.asInt());
+        return NumberValue.of(number1.intValue() >>> value2.asInt());
     }
 
 
