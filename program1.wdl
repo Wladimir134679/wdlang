@@ -99,6 +99,8 @@ println(funcWithOptionalArgs("+", 2))
 println(funcWithOptionalArgs("*", 10, "<!"))
 println()
 
+println(10 + 20 * 2 * 10 / 4)
+
 for (i = 0.5, i < 10, i++){
     println("new += for i " + i)
 }

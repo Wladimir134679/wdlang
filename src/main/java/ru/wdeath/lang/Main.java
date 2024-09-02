@@ -1,7 +1,9 @@
 package ru.wdeath.lang;
 
+import ru.wdeath.lang.ast.Statement;
 import ru.wdeath.lang.lib.CallStack;
 import ru.wdeath.lang.parser.Lexer;
+import ru.wdeath.lang.parser.Optimizer;
 import ru.wdeath.lang.parser.Parser;
 import ru.wdeath.lang.parser.Token;
 import ru.wdeath.lang.utils.TimeMeasurement;
@@ -26,19 +28,27 @@ public class Main {
                 System.out.println(i + " " + tokenize.get(i));
             }
             System.out.println("======");
+
             measurement.start("Parse time");
             final var parser = new Parser(tokenize);
             final var blockProgram = parser.parse();
             measurement.stop("Parse time");
+
             if (parser.getParseErrors().hasErrors()) {
                 System.out.println(parser.getParseErrors());
                 return;
             }
             System.out.println(blockProgram);
+
+            measurement.start("Optimization time");
+            Statement program = Optimizer.optimize(blockProgram, 10);
+            measurement.stop("Optimization time");
+
+            program.accept(new FunctionAdder());
+
             measurement.start("Execution time");
             System.out.println("==Run==");
-            blockProgram.accept(new FunctionAdder());
-            blockProgram.execute();
+            program.execute();
             System.out.println("==End==");
             measurement.stop("Execution time");
             System.out.println(measurement.summary(TimeUnit.MILLISECONDS, true));
