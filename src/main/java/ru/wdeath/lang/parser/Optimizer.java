@@ -1,35 +1,40 @@
 package ru.wdeath.lang.parser;
 
+import ru.wdeath.lang.ast.Node;
 import ru.wdeath.lang.ast.Statement;
-import ru.wdeath.lang.visitors.ConstantFolding;
-import ru.wdeath.lang.visitors.DeadCodeElimination;
-import ru.wdeath.lang.visitors.ExpressionSimplification;
+import ru.wdeath.lang.visitors.optimization.*;
 
 public class Optimizer {
-
-    public interface Info {
-
-        int optimizationsCount();
-
-        String summaryInfo();
-    }
 
     public static Statement optimize(Statement statement, int level) {
         if (level == 0) return statement;
 
-        final ConstantFolding constantFolding = new ConstantFolding();
-        final DeadCodeElimination deadCodeElimination = new DeadCodeElimination();
-        final ExpressionSimplification expressionSimplification = new ExpressionSimplification();
+        final Optimizable optimization = new SummaryOptimization(new Optimizable[]{
+                new ConstantFolding(),
+                new ConstantPropagation(),
+                new DeadCodeElimination(),
+                new ExpressionSimplification()
+        });
 
-        Statement result = statement;
-        for (int i = 0; i < level; i++) {
-            result = (Statement) result.accept(constantFolding, null);
-            result = (Statement) result.accept(deadCodeElimination, null);
-            result = (Statement) result.accept(expressionSimplification, null);
+        Node result = statement;
+        try {
+
+            int iteration = 0, lastModifications = 0;
+            do {
+                lastModifications = optimization.optimizationsCount();
+                result = optimization.optimize(result);
+                iteration++;
+            } while (lastModifications != optimization.optimizationsCount() && iteration < level);
+            System.out.println("Performs " + iteration + " optimization iterations");
+
+            return (Statement) result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            System.out.println(result);
+            System.out.println(optimization.summaryInfo());
         }
-        System.out.print(constantFolding.summaryInfo());
-        System.out.print(deadCodeElimination.summaryInfo());
-        System.out.println();
-        return result;
+
     }
 }

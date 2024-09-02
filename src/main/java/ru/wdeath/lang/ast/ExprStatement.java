@@ -1,16 +1,23 @@
 package ru.wdeath.lang.ast;
 
-public class ExprStatement implements Statement{
+import ru.wdeath.lang.lib.Value;
 
-    public final Expression function;
+public class ExprStatement implements Expression, Statement{
 
-    public ExprStatement(Expression function) {
-        this.function = function;
+    public final Expression expr;
+
+    public ExprStatement(Expression expr) {
+        this.expr = expr;
+    }
+
+    @Override
+    public Value eval() {
+        return expr.eval();
     }
 
     @Override
     public void execute() {
-        function.eval();
+        expr.eval();
     }
 
     @Override
@@ -26,7 +33,7 @@ public class ExprStatement implements Statement{
     @Override
     public String toString() {
         return "FuncS{" +
-                "f=" + function +
+                "f=" + expr +
                 '}';
     }
 }

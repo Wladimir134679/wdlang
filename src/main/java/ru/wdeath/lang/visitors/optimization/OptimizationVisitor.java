@@ -1,4 +1,4 @@
-package ru.wdeath.lang.visitors;
+package ru.wdeath.lang.visitors.optimization;
 
 import ru.wdeath.lang.ast.*;
 
@@ -54,7 +54,11 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
             if (node != statement) {
                 changed = true;
             }
-            result.addStatement((Statement) node);
+            if (node instanceof Statement) {
+                result.addStatement((Statement) node);
+            } else if (node instanceof Expression) {
+                result.addStatement(new ExprStatement((Expression) node));
+            }
         }
         if (changed) {
             return result;
@@ -104,7 +108,7 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
         final Node condition = s.condition.accept(this, t);
         final Node statement = s.body.accept(this, t);
         if (condition != s.condition || statement != s.body) {
-            return new DoWhileStatement((Expression) condition, (Statement) statement);
+            return new DoWhileStatement((Expression) condition, consumeStatement(statement));
         }
         return s;
     }
@@ -117,8 +121,8 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
         final Node statement = s.block.accept(this, t);
         if (initialization != s.init || termination != s.termination
                 || increment != s.increment || statement != s.block) {
-            return new ForStatement((Statement) initialization,
-                    (Expression) termination, (Statement) increment, (Statement) statement);
+            return new ForStatement(consumeStatement(initialization),
+                    (Expression) termination, consumeStatement(increment), consumeStatement(statement));
         }
         return s;
     }
@@ -128,7 +132,7 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
         final Node container = s.container.accept(this, t);
         final Node body = s.body.accept(this, t);
         if (container != s.container || body != s.body) {
-            return new ForeachArrayStatement(s.variable, (Expression) container, (Statement) body);
+            return new ForeachArrayStatement(s.variable, (Expression) container, consumeStatement(body));
         }
         return s;
     }
@@ -138,7 +142,7 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
         final Node container = s.container.accept(this, t);
         final Node body = s.body.accept(this, t);
         if (container != s.container || body != s.body) {
-            return new ForeachMapStatement(s.key, s.value, (Expression) container, (Statement) body);
+            return new ForeachMapStatement(s.key, s.value, (Expression) container, consumeStatement(body));
         }
         return s;
     }
@@ -147,7 +151,7 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
     public Node visit(FunctionDefineStatement s, T t) {
         final Node body = s.body.accept(this, t);
         if (body != s.body) {
-            return new FunctionDefineStatement(s.name, s.arguments, (Statement) body);
+            return new FunctionDefineStatement(s.name, s.arguments, consumeStatement(body));
         }
         return s;
     }
@@ -159,8 +163,8 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
 
     @Override
     public Node visit(ExprStatement s, T t) {
-        final Node expr = s.function.accept(this, t);
-        if (expr != s.function) {
+        final Node expr = s.expr.accept(this, t);
+        if (expr != s.expr) {
             return new ExprStatement((Expression) expr);
         }
         return s;
@@ -195,7 +199,7 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
             elseStatement = null;
         }
         if (expression != s.condition || ifStatement != s.ifStatement || elseStatement != s.elseStatement) {
-            return new IfStatement((Expression) expression, (Statement) ifStatement, (Statement) elseStatement);
+            return new IfStatement((Expression) expression, consumeStatement(ifStatement), consumeStatement(elseStatement));
         }
         return s;
     }
@@ -227,7 +231,7 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
             final Node patternResult = pattern.result.accept(this, t);
             if (patternResult != pattern.result) {
                 changed = true;
-                pattern.result = (Statement) patternResult;
+                pattern.result = consumeStatement(patternResult);
             }
             patterns.add(pattern);
         }
@@ -290,8 +294,15 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
         final Node condition = s.condition.accept(this, t);
         final Node statement = s.body.accept(this, t);
         if (condition != s.condition || statement != s.body) {
-            return new WhileStatement((Expression) condition, (Statement) statement);
+            return new WhileStatement((Expression) condition, consumeStatement(statement));
         }
         return s;
+    }
+
+    protected Statement consumeStatement(Node node) {
+        if (node instanceof Statement) {
+            return (Statement) node;
+        }
+        return new ExprStatement((Expression) node);
     }
 }

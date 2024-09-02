@@ -1,17 +1,34 @@
-package ru.wdeath.lang.visitors;
+package ru.wdeath.lang.visitors.optimization;
 
 import ru.wdeath.lang.ast.*;
 import ru.wdeath.lang.lib.NumberValue;
 import ru.wdeath.lang.lib.Types;
 import ru.wdeath.lang.lib.Value;
 import ru.wdeath.lang.parser.Optimizer;
+import ru.wdeath.lang.visitors.VisitorUtils;
 
-public class ExpressionSimplification extends OptimizationVisitor<Void> implements Optimizer.Info {
+import java.util.HashSet;
+import java.util.Set;
+
+import static ru.wdeath.lang.visitors.VisitorUtils.isIntegerValue;
+import static ru.wdeath.lang.visitors.VisitorUtils.isSameVariables;
+
+public class ExpressionSimplification extends OptimizationVisitor<Void> implements Optimizable {
+
+    private static final Set<String> OPERATORS = VisitorUtils.operators();
 
     private int simplificationsCount;
 
+    private final Set<String> overloadedOperators;
+
     public ExpressionSimplification() {
         simplificationsCount = 0;
+        overloadedOperators = new HashSet<>();
+    }
+
+    @Override
+    public Node optimize(Node node) {
+        return node.accept(this, null);
     }
 
     @Override
@@ -31,31 +48,34 @@ public class ExpressionSimplification extends OptimizationVisitor<Void> implemen
 
     @Override
     public Node visit(BinaryExpression s, Void t) {
+        if (overloadedOperators.contains(s.operation.toString())) {
+            return super.visit(s, t);
+        }
         // operations with 0
         final boolean expr1IsZero = isIntegerValue(s.expr1, 0);
         if (expr1IsZero || isIntegerValue(s.expr2, 0)) {
             switch (s.operation) {
                 case ADD:
-                    //  0 + x2 to x2, x1 + 0 to x1
+                    //  0 + x = x + 0 = x
                     simplificationsCount++;
                     return expr1IsZero ? s.expr2 : s.expr1;
 
                 case SUBTRACT:
                     simplificationsCount++;
                     if (expr1IsZero) {
-                        // 0 - x2 to -x2
+                        // 0 - x = -x
                         return new UnaryExpression(UnaryExpression.Operator.NEGATE, s.expr2);
                     }
-                    // x1 - 0 to x1
+                    // x - 0 = x
                     return s.expr1;
 
                 case MULTIPLY:
-                    // 0 * x2 to 0, x1 * 0 to 0
+                    // 0 * x = x * 0 = 0
                     simplificationsCount++;
                     return new ValueExpression(0);
 
                 case DIVIDE:
-                    // 0 / x2 to 0
+                    // 0 / x = 0
                     if (expr1IsZero) {
                         simplificationsCount++;
                         return new ValueExpression(0);
@@ -69,12 +89,12 @@ public class ExpressionSimplification extends OptimizationVisitor<Void> implemen
         if (expr1IsOne || isIntegerValue(s.expr2, 1)) {
             switch (s.operation) {
                 case MULTIPLY:
-                    // 1 * x2 to x2, x1 * 1 to x1
+                    // 1 * x = x * 1 = x
                     simplificationsCount++;
                     return expr1IsOne ? s.expr2 : s.expr1;
 
                 case DIVIDE:
-                    // x1 / 1 to x1
+                    // x / 1 = x
                     if (!expr1IsOne) {
                         simplificationsCount++;
                         return s.expr1;
@@ -83,16 +103,31 @@ public class ExpressionSimplification extends OptimizationVisitor<Void> implemen
             }
         }
 
-        // x1 / -1 to -x1
-        if (isIntegerValue(s.expr2, -1)) {
+        // x / -1 = -x
+        if (isIntegerValue(s.expr2, -1) && s.operation == BinaryExpression.Operator.DIVIDE) {
             simplificationsCount++;
             return new UnaryExpression(UnaryExpression.Operator.NEGATE, s.expr1);
         }
 
-        // x - x to 0
+        // -1 * x = x * -1 = -x
+        final boolean expr1IsMinusOne = isIntegerValue(s.expr1, -1);
+        if ((expr1IsMinusOne || isIntegerValue(s.expr2, -1)) && s.operation == BinaryExpression.Operator.MULTIPLY) {
+            simplificationsCount++;
+            return new UnaryExpression(UnaryExpression.Operator.NEGATE, expr1IsMinusOne ? s.expr2 : s.expr1);
+        }
+
+        // x - x = 0
         if (isSameVariables(s.expr1, s.expr2) && s.operation == BinaryExpression.Operator.SUBTRACT) {
             simplificationsCount++;
             return new ValueExpression(0);
+        }
+
+        // x >> 0 = x, x << 0 = x
+        if (isIntegerValue(s.expr2, 0) &&
+                (s.operation == BinaryExpression.Operator.LSHIFT ||
+                        s.operation == BinaryExpression.Operator.RSHIFT)) {
+            simplificationsCount++;
+            return s.expr1;
         }
 
         return super.visit(s, t);
@@ -100,39 +135,27 @@ public class ExpressionSimplification extends OptimizationVisitor<Void> implemen
 
     @Override
     public Node visit(ConditionalExpression s, Void t) {
+        if (overloadedOperators.contains(s.operation.getName())) {
+            return super.visit(s, t);
+        }
         if (isIntegerValue(s.expr1, 0) && s.operation == ConditionalExpression.Operator.AND) {
-            // 0 && x2 to 0
+            // 0 && x = 0
             simplificationsCount++;
             return new ValueExpression(0);
         }
         if (isIntegerValue(s.expr1, 1) && s.operation == ConditionalExpression.Operator.OR) {
-            // 1 || x2 to 1
+            // 1 || x = 1
             simplificationsCount++;
             return new ValueExpression(1);
         }
         return super.visit(s, t);
     }
 
-
-    private boolean isIntegerValue(Node node, int valueToCheck) {
-        if (!(node instanceof ValueExpression)) return false;
-
-        final Value value = ((ValueExpression) node).value;
-        if (value.type() != Types.NUMBER) return false;
-
-        final Number number = ((NumberValue) value).raw();
-        if ( (number instanceof Integer) || (number instanceof Short) || (number instanceof Byte)) {
-            return number.intValue() == valueToCheck;
+    @Override
+    public Node visit(FunctionDefineStatement s, Void t) {
+        if (OPERATORS.contains(s.name)) {
+            overloadedOperators.add(s.name);
         }
-        return false;
-    }
-
-    private boolean isSameVariables(Node n1, Node n2) {
-        if ( (n1 instanceof VariableExpression) && (n2 instanceof VariableExpression) ) {
-            final VariableExpression v1 = (VariableExpression) n1;
-            final VariableExpression v2 = (VariableExpression) n2;
-            return v1.name.equals(v2.name);
-        }
-        return false;
+        return super.visit(s, t);
     }
 }

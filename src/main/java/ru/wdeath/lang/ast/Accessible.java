@@ -2,7 +2,7 @@ package ru.wdeath.lang.ast;
 
 import ru.wdeath.lang.lib.Value;
 
-public interface Accessible {
+public interface Accessible extends Node {
 
     Value get();
 

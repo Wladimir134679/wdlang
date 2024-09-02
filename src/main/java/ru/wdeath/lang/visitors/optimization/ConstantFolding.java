@@ -1,19 +1,30 @@
-package ru.wdeath.lang.visitors;
+package ru.wdeath.lang.visitors.optimization;
 
 import ru.wdeath.lang.ast.*;
 import ru.wdeath.lang.exception.OperationIsNotSupportedException;
 import ru.wdeath.lang.parser.Optimizer;
+import ru.wdeath.lang.visitors.VisitorUtils;
 
-public class ConstantFolding extends OptimizationVisitor<Void> implements Optimizer.Info {
+import java.util.HashSet;
+import java.util.Set;
+
+public class ConstantFolding extends OptimizationVisitor<Void> implements Optimizable {
+
+    private static final Set<String> OPERATORS = VisitorUtils.operators();
 
     private int binaryExpressionFoldingCount;
     private int conditionalExpressionFoldingCount;
     private int unaryExpressionFoldingCount;
 
+    private final Set<String> overloadedOperators;
+
     public ConstantFolding() {
-        binaryExpressionFoldingCount = 0;
-        conditionalExpressionFoldingCount = 0;
-        unaryExpressionFoldingCount = 0;
+        overloadedOperators = new HashSet<>();
+    }
+
+    @Override
+    public Node optimize(Node node) {
+        return node.accept(this, null);
     }
 
     @Override
@@ -41,6 +52,9 @@ public class ConstantFolding extends OptimizationVisitor<Void> implements Optimi
 
     @Override
     public Node visit(BinaryExpression s, Void t) {
+        if (overloadedOperators.contains(s.operation.toString())) {
+            return super.visit(s, t);
+        }
         if ( (s.expr1 instanceof ValueExpression) && (s.expr2 instanceof ValueExpression) ) {
             binaryExpressionFoldingCount++;
             try {
@@ -54,6 +68,9 @@ public class ConstantFolding extends OptimizationVisitor<Void> implements Optimi
 
     @Override
     public Node visit(ConditionalExpression s, Void t) {
+        if (overloadedOperators.contains(s.operation.getName())) {
+            return super.visit(s, t);
+        }
         if ( (s.expr1 instanceof ValueExpression) && (s.expr2 instanceof ValueExpression) ) {
             conditionalExpressionFoldingCount++;
             try {
@@ -67,6 +84,9 @@ public class ConstantFolding extends OptimizationVisitor<Void> implements Optimi
 
     @Override
     public Node visit(UnaryExpression s, Void t) {
+        if (overloadedOperators.contains(s.operation.toString())) {
+            return super.visit(s, t);
+        }
         if (s.expr instanceof ValueExpression) {
             unaryExpressionFoldingCount++;
             try {
@@ -74,6 +94,14 @@ public class ConstantFolding extends OptimizationVisitor<Void> implements Optimi
             } catch (OperationIsNotSupportedException op) {
                 unaryExpressionFoldingCount--;
             }
+        }
+        return super.visit(s, t);
+    }
+
+    @Override
+    public Node visit(FunctionDefineStatement s, Void t) {
+        if (OPERATORS.contains(s.name)) {
+            overloadedOperators.add(s.name);
         }
         return super.visit(s, t);
     }

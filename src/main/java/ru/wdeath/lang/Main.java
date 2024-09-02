@@ -41,7 +41,7 @@ public class Main {
             System.out.println(blockProgram);
 
             measurement.start("Optimization time");
-            Statement program = Optimizer.optimize(blockProgram, 10);
+            Statement program = Optimizer.optimize(blockProgram, 9);
             measurement.stop("Optimization time");
 
             program.accept(new FunctionAdder());
