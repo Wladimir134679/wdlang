@@ -1,6 +1,6 @@
 package ru.wdeath.lang.lib;
 
-public interface Value {
+public interface Value extends Comparable<Value> {
 
     Object raw();
     

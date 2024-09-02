@@ -68,4 +68,9 @@ public class StringValue implements Value {
         final StringValue other = (StringValue) obj;
         return Objects.equals(this.value, other.value);
     }
+
+    @Override
+    public int compareTo(Value o) {
+        return value.compareTo(o.asString());
+    }
 }

@@ -103,4 +103,9 @@ public class ArrayValue implements Value, Iterable<Value>{
     public Iterator<Value> iterator() {
         return Arrays.asList(elements).iterator();
     }
+
+    @Override
+    public int compareTo(Value o) {
+        return Integer.compare(elements.length, ((Value[])o.raw()).length);
+    }
 }

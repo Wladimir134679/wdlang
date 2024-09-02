@@ -45,28 +45,54 @@ public class ConditionalExpression implements Expression {
 
     @Override
     public Value eval() {
-        double n1, n2;
-        Value eval1 = expr1.eval();
-        Value eval2 = expr2.eval();
-        if (eval1.type() == Types.STRING) {
-            n1 = eval1.asString().compareTo(eval2.asString());
-            n2 = 0;
-        } else {
-            n1 = eval1.asDouble();
-            n2 = eval2.asDouble();
+        final Value value1 = expr1.eval();
+        switch (operation) {
+            case AND:
+                return NumberValue.fromBoolean(
+                        (value1.asInt() != 0) && (expr2.eval().asInt() != 0));
+            case OR:
+                return NumberValue.fromBoolean(
+                        (value1.asInt() != 0) || (expr2.eval().asInt() != 0));
         }
-        final var result = switch (operation) {
-            case EQUALS -> n1 == n2;
-            case LT -> n1 < n2;
-            case GT -> n1 > n2;
-            case LTEQ -> n1 <= n2;
-            case GTEQ -> n1 >= n2;
-            case NOT_EQUALS -> n1 != n2;
 
-            case AND -> (n1 != 0) && (n2 != 0);
-            case OR -> (n1 != 0) || (n2 != 0);
-            default -> throw new OperationIsNotSupportedException(operation);
-        };
+
+        final Value value2 = expr2.eval();
+
+        double number1, number2;
+
+        if (value1.type() == Types.NUMBER) {
+            number1 = value1.asDouble();
+            number2 = value2.asDouble();
+        } else {
+            number1 = value1.compareTo(value2);
+            number2 = 0;
+        }
+
+        boolean result;
+        switch (operation) {
+            case EQUALS:
+                result = number1 == number2;
+                break;
+            case NOT_EQUALS:
+                result = number1 != number2;
+                break;
+
+            case LT:
+                result = number1 < number2;
+                break;
+            case LTEQ:
+                result = number1 <= number2;
+                break;
+            case GT:
+                result = number1 > number2;
+                break;
+            case GTEQ:
+                result = number1 >= number2;
+                break;
+
+            default:
+                throw new OperationIsNotSupportedException(operation);
+        }
         return NumberValue.fromBoolean(result);
     }
 

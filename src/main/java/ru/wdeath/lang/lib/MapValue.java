@@ -83,4 +83,9 @@ public class MapValue implements Value, Iterable<Map.Entry<Value, Value>> {
     public Iterator<Map.Entry<Value, Value>> iterator() {
         return map.entrySet().iterator();
     }
+
+    @Override
+    public int compareTo(Value o) {
+        return Integer.compare(map.size(), ((Map<?, ?>) o.raw()).size());
+    }
 }

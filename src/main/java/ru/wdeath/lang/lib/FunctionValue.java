@@ -57,4 +57,9 @@ public class FunctionValue implements Value{
         final FunctionValue other = (FunctionValue) obj;
         return Objects.equals(this.function, other.function);
     }
+
+    @Override
+    public int compareTo(Value o) {
+        throw new RuntimeException("Not implemented");
+    }
 }

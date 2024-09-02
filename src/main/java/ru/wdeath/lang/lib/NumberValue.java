@@ -117,4 +117,9 @@ public class NumberValue implements Value {
         }
         return value.intValue() == other.intValue();
     }
+
+    @Override
+    public int compareTo(Value o) {
+        return Double.compare((Double) value, o.asDouble());
+    }
 }
