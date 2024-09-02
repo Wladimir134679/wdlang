@@ -14,6 +14,11 @@ public class TernaryExpression implements Expression{
     }
 
     @Override
+    public <R, T> R accept(ResultVisitor<R, T> visitor, T input) {
+        return visitor.visit(this, input);
+    }
+
+    @Override
     public Value eval() {
         if(condition.eval().asInt() != 0){
             return trueExpr.eval();

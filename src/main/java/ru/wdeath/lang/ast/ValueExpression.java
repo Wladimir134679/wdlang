@@ -23,6 +23,11 @@ public class ValueExpression implements Expression {
     }
 
     @Override
+    public <R, T> R accept(ResultVisitor<R, T> visitor, T input) {
+        return visitor.visit(this, input);
+    }
+
+    @Override
     public Value eval() {
         return value;
     }
