@@ -80,7 +80,7 @@ public class BinaryExpression implements Expression {
                     throw new TypeException("Cannot merge non map value to map");
                 return MapValue.merge((MapValue) value1, (MapValue) value2);
             case Types.FUNCTION: /* TODO: combining functions */
-            case Types.STRING: return new StringValue(value1.asString() + value2.asString());
+            case Types.STRING:
             default:
                 // Concatenation strings
                 return new StringValue(value1.asString() + value2.asString());

@@ -86,21 +86,6 @@ public class ContainerAccessExpression implements Expression, Accessible {
         return indexes.get(i).eval();
     }
 
-    public MapValue consumeMap(Value value) {
-        if (value.type() == Types.MAP) {
-            return (MapValue) value;
-        } else {
-            throw new TypeException("Map expected");
-        }
-    }
-
-    private ArrayValue consumeArray(Value value){
-        if(value.type() == Types.ARRAY){
-            return (ArrayValue) value;
-        }
-        throw new TypeException("Not array variable");
-    }
-
     @Override
     public void accept(Visitor visitor) {
         visitor.visit(this);
