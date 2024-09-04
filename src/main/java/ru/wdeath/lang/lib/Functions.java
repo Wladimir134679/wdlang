@@ -11,6 +11,10 @@ public class Functions {
 
     static {
         functions = new HashMap<>();
+    }
+
+    public static void clearAndInit(){
+        functions.clear();
         functions.put("println", v -> {
             Arguments.checkOrOr(0, 1, v.length);
             if (v.length == 1)

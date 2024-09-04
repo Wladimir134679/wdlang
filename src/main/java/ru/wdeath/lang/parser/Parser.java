@@ -6,20 +6,17 @@ import ru.wdeath.lang.lib.NumberValue;
 import ru.wdeath.lang.lib.StringValue;
 import ru.wdeath.lang.lib.UserDefinedFunction;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Parser {
 
     private static final Token EOF = new Token(TokenType.EOF, "", 0, 0);
 
 
-    private static final Map<TokenType, BinaryExpression.Operator> assignOperator;
+    private static final EnumMap<TokenType, BinaryExpression.Operator> assignOperator;
 
     static {
-        assignOperator = new HashMap<>(BinaryExpression.Operator.values().length + 1);
+        assignOperator = new EnumMap<>(TokenType.class);
         assignOperator.put(TokenType.EQ, null);
         assignOperator.put(TokenType.PLUSEQ, BinaryExpression.Operator.ADD);
         assignOperator.put(TokenType.MINUSEQ, BinaryExpression.Operator.SUBTRACT);

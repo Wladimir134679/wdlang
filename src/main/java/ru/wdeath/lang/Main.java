@@ -2,10 +2,7 @@ package ru.wdeath.lang;
 
 import ru.wdeath.lang.ast.Statement;
 import ru.wdeath.lang.lib.CallStack;
-import ru.wdeath.lang.parser.Lexer;
-import ru.wdeath.lang.parser.Optimizer;
-import ru.wdeath.lang.parser.Parser;
-import ru.wdeath.lang.parser.Token;
+import ru.wdeath.lang.parser.*;
 import ru.wdeath.lang.utils.TimeMeasurement;
 import ru.wdeath.lang.visitors.FunctionAdder;
 
@@ -39,6 +36,8 @@ public class Main {
                 return;
             }
             System.out.println(blockProgram);
+
+            Linter.lint(blockProgram);
 
             measurement.start("Optimization time");
             Statement program = Optimizer.optimize(blockProgram, 9);
