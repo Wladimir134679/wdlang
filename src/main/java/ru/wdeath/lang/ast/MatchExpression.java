@@ -3,6 +3,7 @@ package ru.wdeath.lang.ast;
 import ru.wdeath.lang.exception.ArgumentsMismatchException;
 import ru.wdeath.lang.exception.PatternMatchingException;
 import ru.wdeath.lang.lib.NumberValue;
+import ru.wdeath.lang.lib.ScopeHandler;
 import ru.wdeath.lang.lib.Value;
 import ru.wdeath.lang.lib.Variables;
 
@@ -36,18 +37,18 @@ public class MatchExpression implements Expression, Statement{
             if (p instanceof VariablePattern pattern) {
                 if (pattern.variable.equals("_")) return evalResult(p.result);
 
-                if (Variables.isExists(pattern.variable)) {
-                    if (match(value, Variables.get(pattern.variable)) && optMatches(p)) {
+                if (ScopeHandler.isVariableOrConstantExists(pattern.variable)) {
+                    if (match(value, ScopeHandler.getVariableOrConstant(pattern.variable)) && optMatches(p)) {
                         return evalResult(p.result);
                     }
                 } else {
-                    Variables.define(pattern.variable, value);
+                    ScopeHandler.defineVariableInCurrentScope(pattern.variable, value);
                     if (optMatches(p)) {
                         final Value result = evalResult(p.result);;
-                        Variables.remove(pattern.variable);
+                        ScopeHandler.removeVariable(pattern.variable);
                         return result;
                     }
-                    Variables.remove(pattern.variable);
+                    ScopeHandler.removeVariable(pattern.variable);
                 }
             }
         }

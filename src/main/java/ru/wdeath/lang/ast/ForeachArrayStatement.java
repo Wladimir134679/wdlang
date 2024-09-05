@@ -1,9 +1,11 @@
 package ru.wdeath.lang.ast;
 
-import ru.wdeath.lang.lib.Value;
-import ru.wdeath.lang.lib.Variables;
+import ru.wdeath.lang.exception.TypeException;
+import ru.wdeath.lang.lib.*;
 
-public class ForeachArrayStatement  implements Statement {
+import java.util.Map;
+
+public class ForeachArrayStatement extends InterruptableNode implements Statement {
 
     public final String variable;
     public final Expression container;
@@ -17,10 +19,21 @@ public class ForeachArrayStatement  implements Statement {
 
     @Override
     public void execute() {
-        final Value previousVariableValue = Variables.isExists(variable) ? Variables.get(variable) : null;
-        final Iterable<Value> iterator = (Iterable<Value>) container.eval();
-        for (Value value : iterator) {
-            Variables.set(variable, value);
+        super.interruptionCheck();
+        try (final var ignored = ScopeHandler.closeableScope()) {
+            final Value containerValue = container.eval();
+            switch (containerValue.type()) {
+                case Types.STRING -> iterateString(containerValue.asString());
+                case Types.ARRAY -> iterateArray((ArrayValue) containerValue);
+                case Types.MAP -> iterateMap((MapValue) containerValue);
+                default -> throw new TypeException("Cannot iterate " + Types.typeToString(containerValue.type()));
+            }
+        }
+    }
+
+    private void iterateString(String str) {
+        for (char ch : str.toCharArray()) {
+            ScopeHandler.setVariable(variable, new StringValue(String.valueOf(ch)));
             try {
                 body.execute();
             } catch (BreakStatement bs) {
@@ -29,9 +42,34 @@ public class ForeachArrayStatement  implements Statement {
                 // continue;
             }
         }
-        // Восстанавливаем переменную
-        if (previousVariableValue != null) {
-            Variables.set(variable, previousVariableValue);
+    }
+
+    private void iterateArray(ArrayValue containerValue) {
+        for (Value value : containerValue) {
+            ScopeHandler.setVariable(variable, value);
+            try {
+                body.execute();
+            } catch (BreakStatement bs) {
+                break;
+            } catch (ContinueStatement cs) {
+                // continue;
+            }
+        }
+    }
+
+    private void iterateMap(MapValue containerValue) {
+        for (Map.Entry<Value, Value> entry : containerValue) {
+            ScopeHandler.setVariable(variable, new ArrayValue(new Value[]{
+                    entry.getKey(),
+                    entry.getValue()
+            }));
+            try {
+                body.execute();
+            } catch (BreakStatement bs) {
+                break;
+            } catch (ContinueStatement cs) {
+                // continue;
+            }
         }
     }
 

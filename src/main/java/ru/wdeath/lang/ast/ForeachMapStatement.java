@@ -1,11 +1,11 @@
 package ru.wdeath.lang.ast;
 
-import ru.wdeath.lang.lib.Value;
-import ru.wdeath.lang.lib.Variables;
+import ru.wdeath.lang.exception.TypeException;
+import ru.wdeath.lang.lib.*;
 
 import java.util.Map;
 
-public class ForeachMapStatement implements Statement {
+public class ForeachMapStatement extends InterruptableNode implements Statement {
 
     public final String key, value;
     public final Expression container;
@@ -20,12 +20,22 @@ public class ForeachMapStatement implements Statement {
 
     @Override
     public void execute() {
-        final Value previousVariableValue1 = Variables.isExists(key) ? Variables.get(key) : null;
-        final Value previousVariableValue2 = Variables.isExists(value) ? Variables.get(value) : null;
-        final Iterable<Map.Entry<Value, Value>> iterator = (Iterable<Map.Entry<Value, Value>>) container.eval();
-        for (Map.Entry<Value, Value> entry : iterator) {
-            Variables.set(key, entry.getKey());
-            Variables.set(value, entry.getValue());
+        super.interruptionCheck();
+        try (final var ignored = ScopeHandler.closeableScope()) {
+            final Value containerValue = container.eval();
+            switch (containerValue.type()) {
+                case Types.STRING -> iterateString(containerValue.asString());
+                case Types.ARRAY -> iterateArray((ArrayValue) containerValue);
+                case Types.MAP -> iterateMap((MapValue) containerValue);
+                default -> throw new TypeException("Cannot iterate " + Types.typeToString(containerValue.type()) + " as key, value pair");
+            }
+        }
+    }
+
+    private void iterateString(String str) {
+        for (char ch : str.toCharArray()) {
+            ScopeHandler.setVariable(key, new StringValue(String.valueOf(ch)));
+            ScopeHandler.setVariable(value, NumberValue.of(ch));
             try {
                 body.execute();
             } catch (BreakStatement bs) {
@@ -34,12 +44,34 @@ public class ForeachMapStatement implements Statement {
                 // continue;
             }
         }
-        // Восстанавливаем переменные
-        if (previousVariableValue1 != null) {
-            Variables.set(key, previousVariableValue1);
+    }
+
+    private void iterateArray(ArrayValue containerValue) {
+        int index = 0;
+        for (Value v : containerValue) {
+            ScopeHandler.setVariable(key, v);
+            ScopeHandler.setVariable(value, NumberValue.of(index++));
+            try {
+                body.execute();
+            } catch (BreakStatement bs) {
+                break;
+            } catch (ContinueStatement cs) {
+                // continue;
+            }
         }
-        if (previousVariableValue2 != null) {
-            Variables.set(value, previousVariableValue2);
+    }
+
+    private void iterateMap(MapValue containerValue) {
+        for (Map.Entry<Value, Value> entry : containerValue) {
+            ScopeHandler.setVariable(key, entry.getKey());
+            ScopeHandler.setVariable(value, entry.getValue());
+            try {
+                body.execute();
+            } catch (BreakStatement bs) {
+                break;
+            } catch (ContinueStatement cs) {
+                // continue;
+            }
         }
     }
 

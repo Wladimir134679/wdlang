@@ -9,7 +9,7 @@ import ru.wdeath.lang.lib.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FunctionExpression implements Expression, Statement{
+public class FunctionExpression implements Expression, Statement {
 
     public final Expression expression;
     public final List<Expression> arguments;
@@ -53,9 +53,11 @@ public class FunctionExpression implements Expression, Statement{
     }
 
     private Function getFunction(String name) {
-        if (Functions.isExists(name)) return Functions.getFunction(name);
-        if (Variables.isExists(name)) {
-            final var value = Variables.get(name);
+        if (ScopeHandler.isFunctionExists(name)) {
+            return ScopeHandler.getFunction(name);
+        }
+        if (ScopeHandler.isVariableOrConstantExists(name)) {
+            final Value value = ScopeHandler.getVariableOrConstant(name);
             if (value.type() == Types.FUNCTION)
                 return ((FunctionValue) value).getFunction();
         }

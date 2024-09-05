@@ -16,7 +16,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         try {
-            final var input = Files.readString(Path.of("./classes.wdl"));
+            final var input = Files.readString(Path.of("./program1.wdl"));
             final TimeMeasurement measurement = new TimeMeasurement();
             measurement.start("Tokenize time");
             List<Token> tokenize = Lexer.tokenize(input);

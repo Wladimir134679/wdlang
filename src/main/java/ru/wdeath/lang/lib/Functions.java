@@ -7,15 +7,8 @@ import java.util.Map;
 
 public class Functions {
 
-    private static final Map<String, Function> functions;
-
-    static {
-        functions = new HashMap<>();
-    }
-
     public static void clearAndInit(){
-        functions.clear();
-        functions.put("println", v -> {
+        addFunction("println", v -> {
             ArgumentsUtil.checkOrOr(0, 1, v.length);
             if (v.length == 1)
                 System.out.println(v[0].asString());
@@ -23,18 +16,18 @@ public class Functions {
                 System.out.println();
             return NumberValue.ZERO;
         });
-        functions.put("sin", v -> {
+        addFunction("sin", v -> {
             ArgumentsUtil.check(1, v.length);
             return NumberValue.of(Math.sin(v[0].asDouble()));
         });
-        functions.put("cos", v -> {
+        addFunction("cos", v -> {
             ArgumentsUtil.check(1, v.length);
             return NumberValue.of(Math.sin(v[0].asDouble()));
         });
-        functions.put("newarray", v ->
+        addFunction("newarray", v ->
                 createArray(v, 0)
         );
-        functions.put("assertEquals", v -> {
+        addFunction("assertEquals", v -> {
             ArgumentsUtil.check(2, v.length);
             if(!v[0].equals(v[1]))
                 throw new RuntimeException(v[0].asString() + " != " + v[1].asString());
@@ -59,15 +52,14 @@ public class Functions {
     }
 
     public static boolean isExists(String name) {
-        return functions.containsKey(name);
+        return ScopeHandler.isFunctionExists(name);
     }
 
     public static Function getFunction(String name) {
-        if (!isExists(name)) throw new UnknownFunctionException("Function not found");
-        return functions.get(name);
+        return ScopeHandler.getFunction(name);
     }
 
     public static void addFunction(String name, Function function) {
-        functions.put(name, function);
+        ScopeHandler.setFunction(name, function);
     }
 }
