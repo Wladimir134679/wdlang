@@ -143,8 +143,10 @@ public class Parser {
             // for v : arr || for (v : arr)
             return foreachArrayStatement();
         }
-        if (lookMatch(foreachIndex, TokenType.WORD) && lookMatch(foreachIndex + 1, TokenType.COMMA)
-                && lookMatch(foreachIndex + 2, TokenType.WORD) && lookMatch(foreachIndex + 3, TokenType.COLON)) {
+        if (lookMatch(foreachIndex, TokenType.WORD)
+                && lookMatch(foreachIndex + 1, TokenType.COMMA)
+                && lookMatch(foreachIndex + 2, TokenType.WORD)
+                && lookMatch(foreachIndex + 3, TokenType.COLON)) {
             // for key, value : arr || for (key, value : arr)
             return foreachMapStatement();
         }

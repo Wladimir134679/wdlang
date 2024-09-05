@@ -1,5 +1,7 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.exception.ArgumentsMismatchException;
+import ru.wdeath.lang.exception.TypeException;
 import ru.wdeath.lang.exception.UnknownFunctionException;
 import ru.wdeath.lang.exception.VariableDoesNotExistsException;
 import ru.wdeath.lang.lib.*;
@@ -34,16 +36,20 @@ public class FunctionExpression implements Expression, Statement{
 
     @Override
     public Value eval() {
-        final var listValue = new Value[arguments.size()];
-        for (int i = 0; i < arguments.size(); i++) {
-            listValue[i] = arguments.get(i).eval();
+        final int size = arguments.size();
+        final Value[] values = new Value[size];
+        for (int i = 0; i < size; i++) {
+            values[i] = arguments.get(i).eval();
         }
-
         final Function f = consumeFunction(expression);
         CallStack.enter(expression.toString(), f);
-        final Value result = f.execute(listValue);
-        CallStack.exit();
-        return result;
+        try {
+            final Value result = f.execute(values);
+            CallStack.exit();
+            return result;
+        } catch (ArgumentsMismatchException | TypeException | VariableDoesNotExistsException ex) {
+            throw new RuntimeException(ex.getMessage() + " in function " + expression, ex);
+        }
     }
 
     private Function getFunction(String name) {
