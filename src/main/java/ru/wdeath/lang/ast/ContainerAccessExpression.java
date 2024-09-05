@@ -7,12 +7,26 @@ import java.util.List;
 
 public class ContainerAccessExpression implements Expression, Accessible {
 
-    public final String name;
+    public final Expression root;
     public final List<Expression> indexes;
+    private boolean rootIsVariable;
 
-    public ContainerAccessExpression(String name, List<Expression> indexes) {
-        this.name = name;
-        this.indexes = indexes;
+    public ContainerAccessExpression(String variable, List<Expression> indexes) {
+        this(new VariableExpression(variable), indexes);
+    }
+
+    public ContainerAccessExpression(Expression root, List<Expression> indices) {
+        rootIsVariable = root instanceof VariableExpression;
+        this.root = root;
+        this.indexes = indices;
+    }
+
+    public boolean rootIsVariable() {
+        return rootIsVariable;
+    }
+
+    public Expression getRoot() {
+        return root;
     }
 
     @Override
@@ -57,7 +71,7 @@ public class ContainerAccessExpression implements Expression, Accessible {
     }
 
     public Value getContainer() {
-        Value container = Variables.get(name);
+        Value container = root.eval();
         final int last = indexes.size() - 1;
         for (int i = 0; i < last; i++) {
             final Value index = index(i);
@@ -99,7 +113,7 @@ public class ContainerAccessExpression implements Expression, Accessible {
     @Override
     public String toString() {
         return "ArrayAccessExpression{" +
-                "n='" + name + '\'' +
+                "r='" + root + '\'' +
                 ", i=" + indexes +
                 '}';
     }

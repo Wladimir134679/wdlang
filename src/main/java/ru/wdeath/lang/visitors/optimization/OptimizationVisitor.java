@@ -1,11 +1,14 @@
 package ru.wdeath.lang.visitors.optimization;
 
 import ru.wdeath.lang.ast.*;
+import ru.wdeath.lang.lib.Value;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static ru.wdeath.lang.visitors.VisitorUtils.isValue;
 
 public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
 
@@ -28,9 +31,10 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
 
     @Override
     public Node visit(AssignmentExpression s, T t) {
-        final Node node = s.expression.accept(this, t);
-        if (node != s.expression) {
-            return new AssignmentExpression(s.operation, s.target, (Expression) node);
+        final Node exprNode = s.expression.accept(this, t);
+        final Node targetNode = s.target.accept(this, t);
+        if ( (exprNode != s.expression || targetNode != s.target) && (targetNode instanceof Accessible) ) {
+            return new AssignmentExpression(s.operation, (Accessible) targetNode, (Expression) exprNode);
         }
         return s;
     }
@@ -83,8 +87,9 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
 
     @Override
     public Node visit(ContainerAccessExpression s, T t) {
+        final Node root = s.root.accept(this, t);
+        boolean changed = (root != s.root);
         final List<Expression> indices = new ArrayList<>(s.indexes.size());
-        boolean changed = false;
         for (Expression expression : s.indexes) {
             final Node node = expression.accept(this, t);
             if (node != expression) {
@@ -93,7 +98,7 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
             indices.add((Expression) node);
         }
         if (changed) {
-            return new ContainerAccessExpression(s.name, indices);
+            return new ContainerAccessExpression((Expression) root, indices);
         }
         return s;
     }
@@ -228,11 +233,37 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
         boolean changed = expression != s.expression;
         final List<MatchExpression.Pattern> patterns = new ArrayList<>(s.patterns.size());
         for (MatchExpression.Pattern pattern : s.patterns) {
+            if (pattern instanceof MatchExpression.VariablePattern) {
+                final String variable = ((MatchExpression.VariablePattern) pattern).variable;
+                final VariableExpression expr = new VariableExpression(variable);
+                final Node node = expr.accept(this, t);
+                if (node != expr) {
+                    if (isValue(node)) {
+                        changed = true;
+                        final Value value = ((ValueExpression) node).value;
+                        final Expression optCondition = pattern.optCondition;
+                        final Statement result = pattern.result;
+                        pattern = new MatchExpression.ConstantPattern(value);
+                        pattern.optCondition = optCondition;
+                        pattern.result = result;
+                    }
+                }
+            }
+
             final Node patternResult = pattern.result.accept(this, t);
             if (patternResult != pattern.result) {
                 changed = true;
                 pattern.result = consumeStatement(patternResult);
             }
+
+            if (pattern.optCondition != null) {
+                Node optCond = pattern.optCondition.accept(this, t);
+                if (optCond != pattern.optCondition) {
+                    changed = true;
+                    pattern.optCondition = (Expression) optCond;
+                }
+            }
+
             patterns.add(pattern);
         }
         if (changed) {

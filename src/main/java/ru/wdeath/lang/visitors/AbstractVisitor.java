@@ -28,6 +28,7 @@ public abstract class AbstractVisitor implements Visitor {
 
     @Override
     public void visit(ContainerAccessExpression st) {
+        st.root.accept(this);
         st.indexes.forEach(index -> index.accept(this));
     }
 

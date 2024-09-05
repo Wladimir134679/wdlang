@@ -34,6 +34,12 @@ public class Functions {
         functions.put("newarray", v ->
                 createArray(v, 0)
         );
+        functions.put("assertEquals", v -> {
+            Arguments.check(2, v.length);
+            if(!v[0].equals(v[1]))
+                throw new RuntimeException(v[0].asString() + " != " + v[1].asString());
+            return NumberValue.ZERO;
+        });
     }
 
     public static ArrayValue createArray(Value[] args, int index) {

@@ -62,4 +62,11 @@ public class FunctionValue implements Value{
     public int compareTo(Value o) {
         throw new RuntimeException("Not implemented");
     }
+
+    @Override
+    public String toString() {
+        return "FunctionValue{" +
+                "function=" + function +
+                '}';
+    }
 }

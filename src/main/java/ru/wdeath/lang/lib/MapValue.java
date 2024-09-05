@@ -88,4 +88,11 @@ public class MapValue implements Value, Iterable<Map.Entry<Value, Value>> {
     public int compareTo(Value o) {
         return Integer.compare(map.size(), ((Map<?, ?>) o.raw()).size());
     }
+
+    @Override
+    public String toString() {
+        return "MapValue{" +
+                "map=" + map +
+                '}';
+    }
 }

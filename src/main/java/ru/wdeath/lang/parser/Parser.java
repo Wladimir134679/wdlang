@@ -115,9 +115,9 @@ public class Parser {
         if (match(TokenType.RETURN))
             return new ReturnStatement(expression());
         if (match(TokenType.MATCH))
-            return new ExprStatement(match());
+            return match();
         if (peek(0).getType() == TokenType.WORD && peek(1).getType() == TokenType.LPAREN)
-            return new ExprStatement(function(qualifiedName()));
+            return new ExprStatement(functionChain(qualifiedName()));
         if (match(TokenType.DEF))
             return functionDefine();
 
@@ -256,6 +256,26 @@ public class Parser {
             match(TokenType.COMMA);
         }
         return functionExpression;
+    }
+
+    private Expression functionChain(Expression qualifiedNameExpr) {
+        // f1()()() || f1().f2().f3() || f1().key
+        final Expression expr = function(qualifiedNameExpr);
+        if (lookMatch(0, TokenType.LPAREN)) {
+            return functionChain(expr);
+        }
+        if (lookMatch(0, TokenType.DOT)) {
+            final List<Expression> indices = variableSuffix();
+            if (indices == null | indices.isEmpty()) return expr;
+
+            if (lookMatch(0, TokenType.LPAREN)) {
+                // next function call
+                return functionChain(new ContainerAccessExpression(expr, indices));
+            }
+            // container access
+            return new ContainerAccessExpression(expr, indices);
+        }
+        return expr;
     }
 
     private Expression array() {
@@ -537,14 +557,14 @@ public class Parser {
     private Expression variable() {
         // function(...
         if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.LPAREN)) {
-            return function(new ValueExpression(consume(TokenType.WORD).getText()));
+            return functionChain(new ValueExpression(consume(TokenType.WORD).getText()));
         }
 
         final Expression qualifiedNameExpr = qualifiedName();
         if (qualifiedNameExpr != null) {
             // variable(args) || arr["key"](args) || obj.key(args)
             if (lookMatch(0, TokenType.LPAREN)) {
-                return function(qualifiedNameExpr);
+                return functionChain(qualifiedNameExpr);
             }
             // postfix increment/decrement
             if (match(TokenType.PLUSPLUS)) {
