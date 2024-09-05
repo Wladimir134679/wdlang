@@ -133,3 +133,5 @@ def testBoth() {
 testFunctionChain()
 testCallChain()
 testBoth()
+
+assertEquals(10, "1234567890".length)

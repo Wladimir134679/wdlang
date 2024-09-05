@@ -116,6 +116,8 @@ public class Parser {
             return new ReturnStatement(expression());
         if (match(TokenType.MATCH))
             return match();
+        if (match(TokenType.CLASS))
+            return classDeclaration();
         if (peek(0).getType() == TokenType.WORD && peek(1).getType() == TokenType.LPAREN)
             return new ExprStatement(functionChain(qualifiedName()));
         if (match(TokenType.DEF))
@@ -241,6 +243,30 @@ public class Parser {
         return new MatchExpression(expression, patterns);
     }
 
+    private Statement classDeclaration() {
+        // class Name {
+        //   x = 123
+        //   str = ""
+        //   def method() = str
+        // }
+        final String name = consume(TokenType.WORD).getText();
+        final ClassDeclarationStatement classDeclaration = new ClassDeclarationStatement(name);
+        consume(TokenType.LBRACE);
+        do {
+            if (match(TokenType.DEF)) {
+                classDeclaration.addMethod(functionDefine());
+            } else {
+                final AssignmentExpression fieldDeclaration = assignmentStrict();
+                if (fieldDeclaration != null) {
+                    classDeclaration.addField(fieldDeclaration);
+                } else {
+                    throw new ParseException("Class can contain only assignments and function declarations");
+                }
+            }
+        } while (!match(TokenType.RBRACE));
+        return classDeclaration;
+    }
+
     private Statement assignmentStatement() {
         final Expression expression = expression();
         if (expression instanceof Statement) {
@@ -353,7 +379,7 @@ public class Parser {
         return ternary();
     }
 
-    private Expression assignmentStrict() {
+    private AssignmentExpression assignmentStrict() {
         final int position = pos;
         final Expression targetExpr = qualifiedName();
         if (!(targetExpr instanceof Accessible)) {
@@ -507,17 +533,32 @@ public class Parser {
     }
 
     private Expression multiplicative() {
-        Expression expr = unary();
+        Expression expr = objectCreation();
         while (true) {
             if (match(TokenType.STAR))
-                expr = new BinaryExpression(BinaryExpression.Operator.MULTIPLY, expr, unary());
+                expr = new BinaryExpression(BinaryExpression.Operator.MULTIPLY, expr, objectCreation());
             else if (match(TokenType.SLASH))
-                expr = new BinaryExpression(BinaryExpression.Operator.DIVIDE, expr, unary());
+                expr = new BinaryExpression(BinaryExpression.Operator.DIVIDE, expr, objectCreation());
             else if (match(TokenType.PERCENT))
-                expr = new BinaryExpression(BinaryExpression.Operator.REMAINDER, expr, unary());
+                expr = new BinaryExpression(BinaryExpression.Operator.REMAINDER, expr, objectCreation());
             else break;
         }
         return expr;
+    }
+
+    private Expression objectCreation() {
+        if (match(TokenType.NEW)) {
+            final String className = consume(TokenType.WORD).getText();
+            final List<Expression> args = new ArrayList<>();
+            consume(TokenType.LPAREN);
+            while (!match(TokenType.RPAREN)) {
+                args.add(expression());
+                match(TokenType.COMMA);
+            }
+            return new ObjectCreationExpression(className, args);
+        }
+
+        return unary();
     }
 
     private Expression unary() {
@@ -589,8 +630,25 @@ public class Parser {
 
     private Expression value() {
         final var current = peek(0);
-        if (match(TokenType.TEXT))
-            return new ValueExpression(current.getText());
+        if (match(TokenType.TEXT)) {
+            final ValueExpression strExpr = new ValueExpression(current.getText());
+            // "text".property || "text".func()
+            if (lookMatch(0, TokenType.DOT)) {
+                if (lookMatch(1, TokenType.WORD) && lookMatch(2, TokenType.LPAREN)) {
+                    match(TokenType.DOT);
+                    return functionChain(new ContainerAccessExpression(
+                            strExpr, Collections.singletonList(
+                            new ValueExpression(consume(TokenType.WORD).getText())
+                    )));
+                }
+                final List<Expression> indices = variableSuffix();
+                if (indices.isEmpty()) {
+                    return strExpr;
+                }
+                return new ContainerAccessExpression(strExpr, indices);
+            }
+            return strExpr;
+        }
         if (match(TokenType.NUMBER))
             return new ValueExpression(createNumber(current.getText(), 10));
         if (match(TokenType.HEX_NUMBER))

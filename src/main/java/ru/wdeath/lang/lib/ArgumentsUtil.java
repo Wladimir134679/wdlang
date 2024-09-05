@@ -2,7 +2,7 @@ package ru.wdeath.lang.lib;
 
 import ru.wdeath.lang.exception.ArgumentsMismatchException;
 
-public class Arguments {
+public class ArgumentsUtil {
 
     public static void check(int expected, int got) {
         if (got != expected) throw new ArgumentsMismatchException(String.format(

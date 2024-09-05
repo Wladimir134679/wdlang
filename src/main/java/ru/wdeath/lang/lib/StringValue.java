@@ -1,6 +1,7 @@
 package ru.wdeath.lang.lib;
 
 import ru.wdeath.lang.exception.TypeException;
+import ru.wdeath.lang.exception.UnknownPropertyException;
 
 import java.util.Objects;
 
@@ -33,6 +34,20 @@ public class StringValue implements Value {
         } catch (NumberFormatException e) {
             return 0;
         }
+    }
+
+    public Value access(Value property) {
+        return switch (property.asString()) {
+            // Properties
+            case "length" -> NumberValue.of(length());
+            // Functions
+            case "trim" -> new FunctionValue(args -> new StringValue(value.trim()));
+            default -> throw new UnknownPropertyException(property.asString());
+        };
+    }
+
+    public int length() {
+        return value.length();
     }
 
     @Override

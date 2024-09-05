@@ -16,7 +16,7 @@ public class Functions {
     public static void clearAndInit(){
         functions.clear();
         functions.put("println", v -> {
-            Arguments.checkOrOr(0, 1, v.length);
+            ArgumentsUtil.checkOrOr(0, 1, v.length);
             if (v.length == 1)
                 System.out.println(v[0].asString());
             else
@@ -24,18 +24,18 @@ public class Functions {
             return NumberValue.ZERO;
         });
         functions.put("sin", v -> {
-            Arguments.check(1, v.length);
+            ArgumentsUtil.check(1, v.length);
             return NumberValue.of(Math.sin(v[0].asDouble()));
         });
         functions.put("cos", v -> {
-            Arguments.check(1, v.length);
+            ArgumentsUtil.check(1, v.length);
             return NumberValue.of(Math.sin(v[0].asDouble()));
         });
         functions.put("newarray", v ->
                 createArray(v, 0)
         );
         functions.put("assertEquals", v -> {
-            Arguments.check(2, v.length);
+            ArgumentsUtil.check(2, v.length);
             if(!v[0].equals(v[1]))
                 throw new RuntimeException(v[0].asString() + " != " + v[1].asString());
             return NumberValue.ZERO;

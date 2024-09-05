@@ -53,4 +53,8 @@ public interface Visitor {
     void visit(ForeachMapStatement st);
 
     void visit(MatchExpression st);
+
+    void visit(ObjectCreationExpression st);
+
+    void visit(ClassDeclarationStatement st);
 }

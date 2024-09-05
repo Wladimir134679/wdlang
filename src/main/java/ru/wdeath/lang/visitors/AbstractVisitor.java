@@ -84,7 +84,7 @@ public abstract class AbstractVisitor implements Visitor {
     public void visit(IfStatement st) {
         st.condition.accept(this);
         st.ifStatement.accept(this);
-        if(st.elseStatement != null) {
+        if (st.elseStatement != null) {
             st.elseStatement.accept(this);
         }
     }
@@ -154,5 +154,17 @@ public abstract class AbstractVisitor implements Visitor {
     @Override
     public void visit(MatchExpression st) {
         st.expression.accept(this);
+    }
+
+    @Override
+    public void visit(ObjectCreationExpression st) {
+        for (Expression argument : st.constructorArguments) {
+            argument.accept(this);
+        }
+    }
+
+    @Override
+    public void visit(ClassDeclarationStatement st) {
+
     }
 }

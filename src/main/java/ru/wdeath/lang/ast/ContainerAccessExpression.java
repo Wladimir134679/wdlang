@@ -42,9 +42,12 @@ public class ContainerAccessExpression implements Expression, Accessible {
             case Types.ARRAY:
                 final int arrayIndex = lastIndex.asInt();
                 return ((ArrayValue) container).get(arrayIndex);
-
             case Types.MAP:
                 return ((MapValue) container).get(lastIndex);
+            case Types.STRING:
+                return ((StringValue) container).access(lastIndex);
+            case Types.CLASS:
+                return ((ClassInstanceValue) container).access(lastIndex);
 
             default:
                 throw new TypeException("Array or map expected");

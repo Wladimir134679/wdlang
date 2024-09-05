@@ -19,6 +19,8 @@ public enum TokenType {
     DEF,
     RETURN,
     MATCH, CASE,
+    CLASS,
+    NEW,
 
     PLUS, // +
     MINUS, // -

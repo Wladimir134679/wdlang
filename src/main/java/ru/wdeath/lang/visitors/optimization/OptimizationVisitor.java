@@ -109,6 +109,29 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
     }
 
     @Override
+    public Node visit(ClassDeclarationStatement s, T t) {
+        return s;
+    }
+
+    @Override
+    public Node visit(ObjectCreationExpression s, T t) {
+        final List<Expression> args = new ArrayList<>();
+        boolean changed = false;
+        for (Expression argument : s.constructorArguments) {
+            final Node expr = argument.accept(this, t);
+            if (expr != argument) {
+                changed = true;
+            }
+            args.add((Expression) expr);
+        }
+
+        if (changed) {
+            return new ObjectCreationExpression(s.className, args);
+        }
+        return s;
+    }
+
+    @Override
     public Node visit(DoWhileStatement s, T t) {
         final Node condition = s.condition.accept(this, t);
         final Node statement = s.body.accept(this, t);

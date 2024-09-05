@@ -90,6 +90,8 @@ public class Lexer {
         KEYWORDS.put("return", TokenType.RETURN);
         KEYWORDS.put("match", TokenType.MATCH);
         KEYWORDS.put("case", TokenType.CASE);
+        KEYWORDS.put("class", TokenType.CLASS);
+        KEYWORDS.put("new", TokenType.NEW);
     }
 
     public static List<Token> tokenize(String input) {
