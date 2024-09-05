@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class MapValue implements Value, Iterable<Map.Entry<Value, Value>> {
 
@@ -37,6 +38,19 @@ public class MapValue implements Value, Iterable<Map.Entry<Value, Value>> {
     public int size() {
         return map.size();
     }
+
+    public boolean ifPresent(String key, Consumer<Value> consumer) {
+        return ifPresent(new StringValue(key), consumer);
+    }
+
+    public boolean ifPresent(Value key, Consumer<Value> consumer) {
+        if (map.containsKey(key)) {
+            consumer.accept(map.get(key));
+            return true;
+        }
+        return false;
+    }
+
 
     @Override
     public Object raw() {

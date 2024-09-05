@@ -266,7 +266,7 @@ public class Parser {
         }
         if (lookMatch(0, TokenType.DOT)) {
             final List<Expression> indices = variableSuffix();
-            if (indices == null | indices.isEmpty()) return expr;
+            if (indices.isEmpty()) return expr;
 
             if (lookMatch(0, TokenType.LPAREN)) {
                 // next function call
@@ -354,7 +354,7 @@ public class Parser {
     private Expression assignmentStrict() {
         final int position = pos;
         final Expression targetExpr = qualifiedName();
-        if ((targetExpr == null) || !(targetExpr instanceof Accessible)) {
+        if (!(targetExpr instanceof Accessible)) {
             pos = position;
             return null;
         }
@@ -601,7 +601,7 @@ public class Parser {
         if (!match(TokenType.WORD)) return null;
 
         final List<Expression> indices = variableSuffix();
-        if ((indices == null) || indices.isEmpty()) {
+        if (indices.isEmpty()) {
             return new VariableExpression(current.getText());
         }
         return new ContainerAccessExpression(current.getText(), indices);
@@ -610,7 +610,7 @@ public class Parser {
     private List<Expression> variableSuffix() {
         // .key1.arr1[expr1][expr2].key2
         if (!lookMatch(0, TokenType.DOT) && !lookMatch(0, TokenType.LBRACKET)) {
-            return null;
+            return Collections.emptyList();
         }
         final List<Expression> indices = new ArrayList<>();
         while (lookMatch(0, TokenType.DOT) || lookMatch(0, TokenType.LBRACKET)) {

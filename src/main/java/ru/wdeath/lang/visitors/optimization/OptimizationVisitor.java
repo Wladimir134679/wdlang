@@ -33,7 +33,7 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
     public Node visit(AssignmentExpression s, T t) {
         final Node exprNode = s.expression.accept(this, t);
         final Node targetNode = s.target.accept(this, t);
-        if ( (exprNode != s.expression || targetNode != s.target) && (targetNode instanceof Accessible) ) {
+        if ((exprNode != s.expression || targetNode != s.target) && (targetNode instanceof Accessible)) {
             return new AssignmentExpression(s.operation, (Accessible) targetNode, (Expression) exprNode);
         }
         return s;
@@ -237,16 +237,14 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
                 final String variable = ((MatchExpression.VariablePattern) pattern).variable;
                 final VariableExpression expr = new VariableExpression(variable);
                 final Node node = expr.accept(this, t);
-                if (node != expr) {
-                    if (isValue(node)) {
-                        changed = true;
-                        final Value value = ((ValueExpression) node).value;
-                        final Expression optCondition = pattern.optCondition;
-                        final Statement result = pattern.result;
-                        pattern = new MatchExpression.ConstantPattern(value);
-                        pattern.optCondition = optCondition;
-                        pattern.result = result;
-                    }
+                if ((node != expr) && isValue(node)) {
+                    changed = true;
+                    final Value value = ((ValueExpression) node).value;
+                    final Expression optCondition = pattern.optCondition;
+                    final Statement result = pattern.result;
+                    pattern = new MatchExpression.ConstantPattern(value);
+                    pattern.optCondition = optCondition;
+                    pattern.result = result;
                 }
             }
 
