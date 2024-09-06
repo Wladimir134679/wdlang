@@ -211,6 +211,11 @@ public class Parser {
                 pattern = new MatchExpression.ConstantPattern(
                         NumberValue.of(Double.parseDouble(current.text()))
                 );
+            } else if (match(TokenType.DECIMAL_NUMBER)) {
+                // case 0.5:
+                pattern = new MatchExpression.ConstantPattern(
+                        NumberValue.of(createDecimalNumber(current.text()))
+                );
             } else if (match(TokenType.HEX_NUMBER)) {
                 pattern = new MatchExpression.ConstantPattern(
                         NumberValue.of(Long.parseLong(current.text(), 16))
@@ -648,6 +653,9 @@ public class Parser {
             }
             return strExpr;
         }
+        if (match(TokenType.DECIMAL_NUMBER)) {
+            return new ValueExpression(createDecimalNumber(current.text()));
+        }
         if (match(TokenType.NUMBER))
             return new ValueExpression(createNumber(current.text(), 10));
         if (match(TokenType.HEX_NUMBER))
@@ -697,6 +705,11 @@ public class Parser {
         } catch (NumberFormatException nfe) {
             return Long.parseLong(text, radix);
         }
+    }
+
+    private Number createDecimalNumber(String text) {
+        // Double
+        return Double.parseDouble(text);
     }
 
     private Token consume(TokenType expectedType) {

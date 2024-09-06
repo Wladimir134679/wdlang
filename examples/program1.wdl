@@ -135,3 +135,6 @@ testCallChain()
 testBoth()
 
 assertEquals(10, "1234567890".length)
+
+eee= 3E+10 / 1000000000
+println(eee)
