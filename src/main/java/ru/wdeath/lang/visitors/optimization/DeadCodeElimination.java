@@ -2,7 +2,6 @@ package ru.wdeath.lang.visitors.optimization;
 
 import ru.wdeath.lang.ast.*;
 import ru.wdeath.lang.lib.Types;
-import ru.wdeath.lang.parser.Optimizer;
 
 import java.util.Map;
 
@@ -17,7 +16,7 @@ public class DeadCodeElimination  extends OptimizationVisitor<Map<String, Variab
 
     @Override
     public Node optimize(Node node) {
-        final Map<String, VariableInfo> variableInfos = VariablesGrabber.getInfo(node);
+        final Map<String, VariableInfo> variableInfos = VariablesGrabber.getInfo(node, true);
         return node.accept(this, variableInfos);
     }
 
@@ -88,7 +87,7 @@ public class DeadCodeElimination  extends OptimizationVisitor<Map<String, Variab
 
     @Override
     public Node visit(AssignmentExpression s, Map<String, VariableInfo> t) {
-        if (!isVariable((Node)s.target)) return super.visit(s, t);
+        if (!isVariable(s.target)) return super.visit(s, t);
 
         final String variableName = ((VariableExpression) s.target).name;
         if (!t.containsKey(variableName)) return super.visit(s, t);

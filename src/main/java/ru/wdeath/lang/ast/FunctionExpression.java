@@ -43,13 +43,9 @@ public class FunctionExpression implements Expression, Statement {
         }
         final Function f = consumeFunction(expression);
         CallStack.enter(expression.toString(), f);
-        try {
-            final Value result = f.execute(values);
-            CallStack.exit();
-            return result;
-        } catch (ArgumentsMismatchException | TypeException | VariableDoesNotExistsException ex) {
-            throw new RuntimeException(ex.getMessage() + " in function " + expression, ex);
-        }
+        final Value result = f.execute(values);
+        CallStack.exit();
+        return result;
     }
 
     private Function getFunction(String name) {

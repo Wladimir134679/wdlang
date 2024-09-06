@@ -38,6 +38,7 @@ public class ScopeHandler {
     public static void resetScope() {
         rootScope = new RootScope();
         scope = rootScope;
+        Functions.clearAndInit();
     }
 
     public static void push() {

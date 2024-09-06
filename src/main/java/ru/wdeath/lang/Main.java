@@ -1,67 +1,54 @@
 package ru.wdeath.lang;
 
 import ru.wdeath.lang.ast.Statement;
-import ru.wdeath.lang.lib.CallStack;
-import ru.wdeath.lang.parser.*;
+import ru.wdeath.lang.exception.WdlParserException;
+import ru.wdeath.lang.parser.opttimization.OptimizationStage;
+import ru.wdeath.lang.stages.ScopedStageFactory;
+import ru.wdeath.lang.stages.StagesDataMap;
+import ru.wdeath.lang.stages.impl.*;
 import ru.wdeath.lang.utils.TimeMeasurement;
-import ru.wdeath.lang.visitors.FunctionAdder;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
+        final var measurement = new TimeMeasurement();
+        final var scopedStages = new ScopedStageFactory(measurement::start, measurement::stop);
+        final var input = "./examples/program1.wdl";
+        final var stagesData = new StagesDataMap();
         try {
-            final var input = Files.readString(Path.of("./examples/program1.wdl"));
-            final TimeMeasurement measurement = new TimeMeasurement();
-            measurement.start("Tokenize time");
-            List<Token> tokenize = Lexer.tokenize(input);
-            measurement.stop("Tokenize time");
-            for (int i = 0; i < tokenize.size(); i++) {
-                System.out.println(i + " " + tokenize.get(i));
-            }
-            System.out.println("======");
+            stagesData.put(OptimizationStage.TAG_OPTIMIZATION_SUMMARY, true);
+            stagesData.put(SourceLoaderStage.TAG_SOURCE, input);
 
-            measurement.start("Parse time");
-            final var parser = new Parser(tokenize);
-            final var blockProgram = parser.parse();
-            measurement.stop("Parse time");
-
-            if (parser.getParseErrors().hasErrors()) {
-                System.out.println(parser.getParseErrors());
-                parser.getParseErrors().iterator().forEachRemaining(parseError -> parseError.stackTraceElements());
-                return;
-            }
-            System.out.println(blockProgram);
-
-            Linter.lint(blockProgram);
-
-            measurement.start("Optimization time");
-            Statement program = Optimizer.optimize(blockProgram, 9);
-            measurement.stop("Optimization time");
-
-            program.accept(new FunctionAdder());
-
-            measurement.start("Execution time");
-            System.out.println("==Run==");
-            program.execute();
-            System.out.println("==End==");
-            measurement.stop("Execution time");
-            System.out.println(measurement.summary(TimeUnit.MILLISECONDS, true));
+            scopedStages.create("Load source", new SourceLoaderStage())
+                    .then(scopedStages
+                            .create("Lexer", new LexerStage()))
+                    .then(scopedStages
+                            .create("Parser", new ParserStage()))
+                    .thenConditional(true, scopedStages
+                            .create("Optimization", new OptimizationStage(10, true)))
+                    .then(scopedStages
+                            .create("Linter", new LinterStage()))
+                    .then(scopedStages
+                            .create("Function adding", new FunctionAddingStage()))
+                    .then(scopedStages
+                            .create("Execution", new ExecutionStage()))
+                    .perform(stagesData, input);
+        } catch (WdlParserException ex) {
+            final var error = new ParseErrorsFormatterStage()
+                    .perform(stagesData, ex.getParseErrors());
+            System.err.println(error);
         }catch (Exception ex){
-            handleException(Thread.currentThread(), ex);
+            ex.printStackTrace();
+        }finally {
+            System.out.println();
+            System.out.println(stagesData.getOrDefault(OptimizationStage.TAG_OPTIMIZATION_SUMMARY, ""));
         }
+
+        System.out.println("======================");
+        System.out.println(measurement.summary(TimeUnit.MILLISECONDS, true));
     }
 
-    public static void handleException(Thread thread, Throwable throwable) {
-        System.err.printf("%s in %s\n", throwable.getMessage(), thread.getName());
-        for (CallStack.CallInfo call : CallStack.getCalls()) {
-            System.err.printf("\tat %s\n", call);
-        }
-        throwable.printStackTrace();
-    }
 }

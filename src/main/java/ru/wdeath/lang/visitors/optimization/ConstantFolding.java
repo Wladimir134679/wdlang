@@ -2,7 +2,6 @@ package ru.wdeath.lang.visitors.optimization;
 
 import ru.wdeath.lang.ast.*;
 import ru.wdeath.lang.exception.OperationIsNotSupportedException;
-import ru.wdeath.lang.parser.Optimizer;
 import ru.wdeath.lang.visitors.VisitorUtils;
 
 import java.util.HashSet;
