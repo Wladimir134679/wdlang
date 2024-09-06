@@ -120,11 +120,17 @@ public class Parser {
         if (match(TokenType.CLASS))
             return classDeclaration();
         if (peek(0).type() == TokenType.WORD && peek(1).type() == TokenType.LPAREN)
-            return new ExprStatement(functionChain(qualifiedName()));
+            return functionCallStatement();
         if (match(TokenType.DEF))
             return functionDefine();
 
         return assignmentStatement();
+    }
+
+    private ExprStatement functionCallStatement() {
+        return new ExprStatement(
+                functionChain(new ValueExpression(consume(TokenType.WORD).text()))
+        );
     }
 
     private Statement whileStatement() {

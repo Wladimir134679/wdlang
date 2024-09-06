@@ -61,15 +61,11 @@ public class FunctionExpression implements Expression, Statement {
     }
 
     private Function consumeFunction(Expression expr) {
-        try {
-            final Value value = expr.eval();
-            if (value.type() == Types.FUNCTION) {
-                return ((FunctionValue) value).getFunction();
-            }
-            return getFunction(value.asString());
-        } catch (VariableDoesNotExistsException ex) {
-            return getFunction(ex.getVariable());
+        final Value value = expr.eval();
+        if (value.type() == Types.FUNCTION) {
+            return ((FunctionValue) value).getFunction();
         }
+        return getFunction(value.asString());
     }
 
     @Override
