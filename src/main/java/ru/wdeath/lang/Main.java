@@ -16,7 +16,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         try {
-            final var input = Files.readString(Path.of("./classes.wdl"));
+            final var input = Files.readString(Path.of("./examples/program1.wdl"));
             final TimeMeasurement measurement = new TimeMeasurement();
             measurement.start("Tokenize time");
             List<Token> tokenize = Lexer.tokenize(input);
@@ -33,7 +33,7 @@ public class Main {
 
             if (parser.getParseErrors().hasErrors()) {
                 System.out.println(parser.getParseErrors());
-                parser.getParseErrors().iterator().forEachRemaining(parseError -> parseError.getException().printStackTrace());
+                parser.getParseErrors().iterator().forEachRemaining(parseError -> parseError.exception().printStackTrace());
                 return;
             }
             System.out.println(blockProgram);

@@ -11,87 +11,90 @@ public class Lexer {
 
     private static final String OPERATION_CHARS = "+-*/()=<>!&|{},[]%?:~^.";
 
-    private static final Map<String, TokenType> OPERATORS = new HashMap<>();
+    private static final Map<String, TokenType> OPERATORS;
 
     static {
-        OPERATORS.put("+", TokenType.PLUS);
-        OPERATORS.put("-", TokenType.MINUS);
-        OPERATORS.put("*", TokenType.STAR);
-        OPERATORS.put("/", TokenType.SLASH);
-        OPERATORS.put("(", TokenType.LPAREN);
-        OPERATORS.put(")", TokenType.RPAREN);
-        OPERATORS.put("{", TokenType.LBRACE);
-        OPERATORS.put("}", TokenType.RBRACE);
-        OPERATORS.put("[", TokenType.LBRACKET);
-        OPERATORS.put("]", TokenType.RBRACKET);
-        OPERATORS.put("=", TokenType.EQ);
-        OPERATORS.put("<", TokenType.LT);
-        OPERATORS.put(">", TokenType.GT);
+        final Map<String, TokenType> operators = new HashMap<>();
+        operators.put("+", TokenType.PLUS);
+        operators.put("-", TokenType.MINUS);
+        operators.put("*", TokenType.STAR);
+        operators.put("/", TokenType.SLASH);
+        operators.put("(", TokenType.LPAREN);
+        operators.put(")", TokenType.RPAREN);
+        operators.put("{", TokenType.LBRACE);
+        operators.put("}", TokenType.RBRACE);
+        operators.put("[", TokenType.LBRACKET);
+        operators.put("]", TokenType.RBRACKET);
+        operators.put("=", TokenType.EQ);
+        operators.put("<", TokenType.LT);
+        operators.put(">", TokenType.GT);
 
-        OPERATORS.put("%", TokenType.PERCENT);
-        OPERATORS.put(",", TokenType.COMMA);
-        OPERATORS.put(".", TokenType.DOT);
-        OPERATORS.put("?", TokenType.QUESTION);
-        OPERATORS.put(":", TokenType.COLON);
+        operators.put("%", TokenType.PERCENT);
+        operators.put(",", TokenType.COMMA);
+        operators.put(".", TokenType.DOT);
+        operators.put("?", TokenType.QUESTION);
+        operators.put(":", TokenType.COLON);
 
-        OPERATORS.put("!", TokenType.EXCL);
-        OPERATORS.put("&", TokenType.AMP);
-        OPERATORS.put("|", TokenType.BAR);
+        operators.put("!", TokenType.EXCL);
+        operators.put("&", TokenType.AMP);
+        operators.put("|", TokenType.BAR);
 
-        OPERATORS.put("==", TokenType.EQEQ);
-        OPERATORS.put("!=", TokenType.EXCLEQ);
-        OPERATORS.put("<=", TokenType.LTEQ);
-        OPERATORS.put(">=", TokenType.GTEQ);
+        operators.put("==", TokenType.EQEQ);
+        operators.put("!=", TokenType.EXCLEQ);
+        operators.put("<=", TokenType.LTEQ);
+        operators.put(">=", TokenType.GTEQ);
 
-        OPERATORS.put("::", TokenType.COLONCOLON);
+        operators.put("::", TokenType.COLONCOLON);
 
-        OPERATORS.put("+=", TokenType.PLUSEQ);
-        OPERATORS.put("-=", TokenType.MINUSEQ);
-        OPERATORS.put("*=", TokenType.STAREQ);
-        OPERATORS.put("/=", TokenType.SLASHEQ);
-        OPERATORS.put("%=", TokenType.PERCENTEQ);
-        OPERATORS.put("&=", TokenType.AMPEQ);
-        OPERATORS.put("^=", TokenType.CARETEQ);
-        OPERATORS.put("|=", TokenType.BAREQ);
-        OPERATORS.put("::=", TokenType.COLONCOLONEQ);
-        OPERATORS.put("<<=", TokenType.LTLTEQ);
-        OPERATORS.put(">>=", TokenType.GTGTEQ);
-        OPERATORS.put(">>>=", TokenType.GTGTGTEQ);
+        operators.put("+=", TokenType.PLUSEQ);
+        operators.put("-=", TokenType.MINUSEQ);
+        operators.put("*=", TokenType.STAREQ);
+        operators.put("/=", TokenType.SLASHEQ);
+        operators.put("%=", TokenType.PERCENTEQ);
+        operators.put("&=", TokenType.AMPEQ);
+        operators.put("^=", TokenType.CARETEQ);
+        operators.put("|=", TokenType.BAREQ);
+        operators.put("::=", TokenType.COLONCOLONEQ);
+        operators.put("<<=", TokenType.LTLTEQ);
+        operators.put(">>=", TokenType.GTGTEQ);
+        operators.put(">>>=", TokenType.GTGTGTEQ);
 
-        OPERATORS.put("++", TokenType.PLUSPLUS);
-        OPERATORS.put("--", TokenType.MINUSMINUS);
+        operators.put("++", TokenType.PLUSPLUS);
+        operators.put("--", TokenType.MINUSMINUS);
 
 
-        OPERATORS.put("~", TokenType.TILDE);
-        OPERATORS.put("^", TokenType.CARET);
-        OPERATORS.put("^^", TokenType.CARETCARET);
-        OPERATORS.put(">>", TokenType.GTGT);
-        OPERATORS.put("<<", TokenType.LTLT);
-        OPERATORS.put(">>>", TokenType.GTGTGT);
+        operators.put("~", TokenType.TILDE);
+        operators.put("^", TokenType.CARET);
+        operators.put("^^", TokenType.CARETCARET);
+        operators.put(">>", TokenType.GTGT);
+        operators.put("<<", TokenType.LTLT);
+        operators.put(">>>", TokenType.GTGTGT);
 
-        OPERATORS.put("&&", TokenType.AMPAMP);
-        OPERATORS.put("||", TokenType.BARBAR);
+        operators.put("&&", TokenType.AMPAMP);
+        operators.put("||", TokenType.BARBAR);
 
+        OPERATORS = Map.copyOf(operators);
     }
 
     private static final Map<String, TokenType> KEYWORDS;
 
     static {
-        KEYWORDS = new HashMap<>();
-        KEYWORDS.put("print", TokenType.PRINT);
-        KEYWORDS.put("if", TokenType.IF);
-        KEYWORDS.put("else", TokenType.ELSE);
-        KEYWORDS.put("while", TokenType.WHILE);
-        KEYWORDS.put("for", TokenType.FOR);
-        KEYWORDS.put("do", TokenType.DO);
-        KEYWORDS.put("break", TokenType.BREAK);
-        KEYWORDS.put("continue", TokenType.CONTINUE);
-        KEYWORDS.put("def", TokenType.DEF);
-        KEYWORDS.put("return", TokenType.RETURN);
-        KEYWORDS.put("match", TokenType.MATCH);
-        KEYWORDS.put("case", TokenType.CASE);
-        KEYWORDS.put("class", TokenType.CLASS);
-        KEYWORDS.put("new", TokenType.NEW);
+        final Map<String, TokenType> keywords = new HashMap<>();
+        keywords.put("print", TokenType.PRINT);
+        keywords.put("if", TokenType.IF);
+        keywords.put("else", TokenType.ELSE);
+        keywords.put("while", TokenType.WHILE);
+        keywords.put("for", TokenType.FOR);
+        keywords.put("do", TokenType.DO);
+        keywords.put("break", TokenType.BREAK);
+        keywords.put("continue", TokenType.CONTINUE);
+        keywords.put("def", TokenType.DEF);
+        keywords.put("return", TokenType.RETURN);
+        keywords.put("match", TokenType.MATCH);
+        keywords.put("case", TokenType.CASE);
+        keywords.put("class", TokenType.CLASS);
+        keywords.put("new", TokenType.NEW);
+        KEYWORDS = Map.copyOf(keywords);
     }
 
     public static List<Token> tokenize(String input) {
@@ -111,31 +114,91 @@ public class Lexer {
         this.length = input.length();
         this.pos = 0;
         this.tokens = new ArrayList<>();
-        this.buffer = new StringBuilder();
+        this.buffer = new StringBuilder(40);
         row = col = 1;
     }
 
     public List<Token> tokenize() {
         while (pos < length) {
+            // Fast path for skipping whitespaces
+            while (Character.isWhitespace(peek(0))) {
+                next();
+            }
             final var current = peek(0);
             if (Character.isDigit(current)) tokenizeNumber();
-            else if (Character.isJavaIdentifierStart(current)) tokenizeWorld();
-            else if (current == '#') {
-                next();
-                tokenizeHexNumber();
-            } else if (current == '"') {
-                tokenizeText();
-            } else if (OPERATION_CHARS.indexOf(current) != -1) {
+            else if (isIdentifierStart(current)) tokenizeWorld();
+            else if (current == '#') tokenizeHexNumber(1);
+            else if (current == '"') tokenizeText();
+            else if (OPERATION_CHARS.indexOf(current) != -1) {
                 tokenizeOperation();
             } else {
-                next();
+                skip();
             }
         }
         return tokens;
     }
 
-    private void tokenizeHexNumber() {
-        clearBuffer();
+    private void tokenizeNumber() {
+        final var buffer = createBuffer();
+        final var startPos = markPos();
+        char current = peek(0);
+        if (current == '0' && (peek(1) == 'x' || (peek(1) == 'X'))) {
+            tokenizeHexNumber(2);
+            return;
+        }
+        boolean hasDot = false;
+        while (true) {
+            if (current == '.') {
+                if (hasDot) throw error("Invalid float number");
+                hasDot = true;
+            } else if (current == 'e' || current == 'E') {
+                int exp = subTokenizeScientificNumber();
+                buffer.append(current).append(exp);
+                break;
+            } else if (!Character.isDigit(current))
+                break;
+            buffer.append(current);
+            current = next();
+        }
+        addToken(TokenType.NUMBER, buffer.toString(), startPos);
+    }
+
+    private int subTokenizeScientificNumber() {
+        int sign = 1;
+        switch (next()) {
+            case '-':
+                sign = -1;
+            case '+':
+                skip();
+                break;
+        }
+
+        boolean hasValue = false;
+        char current = peek(0);
+        while (current == '0') {
+            hasValue = true;
+            current = next();
+        }
+        int result = 0;
+        int position = 0;
+        while (Character.isDigit(current)) {
+            result = result * 10 + (current - '0');
+            current = next();
+            position++;
+        }
+        if (position == 0 && !hasValue) throw error("Empty floating point exponent");
+        if (position >= 4) {
+            if (sign > 0) throw error("Float number too large");
+            else throw error("Float number too small");
+        }
+        return sign * result;
+    }
+
+    private void tokenizeHexNumber(int skipChars) {
+        final var buffer = createBuffer();
+        final Pos startPos = markPos();
+        // Skip HEX prefix 0x or #
+        for (int i = 0; i < skipChars; i++) next();
         char current = peek(0);
         while (isHexNumber(current) || (current == '_')) {
             if (current != '_') {
@@ -145,7 +208,7 @@ public class Lexer {
             current = next();
         }
         if (!buffer.isEmpty()) {
-            addToken(TokenType.HEX_NUMBER, buffer.toString());
+            addToken(TokenType.HEX_NUMBER, buffer.toString(), startPos);
         }
     }
 
@@ -155,47 +218,22 @@ public class Lexer {
                 || ('A' <= current && current <= 'F');
     }
 
-    private void tokenizeNumber() {
-        clearBuffer();
-        char current = peek(0);
-        if (current == '0' && (peek(1) == 'x' || (peek(1) == 'X'))) {
-            next();
-            next();
-            tokenizeHexNumber();
-            return;
-        }
-        while (true) {
-            if (current == '.') {
-                if (buffer.indexOf(".") != -1) throw error("Invalid float number");
-                ;
-            } else if (!Character.isDigit(current))
-                break;
-            buffer.append(current);
-            current = next();
-        }
-        addToken(TokenType.NUMBER, buffer.toString());
-    }
-
     private void tokenizeOperation() {
         char current = peek(0);
         if (current == '/') {
             if (peek(1) == '/') {
-                next();
-                next();
                 tokenizeComment();
                 return;
             } else if (peek(1) == '*') {
-                next();
-                next();
                 tokenizeMultilineComment();
                 return;
             }
         }
-        clearBuffer();
+        final Pos startPos = markPos();
+        final var buffer = createBuffer();
         while (true) {
-            final var text = buffer.toString();
-            if (!OPERATORS.containsKey(text + current) && !text.isEmpty()) {
-                addToken(OPERATORS.get(text));
+            if (!buffer.isEmpty() && !OPERATORS.containsKey(buffer.toString() + current)) {
+                addToken(OPERATORS.get(buffer.toString()), startPos);
                 return;
             }
             buffer.append(current);
@@ -204,25 +242,25 @@ public class Lexer {
     }
 
     private void tokenizeWorld() {
-        clearBuffer();
+        final var buffer = createBuffer();
+        final Pos startPos = markPos();
         char current = peek(0);
-        while (true) {
-            if (!Character.isLetterOrDigit(current) && (current != '_') && (current != '$'))
-                break;
+        while (isIdentifierPart(current)) {
             buffer.append(current);
             current = next();
         }
         String word = buffer.toString();
         if (KEYWORDS.containsKey(word)) {
-            addToken(KEYWORDS.get(word));
+            addToken(KEYWORDS.get(word), startPos);
         } else {
-            addToken(TokenType.WORD, word);
+            addToken(TokenType.WORD, word, startPos);
         }
     }
 
     private void tokenizeText() {
-        next();// Skip "
-        clearBuffer();
+        final Pos startPos = markPos();
+        skip();// Skip "
+        final var buffer = createBuffer();
         char current = peek(0);
         while (true) {
             if (current == '\0') throw error("Reached end of file while parsing text string.");
@@ -277,36 +315,44 @@ public class Lexer {
             buffer.append(current);
             current = next();
         }
-        next(); // Skip "
-        addToken(TokenType.TEXT, buffer.toString());
+        skip(); // Skip "
+        addToken(TokenType.TEXT, buffer.toString(), startPos);
     }
 
     private void tokenizeMultilineComment() {
+        skip(); // /
+        skip(); // *
         char current = peek(0);
-        while (true) {
+        while (current != '*' || peek(1) != '/') {
             if (current == '\0') throw error("Missing close tag");
-            if (current == '*' && peek(1) == '/') break;
             current = next();
         }
-        next(); // *
-        next(); // /
+        skip(); // *
+        skip(); // /
     }
 
     private void tokenizeComment() {
+        skip(); // /
+        skip(); // /
         char current = peek(0);
         while ("\n\r\0".indexOf(current) == -1) {
             current = next();
         }
     }
 
-    private char next() {
-        pos++;
-        final char result = peek(0);
+    private void skip() {
+        if (pos >= length) return;
+        final char result = input.charAt(pos);
         if (result == '\n') {
             row++;
             col = 1;
         } else col++;
-        return result;
+        pos++;
+    }
+
+    private char next() {
+        skip();
+        return peek(0);
     }
 
     private char peek(int relativePosition) {
@@ -315,19 +361,32 @@ public class Lexer {
         return input.charAt(position);
     }
 
+    private Pos markPos() {
+        return new Pos(row, col);
+    }
+
     private LexerException error(String text) {
-        return new LexerException(row, col, text);
+        return new LexerException(new Pos(row, col), text);
     }
 
-    private void clearBuffer() {
+    private StringBuilder createBuffer() {
         buffer.setLength(0);
+        return buffer;
     }
 
-    private void addToken(TokenType type) {
-        this.addToken(type, "");
+    private void addToken(TokenType type, Pos startPos) {
+        this.addToken(type, "", startPos);
     }
 
-    private void addToken(TokenType type, String text) {
-        tokens.add(new Token(type, text, row, col));
+    private void addToken(TokenType type, String text, Pos startPos) {
+        tokens.add(new Token(type, text, startPos));
+    }
+
+    private boolean isIdentifierStart(char current) {
+        return (Character.isLetter(current) || (current == '_') || (current == '$'));
+    }
+
+    private boolean isIdentifierPart(char current) {
+        return (Character.isLetterOrDigit(current) || (current == '_') || (current == '$'));
     }
 }
