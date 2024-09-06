@@ -16,6 +16,10 @@ public class ScopeHandler {
         ScopeHandler.resetScope();
     }
 
+    static RootScope rootScope() {
+        return rootScope;
+    }
+
     public static Map<String, Value> variables() {
         return scope.getVariables();
     }
@@ -75,12 +79,20 @@ public class ScopeHandler {
 
 
     public static boolean isVariableOrConstantExists(String name) {
+        Value constant = rootScope().getConstant(name);
+        if (constant != null) {
+            return true;
+        }
         synchronized (lock) {
             return findScope(name).isFound;
         }
     }
 
     public static Value getVariableOrConstant(String name) {
+        Value constant = rootScope().getConstant(name);
+        if (constant != null) {
+            return constant;
+        }
         synchronized (lock) {
             final ScopeFindData scopeData = findScope(name);
             if (scopeData.isFound) {

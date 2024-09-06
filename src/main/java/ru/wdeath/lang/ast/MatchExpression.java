@@ -40,13 +40,12 @@ public class MatchExpression implements Expression, Statement{
                         return evalResult(p.result);
                     }
                 } else {
-                    ScopeHandler.defineVariableInCurrentScope(pattern.variable, value);
-                    if (optMatches(p)) {
-                        final Value result = evalResult(p.result);;
-                        ScopeHandler.removeVariable(pattern.variable);
-                        return result;
+                    try (final var ignored = ScopeHandler.closeableScope()) {
+                        ScopeHandler.defineVariableInCurrentScope(pattern.variable, value);
+                        if (optMatches(p)) {
+                            return evalResult(p.result);
+                        }
                     }
-                    ScopeHandler.removeVariable(pattern.variable);
                 }
             }
         }
