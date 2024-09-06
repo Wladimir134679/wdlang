@@ -1,6 +1,6 @@
 package ru.wdeath.lang.exception;
 
-public class UnknownPropertyException extends RuntimeException {
+public class UnknownPropertyException extends WdlRuntimeException {
 
     private final String propertyName;
 

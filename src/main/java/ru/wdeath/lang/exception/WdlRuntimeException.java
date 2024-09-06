@@ -1,7 +1,9 @@
 package ru.wdeath.lang.exception;
 
 public class WdlRuntimeException extends RuntimeException{
+
     public WdlRuntimeException() {
+        super();
     }
 
     public WdlRuntimeException(String message) {

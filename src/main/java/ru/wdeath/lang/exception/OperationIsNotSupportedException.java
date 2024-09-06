@@ -1,6 +1,6 @@
 package ru.wdeath.lang.exception;
 
-public class OperationIsNotSupportedException extends RuntimeException{
+public class OperationIsNotSupportedException extends WdlRuntimeException{
 
     private final Object operator;
 

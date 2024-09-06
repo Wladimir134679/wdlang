@@ -1,10 +1,20 @@
 package ru.wdeath.lang.parser;
 
-public record ParseError(Exception exception, Pos pos) {
+import java.util.Collections;
+import java.util.List;
 
+public record ParseError(String message, Range range, List<StackTraceElement> stackTraceElements) {
+
+    public ParseError(String message, Range range) {
+        this(message, range, Collections.emptyList());
+    }
+
+    public boolean hasStackTrace() {
+        return !stackTraceElements.isEmpty();
+    }
 
     @Override
     public String toString() {
-        return "ParseError on line " + pos.row() + ": " + exception.getMessage();
+        return "Error on line " + range().start().row() + ": " + message;
     }
 }

@@ -1,6 +1,6 @@
 package ru.wdeath.lang.exception;
 
-public class ArgumentsMismatchException extends RuntimeException{
+public class ArgumentsMismatchException extends WdlRuntimeException{
 
     public ArgumentsMismatchException() {
     }

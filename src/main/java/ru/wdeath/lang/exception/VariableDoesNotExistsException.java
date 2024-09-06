@@ -1,6 +1,6 @@
 package ru.wdeath.lang.exception;
 
-public class VariableDoesNotExistsException extends RuntimeException {
+public class VariableDoesNotExistsException extends WdlRuntimeException {
 
     private final String variable;
 

@@ -1,4 +1,4 @@
 package ru.wdeath.lang.exception;
 
-public class StoppedException extends RuntimeException{
+public class StoppedException extends WdlRuntimeException{
 }

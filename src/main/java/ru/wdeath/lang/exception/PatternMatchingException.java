@@ -1,6 +1,6 @@
 package ru.wdeath.lang.exception;
 
-public class PatternMatchingException extends RuntimeException{
+public class PatternMatchingException extends WdlRuntimeException{
 
     public PatternMatchingException() {
     }

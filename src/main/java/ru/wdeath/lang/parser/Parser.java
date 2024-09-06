@@ -7,6 +7,8 @@ import ru.wdeath.lang.lib.StringValue;
 import ru.wdeath.lang.lib.UserDefinedFunction;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Parser {
 
@@ -34,13 +36,13 @@ public class Parser {
 
     private final List<Token> tokens;
     private final int size;
-    private int pos;
+    private int index;
     private final ParseErrors parseErrors;
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
         this.size = tokens.size();
-        this.pos = 0;
+        this.index = 0;
         parseErrors = new ParseErrors();
     }
 
@@ -54,28 +56,25 @@ public class Parser {
         while (!match(TokenType.EOF)) {
             try {
                 result.addStatement(statement());
+            } catch (ParseException ex) {
+                parseErrors.add(new ParseError(ex.getMessage(), ex.getRange()));
+                recover();
             } catch (Exception ex) {
-                parseErrors.add(ex, getErrorPos());
+                parseErrors.add(new ParseError(ex.getMessage(), getRange(), List.of(ex.getStackTrace())));
                 recover();
             }
         }
         return result;
     }
 
-    private Pos getErrorPos() {
-        if (size == 0) return new Pos(0, 0);
-        if (pos >= size) return tokens.get(size - 1).pos();
-        return tokens.get(pos).pos();
-    }
-
     private void recover() {
-        int preRecoverPosition = pos;
-        for (int i = preRecoverPosition; i <= size; i++) {
-            pos = i;
+        int preRecoverIndex = index;
+        for (int i = preRecoverIndex; i <= size; i++) {
+            index = i;
             try {
                 statement();
                 // successfully parsed,
-                pos = i; // restore position
+                index = i; // restore position
                 return;
             } catch (Exception ex) {
                 // fail
@@ -225,7 +224,7 @@ public class Parser {
             }
 
             if (pattern == null) {
-                throw new ParseException("Wrong pattern in match expression: " + current);
+                throw error("Wrong pattern in match expression: " + current);
             }
             if (match(TokenType.IF)) {
                 pattern.optCondition = expression();
@@ -260,7 +259,7 @@ public class Parser {
                 if (fieldDeclaration != null) {
                     classDeclaration.addField(fieldDeclaration);
                 } else {
-                    throw new ParseException("Class can contain only assignments and function declarations");
+                    throw error("Class can contain only assignments and function declarations");
                 }
             }
         } while (!match(TokenType.RBRACE));
@@ -272,7 +271,7 @@ public class Parser {
         if (expression instanceof Statement) {
             return (Statement) expression;
         }
-        throw new ParseException("Unknown statement " + peek(0));
+        throw error("Unknown statement: " + peek(0));
     }
 
 
@@ -351,7 +350,7 @@ public class Parser {
             } else if (!startsOptionalArgs) {
                 arguments.addRequired(name);
             } else {
-                throw new ParseException("Required argument cannot be after optional");
+                throw error(errorRequiredArgumentAfterOptional());
             }
             match(TokenType.COMMA);
         }
@@ -380,15 +379,15 @@ public class Parser {
     }
 
     private AssignmentExpression assignmentStrict() {
-        final int position = pos;
+        final int position = index;
         final Expression targetExpr = qualifiedName();
         if (!(targetExpr instanceof Accessible)) {
-            pos = position;
+            index = position;
             return null;
         }
         final TokenType currentType = peek(0).type();
         if (!assignOperator.containsKey(currentType)) {
-            pos = position;
+            index = position;
             return null;
         }
         match(currentType);
@@ -653,7 +652,7 @@ public class Parser {
             return new ValueExpression(createNumber(current.text(), 10));
         if (match(TokenType.HEX_NUMBER))
             return new ValueExpression(createNumber(current.text(), 16));
-        throw new ParseException("unknown expression " + current);
+        throw error("Unknown expression: " + current);
     }
 
     private Expression qualifiedName() {
@@ -689,7 +688,7 @@ public class Parser {
 
     private Number createNumber(String text, int radix) {
         // Double
-        if (text.contains(".")) {
+        if (text.contains(".") || text.contains("e") || text.contains("E")) {
             return Double.parseDouble(text);
         }
         // Integer
@@ -700,12 +699,23 @@ public class Parser {
         }
     }
 
-    private Token consume(TokenType type) {
-        Token current = peek(0);
-        if (type != current.type())
-            throw new ParseException("Token " + current + " does not match expected " + type);
-        pos++;
-        return current;
+    private Token consume(TokenType expectedType) {
+        final Token actual = peek(0);
+        if (expectedType != actual.type()) {
+            throw error(errorUnexpectedToken(actual, expectedType));
+        }
+        index++;
+        return actual;
+    }
+
+    private Token consumeOrExplainError(TokenType expectedType, Function<Token, String> errorMessageFunction) {
+        final Token actual = peek(0);
+        if (expectedType != actual.type()) {
+            throw error(errorUnexpectedToken(actual, expectedType)
+                    + errorMessageFunction.apply(actual));
+        }
+        index++;
+        return actual;
     }
 
     private boolean lookMatch(int pos, TokenType type) {
@@ -715,13 +725,63 @@ public class Parser {
     private boolean match(TokenType type) {
         Token current = peek(0);
         if (type != current.type()) return false;
-        pos++;
+        index++;
         return true;
     }
 
     private Token peek(int relativePosition) {
-        final var position = pos + relativePosition;
+        final var position = index + relativePosition;
         if (position >= size) return EOF;
         return tokens.get(position);
+    }
+
+    private Range getRange() {
+        return getRange(index, index);
+    }
+
+    private Range getRange(int startIndex, int endIndex) {
+        if (size == 0) return Range.ZERO;
+        final int last = size - 1;
+        Pos start = tokens.get(Math.min(startIndex, last)).pos();
+        if (startIndex == endIndex) {
+            return new Range(start, start);
+        } else {
+            Pos end = tokens.get(Math.min(endIndex, last)).pos();
+            return new Range(start, end);
+        }
+    }
+
+    private ParseException error(String message) {
+        return new ParseException(message, getRange());
+    }
+
+    private ParseException error(String message, int startIndex, int endIndex) {
+        return new ParseException(message, getRange(startIndex, endIndex));
+    }
+
+    private static String errorUnexpectedToken(Token actual, TokenType expectedType) {
+        return "Expected token with type " + expectedType + ", but found " + actual.shortDescription();
+    }
+
+    private static String errorUnexpectedTokens(Token actual, TokenType... expectedTypes) {
+        String tokenTypes = Arrays.stream(expectedTypes).map(Enum::toString).collect(Collectors.joining(", "));
+        return "Expected tokens with types one of " + tokenTypes + ", but found " + actual.shortDescription();
+    }
+
+    private static String errorDestructuringAssignmentEmpty() {
+        return "Destructuring assignment should contain at least one variable name to assign." +
+                "\nCorrect syntax: extract(v1, , , v4) = ";
+    }
+
+    private static String errorRequiredArgumentAfterOptional() {
+        return "Required argument cannot be placed after optional.";
+    }
+
+    private static String explainUseStatementError(Token current) {
+        String example = current.type().equals(TokenType.TEXT)
+                ? "use " + current.text()
+                : "use std, math";
+        return "\nNote: as of OwnLang 2.0.0 use statement simplifies modules list syntax. " +
+                "Correct syntax: " + example;
     }
 }

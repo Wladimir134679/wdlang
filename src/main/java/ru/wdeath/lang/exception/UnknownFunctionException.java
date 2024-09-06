@@ -1,6 +1,6 @@
 package ru.wdeath.lang.exception;
 
-public class UnknownFunctionException extends RuntimeException{
+public class UnknownFunctionException extends WdlRuntimeException{
 
     private final String functionName;
 

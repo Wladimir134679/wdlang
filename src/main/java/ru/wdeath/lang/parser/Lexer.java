@@ -366,7 +366,7 @@ public class Lexer {
     }
 
     private LexerException error(String text) {
-        return new LexerException(new Pos(row, col), text);
+        return new LexerException(text, new Pos(row, col));
     }
 
     private StringBuilder createBuffer() {

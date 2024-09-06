@@ -33,7 +33,7 @@ public class Main {
 
             if (parser.getParseErrors().hasErrors()) {
                 System.out.println(parser.getParseErrors());
-                parser.getParseErrors().iterator().forEachRemaining(parseError -> parseError.exception().printStackTrace());
+                parser.getParseErrors().iterator().forEachRemaining(parseError -> parseError.stackTraceElements());
                 return;
             }
             System.out.println(blockProgram);
