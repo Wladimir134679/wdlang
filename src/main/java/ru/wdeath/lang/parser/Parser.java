@@ -5,6 +5,8 @@ import ru.wdeath.lang.exception.ParseException;
 import ru.wdeath.lang.lib.NumberValue;
 import ru.wdeath.lang.lib.StringValue;
 import ru.wdeath.lang.lib.UserDefinedFunction;
+import ru.wdeath.lang.parser.error.ParseError;
+import ru.wdeath.lang.parser.error.ParseErrors;
 
 import java.util.*;
 import java.util.function.Function;

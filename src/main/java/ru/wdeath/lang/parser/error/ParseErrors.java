@@ -1,4 +1,4 @@
-package ru.wdeath.lang.parser;
+package ru.wdeath.lang.parser.error;
 
 import java.util.ArrayList;
 import java.util.Iterator;

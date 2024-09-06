@@ -1,6 +1,7 @@
 package ru.wdeath.lang.parser;
 
-import ru.wdeath.lang.exception.LexerException;
+import ru.wdeath.lang.exception.WdlParserException;
+import ru.wdeath.lang.parser.error.ParseError;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -125,15 +126,15 @@ public class Lexer {
                 next();
             }
             final var current = peek(0);
-            if (Character.isDigit(current)) tokenizeNumber();
+            if (isNumber(current)) tokenizeNumber();
             else if (isIdentifierStart(current)) tokenizeWorld();
+            else if (Character.isWhitespace(current)) skip();
             else if (current == '#') tokenizeHexNumber(1);
             else if (current == '"') tokenizeText();
-            else if (OPERATION_CHARS.indexOf(current) != -1) {
-                tokenizeOperation();
-            } else {
-                skip();
-            }
+            else if (current == ';') skip(); // ignore semicolon
+            else if (OPERATION_CHARS.indexOf(current) != -1) tokenizeOperation();
+            else if (current == '\0') break;
+            else throw error("Unknown token " + current, markPos());
         }
         return tokens;
     }
@@ -151,11 +152,11 @@ public class Lexer {
         while (true) {
             if (current == '.') {
                 decimal = true;
-                if (hasDot) throw error("Invalid float number");
+                if (hasDot) throw error("Invalid float number " + buffer, startPos);
                 hasDot = true;
             } else if (current == 'e' || current == 'E') {
                 decimal = true;
-                int exp = subTokenizeScientificNumber();
+                int exp = subTokenizeScientificNumber(startPos);
                 buffer.append(current).append(exp);
                 break;
             } else if (!Character.isDigit(current))
@@ -170,7 +171,7 @@ public class Lexer {
         }
     }
 
-    private int subTokenizeScientificNumber() {
+    private int subTokenizeScientificNumber(Pos startPos) {
         int sign = 1;
         switch (next()) {
             case '-':
@@ -193,10 +194,10 @@ public class Lexer {
             current = next();
             position++;
         }
-        if (position == 0 && !hasValue) throw error("Empty floating point exponent");
+        if (position == 0 && !hasValue) throw error("Empty floating point exponent", startPos, markEndPos());
         if (position >= 4) {
-            if (sign > 0) throw error("Float number too large");
-            else throw error("Float number too small");
+            if (sign > 0) throw error("Float number too large", startPos, markEndPos());
+            else throw error("Float number too small", startPos, markEndPos());
         }
         return sign * result;
     }
@@ -214,9 +215,14 @@ public class Lexer {
             }
             current = next();
         }
-        if (!buffer.isEmpty()) {
-            addToken(TokenType.HEX_NUMBER, buffer.toString(), startPos);
-        }
+        if (buffer.isEmpty()) throw error("Empty HEX value", startPos);
+        if (peek(-1) == '_') throw error("HEX value cannot end with _", startPos, markEndPos());
+        addToken(TokenType.HEX_NUMBER, buffer.toString(), startPos);
+
+    }
+
+    private static boolean isNumber(char current) {
+        return ('0' <= current && current <= '9');
     }
 
     private static boolean isHexNumber(char current) {
@@ -270,7 +276,7 @@ public class Lexer {
         final var buffer = createBuffer();
         char current = peek(0);
         while (true) {
-            if (current == '\0') throw error("Reached end of file while parsing text string.");
+            if (current == '\0') throw error("Reached end of file while parsing text string.", startPos, markEndPos());
             if (current == '\\') {
                 current = next();
                 switch (current) {
@@ -327,11 +333,12 @@ public class Lexer {
     }
 
     private void tokenizeMultilineComment() {
+        final Pos startPos = markPos();
         skip(); // /
         skip(); // *
         char current = peek(0);
         while (current != '*' || peek(1) != '/') {
-            if (current == '\0') throw error("Missing close tag");
+            if (current == '\0') throw error("Missing close tag", startPos, markEndPos());
             current = next();
         }
         skip(); // *
@@ -372,8 +379,16 @@ public class Lexer {
         return new Pos(row, col);
     }
 
-    private LexerException error(String text) {
-        return new LexerException(text, new Pos(row, col));
+    private Pos markEndPos() {
+        return new Pos(row, Math.max(0, col - 1));
+    }
+
+    private WdlParserException error(String text, Pos position) {
+        return error(text, position, position);
+    }
+
+    private WdlParserException error(String text, Pos startPos, Pos endPos) {
+        return new WdlParserException(new ParseError(text, new Range(startPos, endPos)));
     }
 
     private StringBuilder createBuffer() {
