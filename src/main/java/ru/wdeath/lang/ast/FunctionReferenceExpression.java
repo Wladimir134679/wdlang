@@ -2,6 +2,7 @@ package ru.wdeath.lang.ast;
 
 import ru.wdeath.lang.lib.FunctionValue;
 import ru.wdeath.lang.lib.Functions;
+import ru.wdeath.lang.lib.ScopeHandler;
 
 public class FunctionReferenceExpression implements Expression {
 
@@ -13,7 +14,7 @@ public class FunctionReferenceExpression implements Expression {
 
     @Override
     public FunctionValue eval() {
-        return new FunctionValue(Functions.getFunction(name));
+        return new FunctionValue(ScopeHandler.getFunction(name));
     }
 
     @Override

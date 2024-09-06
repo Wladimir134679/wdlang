@@ -55,6 +55,10 @@ public class ScopeHandler {
         return new AutoCloseableScope();
     }
 
+    public static boolean isConstantExists(String name) {
+        return rootScope.containsConstant(name);
+    }
+
     public static boolean isFunctionExists(String name) {
         return rootScope.containsFunction(name);
     }

@@ -1,7 +1,6 @@
 package ru.wdeath.lang.ast;
 
 import ru.wdeath.lang.lib.Value;
-import ru.wdeath.lang.lib.Variables;
 
 public class AssignmentExpression implements Expression, Statement{
 

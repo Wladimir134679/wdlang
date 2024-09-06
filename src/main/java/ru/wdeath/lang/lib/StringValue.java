@@ -36,13 +36,47 @@ public class StringValue implements Value {
         }
     }
 
-    public Value access(Value property) {
-        return switch (property.asString()) {
+    public Value access(Value propertyValue) {
+        final String prop = propertyValue.asString();
+        return switch (prop) {
             // Properties
             case "length" -> NumberValue.of(length());
+            case "lower" -> new StringValue(value.toLowerCase());
+            case "upper" -> new StringValue(value.toUpperCase());
+            case "chars" -> {
+                final Value[] chars = new Value[length()];
+                int i = 0;
+                for (char ch : value.toCharArray()) {
+                    chars[i++] = NumberValue.of(ch);
+                }
+                yield new ArrayValue(chars);
+            }
             // Functions
-            case "trim" -> new FunctionValue(args -> new StringValue(value.trim()));
-            default -> throw new UnknownPropertyException(property.asString());
+            case "trim" -> Converters.voidToString(value::trim);
+            case "startsWith" -> new FunctionValue(args -> {
+                ArgumentsUtil.checkOrOr(1, 2, args.length);
+                int offset = (args.length == 2) ? args[1].asInt() : 0;
+                return NumberValue.fromBoolean(value.startsWith(args[0].asString(), offset));
+            });
+            case "endsWith" -> Converters.stringToBoolean(value::endsWith);
+            case "matches" -> Converters.stringToBoolean(value::matches);
+            case "contains" -> Converters.stringToBoolean(value::contains);
+            case "equalsIgnoreCase" -> Converters.stringToBoolean(value::equalsIgnoreCase);
+            case "isEmpty" -> Converters.voidToBoolean(value::isEmpty);
+
+
+            default -> {
+                if (ScopeHandler.isFunctionExists(prop)) {
+                    final Function f = ScopeHandler.getFunction(prop);
+                    yield new FunctionValue(args -> {
+                        final Value[] newArgs = new Value[args.length + 1];
+                        newArgs[0] = this;
+                        System.arraycopy(args, 0, newArgs, 1, args.length);
+                        return f.execute(newArgs);
+                    });
+                }
+                throw new UnknownPropertyException(prop);
+            }
         };
     }
 

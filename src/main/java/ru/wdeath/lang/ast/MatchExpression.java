@@ -1,11 +1,9 @@
 package ru.wdeath.lang.ast;
 
-import ru.wdeath.lang.exception.ArgumentsMismatchException;
 import ru.wdeath.lang.exception.PatternMatchingException;
 import ru.wdeath.lang.lib.NumberValue;
 import ru.wdeath.lang.lib.ScopeHandler;
 import ru.wdeath.lang.lib.Value;
-import ru.wdeath.lang.lib.Variables;
 
 import java.util.List;
 

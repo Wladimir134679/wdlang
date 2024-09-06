@@ -4,7 +4,6 @@ import ru.wdeath.lang.ast.Statement;
 import ru.wdeath.lang.ast.Visitor;
 import ru.wdeath.lang.lib.Functions;
 import ru.wdeath.lang.lib.ScopeHandler;
-import ru.wdeath.lang.lib.Variables;
 import ru.wdeath.lang.parser.linters.AssignValidator;
 import ru.wdeath.lang.parser.linters.DefaultFunctionsOverrideValidator;
 import ru.wdeath.lang.parser.linters.UseWithNonStringValueValidator;

@@ -3,7 +3,6 @@ package ru.wdeath.lang.ast;
 import ru.wdeath.lang.exception.VariableDoesNotExistsException;
 import ru.wdeath.lang.lib.ScopeHandler;
 import ru.wdeath.lang.lib.Value;
-import ru.wdeath.lang.lib.Variables;
 
 public class VariableExpression implements Expression, Accessible {
 
@@ -20,8 +19,8 @@ public class VariableExpression implements Expression, Accessible {
 
     @Override
     public Value get() {
-        if(!Variables.isExists(name)) throw new VariableDoesNotExistsException(name);
-        return Variables.get(name);
+        if (!ScopeHandler.isVariableOrConstantExists(name)) throw new VariableDoesNotExistsException(name);
+        return ScopeHandler.getVariableOrConstant(name);
     }
 
     @Override

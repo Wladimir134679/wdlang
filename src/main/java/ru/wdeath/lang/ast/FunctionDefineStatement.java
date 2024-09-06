@@ -1,6 +1,7 @@
 package ru.wdeath.lang.ast;
 
 import ru.wdeath.lang.lib.Functions;
+import ru.wdeath.lang.lib.ScopeHandler;
 import ru.wdeath.lang.lib.UserDefinedFunction;
 
 public class FunctionDefineStatement implements Statement{
@@ -17,7 +18,7 @@ public class FunctionDefineStatement implements Statement{
 
     @Override
     public void execute() {
-        Functions.addFunction(name, new UserDefinedFunction(arguments, body));
+        ScopeHandler.setFunction(name, new UserDefinedFunction(arguments, body));
     }
 
     @Override

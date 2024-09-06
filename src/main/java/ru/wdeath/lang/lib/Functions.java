@@ -8,7 +8,7 @@ import java.util.Map;
 public class Functions {
 
     public static void clearAndInit(){
-        addFunction("println", v -> {
+        ScopeHandler.setFunction("println", v -> {
             ArgumentsUtil.checkOrOr(0, 1, v.length);
             if (v.length == 1)
                 System.out.println(v[0].asString());
@@ -16,18 +16,18 @@ public class Functions {
                 System.out.println();
             return NumberValue.ZERO;
         });
-        addFunction("sin", v -> {
+        ScopeHandler.setFunction("sin", v -> {
             ArgumentsUtil.check(1, v.length);
             return NumberValue.of(Math.sin(v[0].asDouble()));
         });
-        addFunction("cos", v -> {
+        ScopeHandler.setFunction("cos", v -> {
             ArgumentsUtil.check(1, v.length);
             return NumberValue.of(Math.sin(v[0].asDouble()));
         });
-        addFunction("newarray", v ->
+        ScopeHandler.setFunction("newarray", v ->
                 createArray(v, 0)
         );
-        addFunction("assertEquals", v -> {
+        ScopeHandler.setFunction("assertEquals", v -> {
             ArgumentsUtil.check(2, v.length);
             if(!v[0].equals(v[1]))
                 throw new RuntimeException(v[0].asString() + " != " + v[1].asString());
@@ -49,17 +49,5 @@ public class Functions {
             }
         }
         return array;
-    }
-
-    public static boolean isExists(String name) {
-        return ScopeHandler.isFunctionExists(name);
-    }
-
-    public static Function getFunction(String name) {
-        return ScopeHandler.getFunction(name);
-    }
-
-    public static void addFunction(String name, Function function) {
-        ScopeHandler.setFunction(name, function);
     }
 }

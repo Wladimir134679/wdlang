@@ -49,6 +49,10 @@ public class ArrayValue implements Value, Iterable<Value>{
         elements[index] = value;
     }
 
+    public int size() {
+        return elements.length;
+    }
+
     @Override
     public Object raw() {
         return elements;

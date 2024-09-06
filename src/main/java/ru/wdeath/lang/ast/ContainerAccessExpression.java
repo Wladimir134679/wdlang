@@ -38,20 +38,16 @@ public class ContainerAccessExpression implements Expression, Accessible {
     public Value get() {
         final Value container = getContainer();
         final Value lastIndex = lastIndex();
-        switch (container.type()) {
-            case Types.ARRAY:
+        return switch (container.type()) {
+            case Types.ARRAY -> {
                 final int arrayIndex = lastIndex.asInt();
-                return ((ArrayValue) container).get(arrayIndex);
-            case Types.MAP:
-                return ((MapValue) container).get(lastIndex);
-            case Types.STRING:
-                return ((StringValue) container).access(lastIndex);
-            case Types.CLASS:
-                return ((ClassInstanceValue) container).access(lastIndex);
-
-            default:
-                throw new TypeException("Array or map expected");
-        }
+                yield ((ArrayValue) container).get(arrayIndex);
+            }
+            case Types.MAP -> ((MapValue) container).get(lastIndex);
+            case Types.STRING -> ((StringValue) container).access(lastIndex);
+            case Types.CLASS -> ((ClassInstanceValue) container).access(lastIndex);
+            default -> throw new TypeException("Array or map expected");
+        };
     }
 
     @Override
@@ -78,19 +74,14 @@ public class ContainerAccessExpression implements Expression, Accessible {
         final int last = indexes.size() - 1;
         for (int i = 0; i < last; i++) {
             final Value index = index(i);
-            switch (container.type()) {
-                case Types.ARRAY:
+            container = switch (container.type()) {
+                case Types.ARRAY -> {
                     final int arrayIndex = index.asInt();
-                    container = ((ArrayValue) container).get(arrayIndex);
-                    break;
-
-                case Types.MAP:
-                    container = ((MapValue) container).get(index);
-                    break;
-
-                default:
-                    throw new TypeException("Array or map expected");
-            }
+                    yield ((ArrayValue) container).get(arrayIndex);
+                }
+                case Types.MAP -> ((MapValue) container).get(index);
+                default -> throw new TypeException("Array or map expected");
+            };
         }
         return container;
     }
