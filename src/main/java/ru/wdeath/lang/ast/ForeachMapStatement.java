@@ -8,10 +8,10 @@ import java.util.Map;
 public class ForeachMapStatement extends InterruptableNode implements Statement {
 
     public final String key, value;
-    public final Expression container;
+    public final Node container;
     public final Statement body;
 
-    public ForeachMapStatement(String key, String value, Expression container, Statement body) {
+    public ForeachMapStatement(String key, String value, Node container, Statement body) {
         this.key = key;
         this.value = value;
         this.container = container;
@@ -19,7 +19,7 @@ public class ForeachMapStatement extends InterruptableNode implements Statement 
     }
 
     @Override
-    public void execute() {
+    public Value eval() {
         super.interruptionCheck();
         try (final var ignored = ScopeHandler.closeableScope()) {
             final Value containerValue = container.eval();
@@ -30,6 +30,7 @@ public class ForeachMapStatement extends InterruptableNode implements Statement 
                 default -> throw new TypeException("Cannot iterate " + Types.typeToString(containerValue.type()) + " as key, value pair");
             }
         }
+        return NumberValue.ZERO;
     }
 
     private void iterateString(String str) {
@@ -37,7 +38,7 @@ public class ForeachMapStatement extends InterruptableNode implements Statement 
             ScopeHandler.setVariable(key, new StringValue(String.valueOf(ch)));
             ScopeHandler.setVariable(value, NumberValue.of(ch));
             try {
-                body.execute();
+                body.eval();
             } catch (BreakStatement bs) {
                 break;
             } catch (ContinueStatement cs) {
@@ -52,7 +53,7 @@ public class ForeachMapStatement extends InterruptableNode implements Statement 
             ScopeHandler.setVariable(key, v);
             ScopeHandler.setVariable(value, NumberValue.of(index++));
             try {
-                body.execute();
+                body.eval();
             } catch (BreakStatement bs) {
                 break;
             } catch (ContinueStatement cs) {
@@ -66,7 +67,7 @@ public class ForeachMapStatement extends InterruptableNode implements Statement 
             ScopeHandler.setVariable(key, entry.getKey());
             ScopeHandler.setVariable(value, entry.getValue());
             try {
-                body.execute();
+                body.eval();
             } catch (BreakStatement bs) {
                 break;
             } catch (ContinueStatement cs) {

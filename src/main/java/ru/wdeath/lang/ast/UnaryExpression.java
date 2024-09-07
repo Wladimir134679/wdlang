@@ -6,9 +6,9 @@ import ru.wdeath.lang.lib.StringValue;
 import ru.wdeath.lang.lib.Types;
 import ru.wdeath.lang.lib.Value;
 
-public class UnaryExpression implements Expression, Statement {
+public class UnaryExpression implements Node, Statement {
 
-    public final Expression expr;
+    public final Node expr;
     public final Operator operation;
 
     public enum Operator {
@@ -34,14 +34,9 @@ public class UnaryExpression implements Expression, Statement {
         }
     }
 
-    public UnaryExpression(Operator operation, Expression expr) {
+    public UnaryExpression(Operator operation, Node expr) {
         this.expr = expr;
         this.operation = operation;
-    }
-
-    @Override
-    public void execute() {
-        eval();
     }
 
     @Override

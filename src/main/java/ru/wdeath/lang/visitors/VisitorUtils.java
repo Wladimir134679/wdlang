@@ -25,6 +25,14 @@ public class VisitorUtils {
         return (node instanceof VariableExpression);
     }
 
+    public static boolean isValueAsInt(Node node, int valueToCheck) {
+        if (!isValue(node)) return false;
+
+        final Value value = ((ValueExpression) node).value;
+        if (value.type() != Types.NUMBER) return false;
+
+        return value.asInt() == valueToCheck;
+    }
 
     public static boolean isIntegerValue(Node node, int valueToCheck) {
         if (!isValue(node)) return false;

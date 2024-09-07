@@ -9,18 +9,18 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class FunctionExpression implements Expression, Statement, SourceLocation {
+public class FunctionExpression implements Node, Statement, SourceLocation {
 
-    public final Expression expression;
-    public final List<Expression> arguments;
+    public final Node expression;
+    public final List<Node> arguments;
     private Range range;
 
-    public FunctionExpression(Expression expression) {
+    public FunctionExpression(Node expression) {
         this.expression = expression;
         this.arguments = new ArrayList<>();
     }
 
-    public FunctionExpression(Expression expression, List<Expression> arguments) {
+    public FunctionExpression(Node expression, List<Node> arguments) {
         this.expression = expression;
         this.arguments = arguments;
     }
@@ -34,15 +34,10 @@ public class FunctionExpression implements Expression, Statement, SourceLocation
         return range;
     }
 
-    public void addArgument(Expression argument) {
+    public void addArgument(Node argument) {
         arguments.add(argument);
     }
 
-
-    @Override
-    public void execute() {
-        eval();
-    }
 
     @Override
     public Value eval() {
@@ -70,7 +65,7 @@ public class FunctionExpression implements Expression, Statement, SourceLocation
         throw new UnknownFunctionException(name, getRange());
     }
 
-    private Function consumeFunction(Expression expr) {
+    private Function consumeFunction(Node expr) {
         final Value value = expr.eval();
         if (value.type() == Types.FUNCTION) {
             return ((FunctionValue) value).getFunction();
@@ -96,7 +91,7 @@ public class FunctionExpression implements Expression, Statement, SourceLocation
         } else {
             sb.append(expression).append('(');
         }
-        final Iterator<Expression> it = arguments.iterator();
+        final Iterator<Node> it = arguments.iterator();
         if (it.hasNext()) {
             sb.append(it.next());
             while (it.hasNext()) {

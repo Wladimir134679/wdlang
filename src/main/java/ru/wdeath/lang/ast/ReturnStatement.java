@@ -4,10 +4,10 @@ import ru.wdeath.lang.lib.Value;
 
 public class ReturnStatement extends RuntimeException implements Statement{
 
-    public final Expression expression;
+    public final Node expression;
     public Value result;
 
-    public ReturnStatement(Expression expression) {
+    public ReturnStatement(Node expression) {
         this.expression = expression;
     }
 
@@ -16,7 +16,7 @@ public class ReturnStatement extends RuntimeException implements Statement{
     }
 
     @Override
-    public void execute() {
+    public Value eval() {
         result = expression.eval();
         throw this;
     }

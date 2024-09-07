@@ -21,7 +21,7 @@ public abstract class AbstractVisitor implements Visitor {
 
     @Override
     public void visit(ArrayExpression st) {
-        for (Expression argument : st.arguments) {
+        for (Node argument : st.arguments) {
             argument.accept(this);
         }
     }
@@ -128,7 +128,7 @@ public abstract class AbstractVisitor implements Visitor {
 
     @Override
     public void visit(MapExpression st) {
-        for (Expression key : st.elements.keySet()) {
+        for (Node key : st.elements.keySet()) {
             key.accept(this);
             st.elements.get(key).accept(this);
         }
@@ -158,7 +158,7 @@ public abstract class AbstractVisitor implements Visitor {
 
     @Override
     public void visit(ObjectCreationExpression st) {
-        for (Expression argument : st.constructorArguments) {
+        for (Node argument : st.constructorArguments) {
             argument.accept(this);
         }
     }

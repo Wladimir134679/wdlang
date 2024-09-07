@@ -1,26 +1,30 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.lib.NumberValue;
+import ru.wdeath.lang.lib.Value;
+
 public class DoWhileStatement implements Statement {
 
-    public final Expression condition;
+    public final Node condition;
     public final Statement body;
 
-    public DoWhileStatement(Expression condition, Statement body) {
+    public DoWhileStatement(Node condition, Statement body) {
         this.condition = condition;
         this.body = body;
     }
 
     @Override
-    public void execute() {
+    public Value eval() {
         do {
             try {
-                body.execute();
+                body.eval();
             } catch (BreakStatement bs) {
                 break;
             } catch (ContinueStatement cs) {
                 //continue;
             }
         } while (condition.eval().asInt() != 0);
+        return NumberValue.ZERO;
     }
 
     @Override

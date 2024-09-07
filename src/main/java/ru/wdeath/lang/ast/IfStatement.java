@@ -1,23 +1,27 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.lib.NumberValue;
+import ru.wdeath.lang.lib.Value;
+
 public class IfStatement implements Statement {
 
-    public final Expression condition;
+    public final Node condition;
     public final Statement ifStatement, elseStatement;
 
-    public IfStatement(Expression condition, Statement ifStatement, Statement elseStatement) {
+    public IfStatement(Node condition, Statement ifStatement, Statement elseStatement) {
         this.condition = condition;
         this.ifStatement = ifStatement;
         this.elseStatement = elseStatement;
     }
 
     @Override
-    public void execute() {
+    public Value eval() {
         final var result = condition.eval().asInt();
         if (result != 0)
-            ifStatement.execute();
+            ifStatement.eval();
         else if (elseStatement != null)
-            elseStatement.execute();
+            elseStatement.eval();
+        return NumberValue.ZERO;
     }
 
     @Override

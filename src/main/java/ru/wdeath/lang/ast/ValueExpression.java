@@ -2,7 +2,7 @@ package ru.wdeath.lang.ast;
 
 import ru.wdeath.lang.lib.*;
 
-public class ValueExpression implements Expression {
+public class ValueExpression implements Node {
 
     public final Value value;
 

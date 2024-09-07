@@ -177,7 +177,7 @@ public class Parser {
         boolean openParen = match(TokenType.LPAREN); // необязательные скобки
         final String variable = consume(TokenType.WORD).text();
         consume(TokenType.COLON);
-        final Expression container = expression();
+        final Node container = expression();
         if (openParen) consume(TokenType.RPAREN); // скобки
         final Statement statement = statementOrBlock();
         return new ForeachArrayStatement(variable, container, statement);
@@ -189,7 +189,7 @@ public class Parser {
         consume(TokenType.COMMA);
         final String value = consume(TokenType.WORD).text();
         consume(TokenType.COLON);
-        final Expression container = expression();
+        final Node container = expression();
         if (openParen) consume(TokenType.RPAREN); // скобки
         final Statement statement = statementOrBlock();
         return new ForeachMapStatement(key, value, container, statement);
@@ -210,7 +210,7 @@ public class Parser {
         //  case pattern1: result1
         //  case pattern2 if extr: result2
         // }
-        final Expression expression = expression();
+        final Node expression = expression();
         consume(TokenType.LBRACE);
         final List<MatchExpression.Pattern> patterns = new ArrayList<>();
         do {
@@ -282,7 +282,7 @@ public class Parser {
     }
 
     private Statement assignmentStatement() {
-        final Expression expression = expression();
+        final Node expression = expression();
         if (expression instanceof Statement) {
             return (Statement) expression;
         }
@@ -290,7 +290,7 @@ public class Parser {
     }
 
 
-    private FunctionExpression function(Expression qualifiedName) {
+    private FunctionExpression function(Node qualifiedName) {
         final var startTokenIndex = index - 1;
         consume(TokenType.LPAREN);
         final var functionExpression = new FunctionExpression(qualifiedName);
@@ -302,29 +302,29 @@ public class Parser {
         return functionExpression;
     }
 
-    private Expression functionChain(Expression qualifiedNameExpr) {
+    private Node functionChain(Node qualifiedNameExpr) {
         // f1()()() || f1().f2().f3() || f1().key
-        final Expression expr = function(qualifiedNameExpr);
+        final Node expr = function(qualifiedNameExpr);
         if (lookMatch(0, TokenType.LPAREN)) {
             return functionChain(expr);
         }
         if (lookMatch(0, TokenType.DOT)) {
-            final List<Expression> indices = variableSuffix();
+            final List<Node> indices = variableSuffix();
             if (indices.isEmpty()) return expr;
 
             if (lookMatch(0, TokenType.LPAREN)) {
                 // next function call
-                return functionChain(new ContainerAccessExpression(expr, indices));
+                return functionChain(new ContainerAccessExpression(expr, indices, getRange()));
             }
             // container access
-            return new ContainerAccessExpression(expr, indices);
+            return new ContainerAccessExpression(expr, indices, getRange());
         }
         return expr;
     }
 
-    private Expression array() {
+    private Node array() {
         consume(TokenType.LBRACKET);
-        final List<Expression> elements = new ArrayList<>();
+        final List<Node> elements = new ArrayList<>();
         while (!match(TokenType.RBRACKET)) {
             elements.add(expression());
             match(TokenType.COMMA);
@@ -332,13 +332,13 @@ public class Parser {
         return new ArrayExpression(elements);
     }
 
-    private Expression map() {
+    private Node map() {
         consume(TokenType.LBRACE);
-        final Map<Expression, Expression> elements = new HashMap<>();
+        final Map<Node, Node> elements = new HashMap<>();
         while (!match(TokenType.RBRACE)) {
-            final Expression key = expression();
+            final Node key = expression();
             consume(TokenType.COLON);
-            final Expression value = expression();
+            final Node value = expression();
             elements.put(key, value);
             match(TokenType.COMMA);
         }
@@ -386,12 +386,12 @@ public class Parser {
     }
 
 
-    private Expression expression() {
+    private Node expression() {
         return assignment();
     }
 
-    private Expression assignment() {
-        final Expression assignment = assignmentStrict();
+    private Node assignment() {
+        final Node assignment = assignmentStrict();
         if (assignment != null) {
             return assignment;
         }
@@ -400,7 +400,7 @@ public class Parser {
 
     private AssignmentExpression assignmentStrict() {
         final int position = index;
-        final Expression targetExpr = qualifiedName();
+        final Node targetExpr = qualifiedName();
         if (!(targetExpr instanceof Accessible)) {
             index = position;
             return null;
@@ -413,13 +413,13 @@ public class Parser {
         match(currentType);
 
         final BinaryExpression.Operator op = assignOperator.get(currentType);
-        final Expression expression = expression();
+        final Node expression = expression();
 
-        return new AssignmentExpression(op, (Accessible) targetExpr, expression);
+        return new AssignmentExpression(op, (Accessible) targetExpr, expression, getRange());
     }
 
-    private Expression ternary() {
-        Expression result = logicalOr();
+    private Node ternary() {
+        Node result = logicalOr();
         if (match(TokenType.QUESTION)) {
             final var expTrue = expression();
             consume(TokenType.COLON);
@@ -429,8 +429,8 @@ public class Parser {
         return result;
     }
 
-    private Expression logicalOr() {
-        Expression left = logicalAnd();
+    private Node logicalOr() {
+        Node left = logicalAnd();
         while (true) {
             if (match(TokenType.BARBAR))
                 left = new ConditionalExpression(ConditionalExpression.Operator.OR, left, logicalAnd());
@@ -439,8 +439,8 @@ public class Parser {
         return left;
     }
 
-    private Expression logicalAnd() {
-        Expression left = bitwiseOr();
+    private Node logicalAnd() {
+        Node left = bitwiseOr();
         while (true) {
             if (match(TokenType.AMPAMP))
                 left = new ConditionalExpression(ConditionalExpression.Operator.AND, left, bitwiseOr());
@@ -450,8 +450,8 @@ public class Parser {
     }
 
 
-    private Expression bitwiseOr() {
-        Expression expression = bitwiseXor();
+    private Node bitwiseOr() {
+        Node expression = bitwiseXor();
 
         while (true) {
             if (match(TokenType.BAR)) {
@@ -464,8 +464,8 @@ public class Parser {
         return expression;
     }
 
-    private Expression bitwiseXor() {
-        Expression expression = bitwiseAnd();
+    private Node bitwiseXor() {
+        Node expression = bitwiseAnd();
 
         while (true) {
             if (match(TokenType.CARET)) {
@@ -478,8 +478,8 @@ public class Parser {
         return expression;
     }
 
-    private Expression bitwiseAnd() {
-        Expression expression = equality();
+    private Node bitwiseAnd() {
+        Node expression = equality();
 
         while (true) {
             if (match(TokenType.AMP)) {
@@ -492,8 +492,8 @@ public class Parser {
         return expression;
     }
 
-    private Expression equality() {
-        Expression left = conditional();
+    private Node equality() {
+        Node left = conditional();
 
         while (true) {
             if (match(TokenType.EQEQ))
@@ -505,8 +505,8 @@ public class Parser {
         return left;
     }
 
-    private Expression conditional() {
-        Expression expr = shift();
+    private Node conditional() {
+        Node expr = shift();
         while (true) {
             if (match(TokenType.LT))
                 expr = new ConditionalExpression(ConditionalExpression.Operator.LT, expr, shift());
@@ -522,8 +522,8 @@ public class Parser {
     }
 
 
-    private Expression shift() {
-        Expression expression = additive();
+    private Node shift() {
+        Node expression = additive();
         while (true) {
             if (match(TokenType.LTLT))
                 expression = new BinaryExpression(BinaryExpression.Operator.LSHIFT, expression, additive());
@@ -537,8 +537,8 @@ public class Parser {
         return expression;
     }
 
-    private Expression additive() {
-        Expression expr = multiplicative();
+    private Node additive() {
+        Node expr = multiplicative();
         while (true) {
             if (match(TokenType.PLUS))
                 expr = new BinaryExpression(BinaryExpression.Operator.ADD, expr, multiplicative());
@@ -551,8 +551,8 @@ public class Parser {
         return expr;
     }
 
-    private Expression multiplicative() {
-        Expression expr = objectCreation();
+    private Node multiplicative() {
+        Node expr = objectCreation();
         while (true) {
             if (match(TokenType.STAR))
                 expr = new BinaryExpression(BinaryExpression.Operator.MULTIPLY, expr, objectCreation());
@@ -565,25 +565,23 @@ public class Parser {
         return expr;
     }
 
-    private Expression objectCreation() {
+    private Node objectCreation() {
         if (match(TokenType.NEW)) {
             final var startTokenIndex = index - 1;
             final String className = consume(TokenType.WORD).text();
-            final List<Expression> args = new ArrayList<>();
+            final List<Node> args = new ArrayList<>();
             consume(TokenType.LPAREN);
             while (!match(TokenType.RPAREN)) {
                 args.add(expression());
                 match(TokenType.COMMA);
             }
-            final var expr = new ObjectCreationExpression(className, args);
-            expr.setRange(getRange(startTokenIndex, index - 1));
-            return expr;
+            return new ObjectCreationExpression(className, args, getRange(startTokenIndex, index - 1));
         }
 
         return unary();
     }
 
-    private Expression unary() {
+    private Node unary() {
         if (match(TokenType.PLUSPLUS))
             return new UnaryExpression(UnaryExpression.Operator.INCREMENT_PREFIX, primary());
         if (match(TokenType.MINUSMINUS))
@@ -599,9 +597,9 @@ public class Parser {
         return primary();
     }
 
-    private Expression primary() {
+    private Node primary() {
         if (match(TokenType.LPAREN)) {
-            Expression expression = expression();
+            Node expression = expression();
             match(TokenType.RPAREN);
             return expression;
         }
@@ -620,13 +618,13 @@ public class Parser {
         return variable();
     }
 
-    private Expression variable() {
+    private Node variable() {
         // function(...
         if (lookMatch(0, TokenType.WORD) && lookMatch(1, TokenType.LPAREN)) {
             return functionChain(new ValueExpression(consume(TokenType.WORD).text()));
         }
 
-        final Expression qualifiedNameExpr = qualifiedName();
+        final Node qualifiedNameExpr = qualifiedName();
         if (qualifiedNameExpr != null) {
             // variable(args) || arr["key"](args) || obj.key(args)
             if (lookMatch(0, TokenType.LPAREN)) {
@@ -651,7 +649,7 @@ public class Parser {
         return value();
     }
 
-    private Expression value() {
+    private Node value() {
         final var current = peek(0);
         if (match(TokenType.TEXT)) {
             final ValueExpression strExpr = new ValueExpression(current.text());
@@ -662,13 +660,13 @@ public class Parser {
                     return functionChain(new ContainerAccessExpression(
                             strExpr, Collections.singletonList(
                             new ValueExpression(consume(TokenType.WORD).text())
-                    )));
+                    ), getRange()));
                 }
-                final List<Expression> indices = variableSuffix();
+                final List<Node> indices = variableSuffix();
                 if (indices.isEmpty()) {
                     return strExpr;
                 }
-                return new ContainerAccessExpression(strExpr, indices);
+                return new ContainerAccessExpression(strExpr, indices, getRange());
             }
             return strExpr;
         }
@@ -682,27 +680,27 @@ public class Parser {
         throw error("Unknown expression: " + current);
     }
 
-    private Expression qualifiedName() {
+    private Node qualifiedName() {
         final Token current = peek(0);
         if (!match(TokenType.WORD)) return null;
 
-        final List<Expression> indices = variableSuffix();
+        final List<Node> indices = variableSuffix();
         if (indices.isEmpty()) {
             return new VariableExpression(current.text());
         }
-        return new ContainerAccessExpression(current.text(), indices);
+        return new ContainerAccessExpression(current.text(), indices, getRange());
     }
 
-    private List<Expression> variableSuffix() {
+    private List<Node> variableSuffix() {
         // .key1.arr1[expr1][expr2].key2
         if (!lookMatch(0, TokenType.DOT) && !lookMatch(0, TokenType.LBRACKET)) {
             return Collections.emptyList();
         }
-        final List<Expression> indices = new ArrayList<>();
+        final List<Node> indices = new ArrayList<>();
         while (lookMatch(0, TokenType.DOT) || lookMatch(0, TokenType.LBRACKET)) {
             if (match(TokenType.DOT)) {
                 final String fieldName = consume(TokenType.WORD).text();
-                final Expression key = new ValueExpression(fieldName);
+                final Node key = new ValueExpression(fieldName);
                 indices.add(key);
             }
             if (match(TokenType.LBRACKET)) {

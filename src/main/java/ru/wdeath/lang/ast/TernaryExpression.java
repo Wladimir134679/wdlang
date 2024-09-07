@@ -2,12 +2,12 @@ package ru.wdeath.lang.ast;
 
 import ru.wdeath.lang.lib.Value;
 
-public class TernaryExpression implements Expression{
+public class TernaryExpression implements Node{
 
-    public final Expression condition;
-    public final Expression trueExpr, falseExpr;
+    public final Node condition;
+    public final Node trueExpr, falseExpr;
 
-    public TernaryExpression(Expression condition, Expression trueExpr, Expression falseExpr) {
+    public TernaryExpression(Node condition, Node trueExpr, Node falseExpr) {
         this.condition = condition;
         this.trueExpr = trueExpr;
         this.falseExpr = falseExpr;

@@ -7,6 +7,6 @@ public class FunctionAdder extends AbstractVisitor {
     @Override
     public void visit(FunctionDefineStatement st) {
         super.visit(st);
-        st.execute();
+        st.eval();
     }
 }

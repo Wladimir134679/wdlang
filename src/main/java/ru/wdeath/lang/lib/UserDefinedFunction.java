@@ -60,7 +60,7 @@ public class UserDefinedFunction implements Function, SourceLocation {
                 final Argument arg = arguments.get(i);
                 ScopeHandler.defineVariableInCurrentScope(arg.getName(), arg.getValueExpr().eval());
             }
-            body.execute();
+            body.eval();
             return NumberValue.ZERO;
         } catch (ReturnStatement rs) {
             return rs.getResult();

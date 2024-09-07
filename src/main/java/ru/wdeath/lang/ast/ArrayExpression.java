@@ -5,11 +5,11 @@ import ru.wdeath.lang.lib.Value;
 
 import java.util.List;
 
-public class ArrayExpression implements Expression {
+public class ArrayExpression implements Node {
 
-    public final List<Expression> arguments;
+    public final List<Node> arguments;
 
-    public ArrayExpression(List<Expression> arguments) {
+    public ArrayExpression(List<Node> arguments) {
         this.arguments = arguments;
     }
 

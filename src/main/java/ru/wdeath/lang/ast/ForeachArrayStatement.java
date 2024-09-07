@@ -8,17 +8,17 @@ import java.util.Map;
 public class ForeachArrayStatement extends InterruptableNode implements Statement {
 
     public final String variable;
-    public final Expression container;
+    public final Node container;
     public final Statement body;
 
-    public ForeachArrayStatement(String variable, Expression container, Statement body) {
+    public ForeachArrayStatement(String variable, Node container, Statement body) {
         this.variable = variable;
         this.container = container;
         this.body = body;
     }
 
     @Override
-    public void execute() {
+    public Value eval() {
         super.interruptionCheck();
         try (final var ignored = ScopeHandler.closeableScope()) {
             final Value containerValue = container.eval();
@@ -29,13 +29,14 @@ public class ForeachArrayStatement extends InterruptableNode implements Statemen
                 default -> throw new TypeException("Cannot iterate " + Types.typeToString(containerValue.type()));
             }
         }
+        return NumberValue.ZERO;
     }
 
     private void iterateString(String str) {
         for (char ch : str.toCharArray()) {
             ScopeHandler.setVariable(variable, new StringValue(String.valueOf(ch)));
             try {
-                body.execute();
+                body.eval();
             } catch (BreakStatement bs) {
                 break;
             } catch (ContinueStatement cs) {
@@ -48,7 +49,7 @@ public class ForeachArrayStatement extends InterruptableNode implements Statemen
         for (Value value : containerValue) {
             ScopeHandler.setVariable(variable, value);
             try {
-                body.execute();
+                body.eval();
             } catch (BreakStatement bs) {
                 break;
             } catch (ContinueStatement cs) {
@@ -64,7 +65,7 @@ public class ForeachArrayStatement extends InterruptableNode implements Statemen
                     entry.getValue()
             }));
             try {
-                body.execute();
+                body.eval();
             } catch (BreakStatement bs) {
                 break;
             } catch (ContinueStatement cs) {

@@ -1,27 +1,31 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.lib.NumberValue;
+import ru.wdeath.lang.lib.Value;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class BlockStatement implements Statement{
 
-    public final List<Statement> statements;
+    public final List<Node> statements;
 
     public BlockStatement() {
         statements = new ArrayList<>();
     }
 
-    public BlockStatement(List<Statement> statements) {
+    public BlockStatement(List<Node> statements) {
         this.statements = statements;
     }
 
-    public void addStatement(Statement statement) {
+    public void addStatement(Node statement) {
         statements.add(statement);
     }
 
     @Override
-    public void execute() {
-        statements.forEach(Statement::execute);
+    public Value eval() {
+        statements.forEach(Node::eval);
+        return NumberValue.ZERO;
     }
 
     @Override

@@ -8,7 +8,7 @@ public class ExecutionStage implements Stage<Statement, Statement> {
 
     @Override
     public Statement perform(StagesData stagesData, Statement input) {
-        input.execute();
+        input.eval();
         return input;
     }
 }

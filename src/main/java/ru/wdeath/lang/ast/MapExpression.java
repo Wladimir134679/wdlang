@@ -5,11 +5,11 @@ import ru.wdeath.lang.lib.Value;
 
 import java.util.Map;
 
-public class MapExpression implements Expression{
+public class MapExpression implements Node{
 
-    public final Map<Expression, Expression> elements;
+    public final Map<Node, Node> elements;
 
-    public MapExpression(Map<Expression, Expression> arguments) {
+    public MapExpression(Map<Node, Node> arguments) {
         this.elements = arguments;
     }
 
@@ -17,7 +17,7 @@ public class MapExpression implements Expression{
     public Value eval() {
         final int size = elements.size();
         final MapValue map = new MapValue(size);
-        for (Map.Entry<Expression, Expression> entry : elements.entrySet()) {
+        for (Map.Entry<Node, Node> entry : elements.entrySet()) {
             map.set(entry.getKey().eval(), entry.getValue().eval());
         }
         return map;

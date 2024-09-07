@@ -1,9 +1,11 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.lib.Value;
+
 public class ContinueStatement extends RuntimeException implements Statement{
 
     @Override
-    public void execute() {
+    public Value eval() {
         throw this;
     }
 

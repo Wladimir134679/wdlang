@@ -8,16 +8,16 @@ import ru.wdeath.lang.utils.SourceLocation;
 import java.util.Iterator;
 import java.util.List;
 
-public class ObjectCreationExpression implements Expression, SourceLocation {
+public class ObjectCreationExpression implements Node, SourceLocation {
 
     public final String className;
-    public final List<Expression> constructorArguments;
+    public final List<Node> constructorArguments;
     private Range range;
 
-
-    public ObjectCreationExpression(String className, List<Expression> constructorArguments) {
+    public ObjectCreationExpression(String className, List<Node> constructorArguments, Range range) {
         this.className = className;
         this.constructorArguments = constructorArguments;
+        this.range = range;
     }
 
     @Override
@@ -116,7 +116,7 @@ public class ObjectCreationExpression implements Expression, SourceLocation {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("new ").append(className).append(' ');
-        final Iterator<Expression> it = constructorArguments.iterator();
+        final Iterator<Node> it = constructorArguments.iterator();
         if (it.hasNext()) {
             sb.append(it.next());
             while (it.hasNext()) {

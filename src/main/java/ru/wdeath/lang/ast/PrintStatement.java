@@ -1,16 +1,20 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.lib.NumberValue;
+import ru.wdeath.lang.lib.Value;
+
 public class PrintStatement implements Statement{
 
-    public final Expression expression;
+    public final Node expression;
 
-    public PrintStatement(Expression expression) {
+    public PrintStatement(Node expression) {
         this.expression = expression;
     }
 
     @Override
-    public void execute() {
+    public Value eval() {
         System.out.print(expression.eval().asString());
+        return NumberValue.ZERO;
     }
 
 

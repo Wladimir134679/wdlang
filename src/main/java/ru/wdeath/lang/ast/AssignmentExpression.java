@@ -1,22 +1,21 @@
 package ru.wdeath.lang.ast;
 
 import ru.wdeath.lang.lib.Value;
+import ru.wdeath.lang.utils.Range;
+import ru.wdeath.lang.utils.SourceLocation;
 
-public class AssignmentExpression implements Expression, Statement{
+public class AssignmentExpression implements Statement, SourceLocation {
 
     public final Accessible target;
     public final BinaryExpression.Operator operation;
-    public final Expression expression;
+    public final Node expression;
+    public final Range range;
 
-    public AssignmentExpression(BinaryExpression.Operator operation, Accessible target, Expression expr) {
+    public AssignmentExpression(BinaryExpression.Operator operation, Accessible target, Node expr, Range range) {
         this.operation = operation;
         this.target = target;
         this.expression = expr;
-    }
-
-    @Override
-    public void execute() {
-        eval();
+        this.range = range;
     }
 
     @Override
@@ -25,8 +24,8 @@ public class AssignmentExpression implements Expression, Statement{
             // Simple assignment
             return target.set(expression.eval());
         }
-        final Expression expr1 = new ValueExpression(target.get());
-        final Expression expr2 = new ValueExpression(expression.eval());
+        final Node expr1 = new ValueExpression(target.get());
+        final Node expr2 = new ValueExpression(expression.eval());
         return target.set(new BinaryExpression(operation, expr1, expr2).eval());
     }
 

@@ -7,20 +7,15 @@ import ru.wdeath.lang.lib.Value;
 
 import java.util.List;
 
-public class MatchExpression implements Expression, Statement{
+public class MatchExpression implements Statement {
 
 
-    public final Expression expression;
+    public final Node expression;
     public final List<Pattern> patterns;
 
-    public MatchExpression(Expression expression, List<Pattern> patterns) {
+    public MatchExpression(Node expression, List<Pattern> patterns) {
         this.expression = expression;
         this.patterns = patterns;
-    }
-
-    @Override
-    public void execute() {
-        eval();
     }
 
     @Override
@@ -64,7 +59,7 @@ public class MatchExpression implements Expression, Statement{
 
     private Value evalResult(Statement s) {
         try {
-            s.execute();
+            s.eval();
         } catch (ReturnStatement ret) {
             return ret.getResult();
         }
@@ -94,7 +89,7 @@ public class MatchExpression implements Expression, Statement{
 
     public static abstract class Pattern {
         public Statement result;
-        public Expression optCondition;
+        public Node optCondition;
     }
 
     public static class ConstantPattern extends Pattern {

@@ -85,6 +85,21 @@ public class VariablesGrabber extends OptimizationVisitor<Map<String, VariableIn
         return super.visit(s, t);
     }
 
+    @Override
+    protected boolean visit(Arguments in, Arguments out, Map<String, VariableInfo> t) {
+        for (Argument argument : in) {
+            final String variableName = argument.name();
+            grabVariableInfo(t, variableName);
+            /* No need to add value - it is optional arguments
+            final Node expr = argument.getValueExpr();
+            if (expr != null && isValue(expr)) {
+                var.value = ((ValueExpression) expr).value;
+            }*/
+        }
+        return super.visit(in, out, t);
+    }
+
+
 
     private VariableInfo grabVariableInfo(Map<String, VariableInfo> t, final String variableName) {
         final VariableInfo var;

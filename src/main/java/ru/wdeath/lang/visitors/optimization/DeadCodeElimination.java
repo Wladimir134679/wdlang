@@ -7,7 +7,7 @@ import java.util.Map;
 
 import static ru.wdeath.lang.visitors.VisitorUtils.*;
 
-public class DeadCodeElimination  extends OptimizationVisitor<Map<String, VariableInfo>> implements Optimizable {
+public class DeadCodeElimination extends OptimizationVisitor<Map<String, VariableInfo>> implements Optimizable {
 
     private int ifStatementEliminatedCount;
     private int ternaryExpressionEliminatedCount;
@@ -39,7 +39,7 @@ public class DeadCodeElimination  extends OptimizationVisitor<Map<String, Variab
         if (whileStatementEliminatedCount > 0) {
             sb.append("\nEliminated WhileStatement: ").append(whileStatementEliminatedCount);
         }
-        if (assignmentExpressionEliminatedCount > 0) {
+        if (whileStatementEliminatedCount > 0) {
             sb.append("\nEliminated AssignmentExpression: ").append(assignmentExpressionEliminatedCount);
         }
         return sb.toString();
@@ -76,11 +76,9 @@ public class DeadCodeElimination  extends OptimizationVisitor<Map<String, Variab
 
     @Override
     public Node visit(WhileStatement s, Map<String, VariableInfo> t) {
-        if (isValue(s.condition)) {
-            if (s.condition.eval().asInt() == 0) {
-                whileStatementEliminatedCount++;
-                return new ExprStatement(s.condition);
-            }
+        if (isValueAsInt(s.condition, 0)) {
+            whileStatementEliminatedCount++;
+            return new ExprStatement(s.condition);
         }
         return super.visit(s, t);
     }
@@ -111,21 +109,20 @@ public class DeadCodeElimination  extends OptimizationVisitor<Map<String, Variab
     public Node visit(BlockStatement s, Map<String, VariableInfo> t) {
         final BlockStatement result = new BlockStatement();
         boolean changed = false;
-        for (Statement statement : s.statements) {
+        for (Node statement : s.statements) {
             final Node node = statement.accept(this, t);
             if (node != statement) {
                 changed = true;
             }
-            if (node instanceof ExprStatement
-                    && isConstantValue( ((ExprStatement) node).expr )) {
+            if (node instanceof ExprStatement expr && isConstantValue(expr.expr)) {
                 changed = true;
                 continue;
             }
 
-            if (node instanceof Statement) {
-                result.addStatement((Statement) node);
-            } else if (node instanceof Expression) {
-                result.addStatement(new ExprStatement((Expression) node));
+            if (node instanceof Statement stmt) {
+                result.addStatement(stmt);
+            } else if (node != null) {
+                result.addStatement(new ExprStatement(node));
             }
         }
         if (changed) {

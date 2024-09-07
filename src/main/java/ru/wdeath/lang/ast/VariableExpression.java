@@ -4,7 +4,7 @@ import ru.wdeath.lang.exception.VariableDoesNotExistsException;
 import ru.wdeath.lang.lib.ScopeHandler;
 import ru.wdeath.lang.lib.Value;
 
-public class VariableExpression implements Expression, Accessible {
+public class VariableExpression implements Node, Accessible {
 
     public final String name;
 

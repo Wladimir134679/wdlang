@@ -2,22 +2,17 @@ package ru.wdeath.lang.ast;
 
 import ru.wdeath.lang.lib.Value;
 
-public class ExprStatement implements Expression, Statement{
+public class ExprStatement implements Node, Statement{
 
-    public final Expression expr;
+    public final Node expr;
 
-    public ExprStatement(Expression expr) {
+    public ExprStatement(Node expr) {
         this.expr = expr;
     }
 
     @Override
     public Value eval() {
         return expr.eval();
-    }
-
-    @Override
-    public void execute() {
-        expr.eval();
     }
 
     @Override

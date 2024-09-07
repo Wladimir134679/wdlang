@@ -2,35 +2,44 @@ package ru.wdeath.lang.ast;
 
 import ru.wdeath.lang.exception.TypeException;
 import ru.wdeath.lang.lib.*;
+import ru.wdeath.lang.utils.Range;
+import ru.wdeath.lang.utils.SourceLocation;
 
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class ContainerAccessExpression implements Expression, Accessible {
+public class ContainerAccessExpression implements Node, Accessible, SourceLocation {
 
     private static final Pattern PATTERN_SIMPLE_INDEX = Pattern.compile("^\"[a-zA-Z$_]\\w*\"");
 
-    public final Expression root;
-    public final List<Expression> indexes;
+    public final Node root;
+    public final List<Node> indexes;
     private final boolean[] simpleIndices;
     private final boolean rootIsVariable;
+    private final Range range;
 
-    public ContainerAccessExpression(String variable, List<Expression> indexes) {
-        this(new VariableExpression(variable), indexes);
+    public ContainerAccessExpression(String variable, List<Node> indexes, Range range) {
+        this(new VariableExpression(variable), indexes, range);
     }
 
-    public ContainerAccessExpression(Expression root, List<Expression> indices) {
+    public ContainerAccessExpression(Node root, List<Node> indices, Range range) {
         this.rootIsVariable = root instanceof VariableExpression;
         this.root = root;
         this.indexes = indices;
+        this.range = range;
         this.simpleIndices = precomputeSimpleIndices();
+    }
+
+    @Override
+    public Range getRange() {
+        return range;
     }
 
     public boolean rootIsVariable() {
         return rootIsVariable;
     }
 
-    public Expression getRoot() {
+    public Node getRoot() {
         return root;
     }
 
@@ -88,7 +97,7 @@ public class ContainerAccessExpression implements Expression, Accessible {
     private boolean[] precomputeSimpleIndices() {
         final boolean[] result = new boolean[indexes.size()];
         int i = 0;
-        for (Expression index : indexes) {
+        for (Node index : indexes) {
             String indexStr = index.toString();
             result[i] = PATTERN_SIMPLE_INDEX.matcher(indexStr).matches();
             i++;
@@ -118,7 +127,7 @@ public class ContainerAccessExpression implements Expression, Accessible {
     public String toString() {
         final var sb = new StringBuilder(root.toString());
         int i = 0;
-        for (Expression index : indexes) {
+        for (Node index : indexes) {
             String indexStr = index.toString();
             if (simpleIndices[i]) {
                 sb.append('.').append(indexStr, 1, indexStr.length() - 1);

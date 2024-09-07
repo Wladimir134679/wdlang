@@ -1,13 +1,16 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.lib.NumberValue;
+import ru.wdeath.lang.lib.Value;
+
 public class ForStatement implements Statement {
 
     public final Statement init;
-    public final Expression termination;
+    public final Node termination;
     public final Statement increment;
     public final Statement block;
 
-    public ForStatement(Statement init, Expression termination, Statement increment, Statement block) {
+    public ForStatement(Statement init, Node termination, Statement increment, Statement block) {
         this.init = init;
         this.termination = termination;
         this.increment = increment;
@@ -16,16 +19,17 @@ public class ForStatement implements Statement {
 
 
     @Override
-    public void execute() {
-        for (init.execute(); termination.eval().asInt() != 0; increment.execute()) {
+    public Value eval() {
+        for (init.eval(); termination.eval().asInt() != 0; increment.eval()) {
             try {
-                block.execute();
+                block.eval();
             } catch (BreakStatement bs) {
                 break;
             } catch (ContinueStatement cs) {
                 //continue;
             }
         }
+        return NumberValue.ZERO;
     }
 
     @Override

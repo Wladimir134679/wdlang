@@ -4,7 +4,7 @@ import ru.wdeath.lang.exception.OperationIsNotSupportedException;
 import ru.wdeath.lang.exception.TypeException;
 import ru.wdeath.lang.lib.*;
 
-public class BinaryExpression implements Expression {
+public class BinaryExpression implements Node {
 
     public enum Operator {
         ADD("+"), SUBTRACT("-"), MULTIPLY("*"), DIVIDE("/"),
@@ -25,11 +25,11 @@ public class BinaryExpression implements Expression {
         final String name;
     }
 
-    public final Expression expr1, expr2;
+    public final Node expr1, expr2;
 
     public final Operator operation;
 
-    public BinaryExpression(Operator operation, Expression expr1, Expression expr2) {
+    public BinaryExpression(Operator operation, Node expr1, Node expr2) {
         this.expr1 = expr1;
         this.expr2 = expr2;
         this.operation = operation;

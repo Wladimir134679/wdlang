@@ -1,8 +1,6 @@
 package ru.wdeath.lang.ast;
 
-import ru.wdeath.lang.lib.Functions;
-import ru.wdeath.lang.lib.ScopeHandler;
-import ru.wdeath.lang.lib.UserDefinedFunction;
+import ru.wdeath.lang.lib.*;
 import ru.wdeath.lang.utils.Range;
 import ru.wdeath.lang.utils.SourceLocation;
 
@@ -26,8 +24,9 @@ public class FunctionDefineStatement implements Statement, SourceLocation {
     }
 
     @Override
-    public void execute() {
+    public Value eval() {
         ScopeHandler.setFunction(name, new UserDefinedFunction(arguments, body, range));
+        return NumberValue.ZERO;
     }
 
     @Override
