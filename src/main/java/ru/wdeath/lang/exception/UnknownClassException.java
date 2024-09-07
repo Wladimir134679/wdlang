@@ -1,12 +1,14 @@
 package ru.wdeath.lang.exception;
 
 
+import ru.wdeath.lang.utils.Range;
+
 public final class UnknownClassException extends WdlRuntimeException {
 
     private final String className;
 
-    public UnknownClassException(String name) {
-        super("Unknown class " + name);
+    public UnknownClassException(String name, Range range) {
+        super("Unknown class " + name, range);
         this.className = name;
     }
 

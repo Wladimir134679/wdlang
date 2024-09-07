@@ -2,14 +2,18 @@ package ru.wdeath.lang.ast;
 
 import ru.wdeath.lang.exception.UnknownClassException;
 import ru.wdeath.lang.lib.*;
+import ru.wdeath.lang.utils.Range;
+import ru.wdeath.lang.utils.SourceLocation;
 
 import java.util.Iterator;
 import java.util.List;
 
-public class ObjectCreationExpression implements Expression {
+public class ObjectCreationExpression implements Expression, SourceLocation {
 
     public final String className;
     public final List<Expression> constructorArguments;
+    private Range range;
+
 
     public ObjectCreationExpression(String className, List<Expression> constructorArguments) {
         this.className = className;
@@ -27,7 +31,7 @@ public class ObjectCreationExpression implements Expression {
                     return ((Instantiable) variable).newInstance(ctorArgs());
                 }
             }
-            throw new UnknownClassException(className);
+            throw new UnknownClassException(className, getRange());
         }
 
         // Create an instance and put evaluated fields with method declarations
@@ -88,6 +92,15 @@ public class ObjectCreationExpression implements Expression {
 //        }
 //        return ctorArgs;
 //    }
+
+    public void setRange(Range range) {
+        this.range = range;
+    }
+
+    @Override
+    public Range getRange() {
+        return range;
+    }
 
     @Override
     public void accept(Visitor visitor) {

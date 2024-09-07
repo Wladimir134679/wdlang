@@ -41,7 +41,7 @@ public class VariableExpression implements Expression, Accessible {
 
     @Override
     public String toString() {
-        return "VE{n='" + name + "'}";
+        return name;
     }
 
 }

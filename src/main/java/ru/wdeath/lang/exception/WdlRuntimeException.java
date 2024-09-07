@@ -1,16 +1,38 @@
 package ru.wdeath.lang.exception;
 
-public class WdlRuntimeException extends RuntimeException{
+import ru.wdeath.lang.stages.util.SourceLocatedError;
+import ru.wdeath.lang.utils.Range;
+
+public class WdlRuntimeException extends RuntimeException implements SourceLocatedError {
+
+    private final Range range;
 
     public WdlRuntimeException() {
         super();
+        this.range = null;
+    }
+
+    public WdlRuntimeException(Exception ex) {
+        super(ex);
+        this.range = null;
     }
 
     public WdlRuntimeException(String message) {
-        super(message);
+        this(message, (Range) null);
     }
 
-    public WdlRuntimeException(String message, Throwable cause) {
-        super(message, cause);
+    public WdlRuntimeException(String message, Range range) {
+        super(message);
+        this.range = range;
+    }
+
+    public WdlRuntimeException(String message, Throwable ex) {
+        super(message, ex);
+        this.range = null;
+    }
+
+    @Override
+    public Range getRange() {
+        return range;
     }
 }

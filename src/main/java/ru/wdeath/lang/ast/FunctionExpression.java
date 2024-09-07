@@ -67,7 +67,7 @@ public class FunctionExpression implements Expression, Statement, SourceLocation
             if (value.type() == Types.FUNCTION)
                 return ((FunctionValue) value).getFunction();
         }
-        throw new UnknownFunctionException(name);
+        throw new UnknownFunctionException(name, getRange());
     }
 
     private Function consumeFunction(Expression expr) {

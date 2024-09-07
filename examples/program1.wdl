@@ -105,6 +105,17 @@ for (i = 0.5, i < 10, i++){
     println("new += for i " + i)
 }
 
+class TestClass{
+    def add(a, b) = a + b
+    def assers(a, b) = assertEquals(a, b)
+    def runTest(){
+        this.assers(4, this.add(2, 3))
+    }
+}
+
+testClass = new TestClass()
+testClass.runTest()
+
 def f1() = {"func": ::f2}
 def f2() = {
   "functions" : {

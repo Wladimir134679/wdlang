@@ -36,7 +36,9 @@ public class ClassInstanceValue implements Value {
 
     public void callConstructor(Value[] args) {
         if (constructor != null) {
+            CallStack.enter("class " + className, constructor, null);
             constructor.execute(args);
+            CallStack.exit();
         }
     }
 
@@ -51,17 +53,23 @@ public class ClassInstanceValue implements Value {
 
     @Override
     public int asInt() {
-        throw new TypeException("Cannot cast class to integer");
+        throw new TypeException("Cannot cast class " + className + " to integer");
     }
 
     @Override
     public double asDouble() {
-        throw new TypeException("Cannot cast class to integer");
+        throw new TypeException("Cannot cast class " + className + " to number");
     }
 
     @Override
     public String asString() {
-        return "class " + className + "@" + thisMap;
+        Value toString = thisMap.get(new StringValue("toString"));
+        if (toString != null) {
+            if (toString instanceof ClassMethod cm) {
+                return cm.execute(new Value[0]).asString();
+            }
+        }
+        return className + "@" + thisMap;
     }
 
     @Override

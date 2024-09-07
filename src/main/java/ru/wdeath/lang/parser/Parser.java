@@ -564,6 +564,7 @@ public class Parser {
 
     private Expression objectCreation() {
         if (match(TokenType.NEW)) {
+            final var startTokenIndex = index - 1;
             final String className = consume(TokenType.WORD).text();
             final List<Expression> args = new ArrayList<>();
             consume(TokenType.LPAREN);
@@ -571,7 +572,9 @@ public class Parser {
                 args.add(expression());
                 match(TokenType.COMMA);
             }
-            return new ObjectCreationExpression(className, args);
+            final var expr = new ObjectCreationExpression(className, args);
+            expr.setRange(getRange(startTokenIndex, index - 1));
+            return expr;
         }
 
         return unary();
