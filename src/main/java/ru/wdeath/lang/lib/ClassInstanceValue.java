@@ -1,6 +1,7 @@
 package ru.wdeath.lang.lib;
 
 import ru.wdeath.lang.exception.TypeException;
+import ru.wdeath.lang.exception.WdlRuntimeException;
 
 import java.util.Objects;
 
@@ -44,6 +45,16 @@ public class ClassInstanceValue implements Value {
 
     public Value access(Value value) {
         return thisMap.get(value);
+    }
+
+    public void set(Value key, Value value) {
+        final Value v = thisMap.get(key);
+        if (v == null) {
+            throw new WdlRuntimeException(
+                    "Unable to add new field %s to class %s"
+                            .formatted(key.asString(), className));
+        }
+        thisMap.set(key, value);
     }
 
     @Override

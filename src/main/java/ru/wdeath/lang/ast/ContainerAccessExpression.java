@@ -12,16 +12,18 @@ public class ContainerAccessExpression implements Expression, Accessible {
 
     public final Expression root;
     public final List<Expression> indexes;
-    private boolean rootIsVariable;
+    private final boolean[] simpleIndices;
+    private final boolean rootIsVariable;
 
     public ContainerAccessExpression(String variable, List<Expression> indexes) {
         this(new VariableExpression(variable), indexes);
     }
 
     public ContainerAccessExpression(Expression root, List<Expression> indices) {
-        rootIsVariable = root instanceof VariableExpression;
+        this.rootIsVariable = root instanceof VariableExpression;
         this.root = root;
         this.indexes = indices;
+        this.simpleIndices = precomputeSimpleIndices();
     }
 
     public boolean rootIsVariable() {
@@ -58,18 +60,12 @@ public class ContainerAccessExpression implements Expression, Accessible {
         final Value container = getContainer();
         final Value lastIndex = lastIndex();
         switch (container.type()) {
-            case Types.ARRAY:
-                final int arrayIndex = lastIndex.asInt();
-                ((ArrayValue) container).set(arrayIndex, value);
-                return value;
-
-            case Types.MAP:
-                ((MapValue) container).set(lastIndex, value);
-                return value;
-
-            default:
-                throw new TypeException("Array or map expected. Got " + container.type());
+            case Types.ARRAY -> ((ArrayValue) container).set(lastIndex.asInt(), value);
+            case Types.MAP -> ((MapValue) container).set(lastIndex, value);
+            case Types.CLASS -> ((ClassInstanceValue) container).set(lastIndex, value);
+            default -> throw new TypeException("Array or map expected. Got " + container.type());
         }
+        return value;
     }
 
     public Value getContainer() {
@@ -87,6 +83,17 @@ public class ContainerAccessExpression implements Expression, Accessible {
             };
         }
         return container;
+    }
+
+    private boolean[] precomputeSimpleIndices() {
+        final boolean[] result = new boolean[indexes.size()];
+        int i = 0;
+        for (Expression index : indexes) {
+            String indexStr = index.toString();
+            result[i] = PATTERN_SIMPLE_INDEX.matcher(indexStr).matches();
+            i++;
+        }
+        return result;
     }
 
     public Value lastIndex(){
@@ -111,9 +118,9 @@ public class ContainerAccessExpression implements Expression, Accessible {
     public String toString() {
         final var sb = new StringBuilder(root.toString());
         int i = 0;
-        for (Node index : indexes) {
+        for (Expression index : indexes) {
             String indexStr = index.toString();
-            if (precomputeSimpleIndices()[i]) {
+            if (simpleIndices[i]) {
                 sb.append('.').append(indexStr, 1, indexStr.length() - 1);
             } else {
                 sb.append('[').append(indexStr).append(']');
@@ -121,16 +128,5 @@ public class ContainerAccessExpression implements Expression, Accessible {
             i++;
         }
         return sb.toString();
-    }
-
-    private boolean[] precomputeSimpleIndices() {
-        final boolean[] result = new boolean[indexes.size()];
-        int i = 0;
-        for (Node index : indexes) {
-            String indexStr = index.toString();
-            result[i] = PATTERN_SIMPLE_INDEX.matcher(indexStr).matches();
-            i++;
-        }
-        return result;
     }
 }
