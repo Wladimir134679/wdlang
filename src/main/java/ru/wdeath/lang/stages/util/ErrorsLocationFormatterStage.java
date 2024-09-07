@@ -2,6 +2,7 @@ package ru.wdeath.lang.stages.util;
 
 import ru.wdeath.lang.stages.Stage;
 import ru.wdeath.lang.stages.StagesData;
+import ru.wdeath.lang.utils.Input.SourceLoaderStage;
 import ru.wdeath.lang.utils.Pos;
 import ru.wdeath.lang.utils.Range;
 
@@ -10,7 +11,7 @@ public class ErrorsLocationFormatterStage implements Stage<Iterable<? extends So
     @Override
     public String perform(StagesData stagesData, Iterable<? extends SourceLocatedError> input) {
         final var sb = new StringBuilder();
-        final String source = stagesData.get(SourceLoaderStage.TAG_SOURCE);
+        final String source = stagesData.getOrDefault(SourceLoaderStage.TAG_SOURCE, "");
         final var lines = source.split("\r?\n");
         for (SourceLocatedError error : input) {
             sb.append(newline());

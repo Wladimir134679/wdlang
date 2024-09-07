@@ -1,6 +1,6 @@
 package ru.wdeath.lang.stages.impl;
 
-import ru.wdeath.lang.stages.util.SourceLoaderStage;
+import ru.wdeath.lang.utils.Input.SourceLoaderStage;
 import ru.wdeath.lang.utils.Pos;
 import ru.wdeath.lang.utils.Range;
 import ru.wdeath.lang.parser.error.ParseError;

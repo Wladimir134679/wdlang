@@ -10,7 +10,8 @@ import ru.wdeath.lang.stages.impl.*;
 import ru.wdeath.lang.stages.util.ErrorsLocationFormatterStage;
 import ru.wdeath.lang.stages.util.ExceptionConverterStage;
 import ru.wdeath.lang.stages.util.ExceptionStackTraceToStringStage;
-import ru.wdeath.lang.stages.util.SourceLoaderStage;
+import ru.wdeath.lang.utils.Input.InputSourceFile;
+import ru.wdeath.lang.utils.Input.SourceLoaderStage;
 import ru.wdeath.lang.utils.TimeMeasurement;
 
 import java.io.IOException;
@@ -22,7 +23,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         final var measurement = new TimeMeasurement();
         final var scopedStages = new ScopedStageFactory(measurement::start, measurement::stop);
-        final var input = "./examples/program1.wdl";
+        final var input = new InputSourceFile("./examples/program1.wdl");
         final var stagesData = new StagesDataMap();
         try {
             stagesData.put(SourceLoaderStage.TAG_SOURCE, input);

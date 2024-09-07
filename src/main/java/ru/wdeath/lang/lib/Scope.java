@@ -45,10 +45,6 @@ public class Scope {
         variables.put(name, value);
     }
 
-    public final void removeVariable(String name) {
-        variables.remove(name);
-    }
-
     public Map<String, Value> getVariables() {
         return variables;
     }
