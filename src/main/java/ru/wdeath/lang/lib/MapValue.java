@@ -113,8 +113,6 @@ public class MapValue implements Value, Iterable<Map.Entry<Value, Value>> {
 
     @Override
     public String toString() {
-        return "MapValue{" +
-                "map=" + map +
-                '}';
+        return asString();
     }
 }

@@ -96,9 +96,7 @@ public class StringValue implements Value {
 
     @Override
     public String toString() {
-        return "SV{" +
-                "v='" + value + '\'' +
-                '}';
+        return asString();
     }
 
     @Override

@@ -42,9 +42,16 @@ public class Arguments implements Iterable<Argument> {
 
     @Override
     public String toString() {
-        return "Arguments{" +
-                "a=" + arguments +
-                ", r=" + requiredArgumentsCount +
-                '}';
+        final StringBuilder result = new StringBuilder();
+        result.append('(');
+        final Iterator<Argument> it = arguments.iterator();
+        if (it.hasNext()) {
+            result.append(it.next());
+            while (it.hasNext()) {
+                result.append(", ").append(it.next());
+            }
+        }
+        result.append(')');
+        return result.toString();
     }
 }

@@ -35,8 +35,6 @@ public class ArrayExpression implements Expression {
 
     @Override
     public String toString() {
-        return "ArrayExpression{" +
-                "a=" + arguments +
-                '}';
+        return arguments.toString();
     }
 }

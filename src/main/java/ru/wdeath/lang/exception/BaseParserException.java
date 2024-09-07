@@ -1,6 +1,6 @@
 package ru.wdeath.lang.exception;
 
-import ru.wdeath.lang.parser.Range;
+import ru.wdeath.lang.utils.Range;
 
 public class BaseParserException extends RuntimeException{
 

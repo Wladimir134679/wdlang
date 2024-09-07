@@ -4,8 +4,11 @@ import ru.wdeath.lang.exception.TypeException;
 import ru.wdeath.lang.lib.*;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class ContainerAccessExpression implements Expression, Accessible {
+
+    private static final Pattern PATTERN_SIMPLE_INDEX = Pattern.compile("^\"[a-zA-Z$_]\\w*\"");
 
     public final Expression root;
     public final List<Expression> indexes;
@@ -106,9 +109,28 @@ public class ContainerAccessExpression implements Expression, Accessible {
 
     @Override
     public String toString() {
-        return "ArrayAccessExpression{" +
-                "r='" + root + '\'' +
-                ", i=" + indexes +
-                '}';
+        final var sb = new StringBuilder(root.toString());
+        int i = 0;
+        for (Node index : indexes) {
+            String indexStr = index.toString();
+            if (precomputeSimpleIndices()[i]) {
+                sb.append('.').append(indexStr, 1, indexStr.length() - 1);
+            } else {
+                sb.append('[').append(indexStr).append(']');
+            }
+            i++;
+        }
+        return sb.toString();
+    }
+
+    private boolean[] precomputeSimpleIndices() {
+        final boolean[] result = new boolean[indexes.size()];
+        int i = 0;
+        for (Node index : indexes) {
+            String indexStr = index.toString();
+            result[i] = PATTERN_SIMPLE_INDEX.matcher(indexStr).matches();
+            i++;
+        }
+        return result;
     }
 }

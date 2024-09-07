@@ -65,8 +65,6 @@ public class FunctionValue implements Value{
 
     @Override
     public String toString() {
-        return "FunctionValue{" +
-                "function=" + function +
-                '}';
+        return asString();
     }
 }

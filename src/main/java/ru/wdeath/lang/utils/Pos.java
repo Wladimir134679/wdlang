@@ -1,4 +1,4 @@
-package ru.wdeath.lang.parser;
+package ru.wdeath.lang.utils;
 
 public record Pos(int row, int col) {
 

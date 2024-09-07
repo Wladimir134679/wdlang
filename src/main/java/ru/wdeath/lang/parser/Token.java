@@ -1,5 +1,7 @@
 package ru.wdeath.lang.parser;
 
+import ru.wdeath.lang.utils.Pos;
+
 public record Token(TokenType type, String text, Pos pos) {
 
     public String shortDescription() {

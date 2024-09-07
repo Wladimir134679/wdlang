@@ -42,10 +42,7 @@ public class AssignmentExpression implements Expression, Statement{
 
     @Override
     public String toString() {
-        return "AssignmentExpression{" +
-                "t=" + target +
-                ", o=" + operation +
-                ", e=" + expression +
-                '}';
+        final String op = (operation == null) ? "" : operation.toString();
+        return String.format("%s %s= %s", target, op, expression);
     }
 }

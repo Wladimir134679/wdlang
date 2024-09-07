@@ -2,6 +2,8 @@ package ru.wdeath.lang.parser;
 
 import ru.wdeath.lang.exception.WdlParserException;
 import ru.wdeath.lang.parser.error.ParseError;
+import ru.wdeath.lang.utils.Pos;
+import ru.wdeath.lang.utils.Range;
 
 import java.util.ArrayList;
 import java.util.HashMap;

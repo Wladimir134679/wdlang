@@ -1,4 +1,4 @@
-package ru.wdeath.lang.parser;
+package ru.wdeath.lang.utils;
 
 import java.util.Objects;
 
@@ -19,8 +19,10 @@ public record Range(Pos start, Pos end) {
     }
 
     public String format() {
-        if (isOnSameLine()) {
+        if (isEqualPosition()) {
             return start.format();
+        } else if (isOnSameLine()) {
+            return "[%d:%d~%d]".formatted(start.row(), start.col(), end.col());
         } else {
             return start.format() + "..." + end.format();
         }

@@ -111,6 +111,7 @@ def f2() = {
     "add" : def(a, b) = a + b
     "mul" : def(a, b) = a * b
     "negate" : def(a) = {"result" : -a}
+    "as": def(a, b) = assertEquals(a, b)
   }
 }
 def f3() = def() = def() = def() = "test"
@@ -125,14 +126,14 @@ def testCallChain() {
   assertEquals("test", f3()()()())
 }
 
-def testBoth() {
-  assertEquals(-123, f4()()().func().functions.negate(123).result)
+def testBoth(a, b, c=23) {
+  f4()()().func().functions.as(-123, f4()()().func().functions.negate(-123).result)
 }
 
 
 testFunctionChain()
 testCallChain()
-testBoth()
+testBoth(10, 2)
 
 assertEquals(10, "1234567890".length)
 

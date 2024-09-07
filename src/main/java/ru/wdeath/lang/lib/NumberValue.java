@@ -87,9 +87,7 @@ public class NumberValue implements Value {
 
     @Override
     public String toString() {
-        return "NV{" +
-                "v=" + value +
-                '}';
+        return asString();
     }
 
     @Override

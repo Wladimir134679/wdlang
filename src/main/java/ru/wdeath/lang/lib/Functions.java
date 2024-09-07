@@ -1,6 +1,7 @@
 package ru.wdeath.lang.lib;
 
 import ru.wdeath.lang.exception.UnknownFunctionException;
+import ru.wdeath.lang.exception.WdlRuntimeException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +31,7 @@ public class Functions {
         ScopeHandler.setFunction("assertEquals", v -> {
             ArgumentsUtil.check(2, v.length);
             if(!v[0].equals(v[1]))
-                throw new RuntimeException(v[0].asString() + " != " + v[1].asString());
+                throw new WdlRuntimeException(v[0].asString() + " != " + v[1].asString());
             return NumberValue.ZERO;
         });
     }

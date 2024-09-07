@@ -1,6 +1,6 @@
 package ru.wdeath.lang.parser.error;
 
-import ru.wdeath.lang.parser.Range;
+import ru.wdeath.lang.utils.Range;
 
 import java.util.Collections;
 import java.util.List;

@@ -7,6 +7,8 @@ import ru.wdeath.lang.lib.StringValue;
 import ru.wdeath.lang.lib.UserDefinedFunction;
 import ru.wdeath.lang.parser.error.ParseError;
 import ru.wdeath.lang.parser.error.ParseErrors;
+import ru.wdeath.lang.utils.Pos;
+import ru.wdeath.lang.utils.Range;
 
 import java.util.*;
 import java.util.function.Function;
@@ -288,13 +290,15 @@ public class Parser {
     }
 
 
-    private Expression function(Expression qualifiedName) {
+    private FunctionExpression function(Expression qualifiedName) {
+        final var startTokenIndex = index - 1;
         consume(TokenType.LPAREN);
         final var functionExpression = new FunctionExpression(qualifiedName);
         while (!match(TokenType.RPAREN)) {
             functionExpression.addArgument(expression());
             match(TokenType.COMMA);
         }
+        functionExpression.setRange(getRange(startTokenIndex, index - 1));
         return functionExpression;
     }
 

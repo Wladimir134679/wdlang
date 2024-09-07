@@ -24,9 +24,6 @@ public class Argument {
 
     @Override
     public String toString() {
-        return "Argument{" +
-                "n='" + name + '\'' +
-                ", v=" + valueExpr +
-                '}';
+        return name + (valueExpr == null ? "" : " = " + valueExpr);
     }
 }

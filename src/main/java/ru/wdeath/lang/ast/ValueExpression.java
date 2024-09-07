@@ -39,8 +39,9 @@ public class ValueExpression implements Expression {
 
     @Override
     public String toString() {
-        return "NE{" +
-                "v=" + value +
-                '}';
+        if (value.type() == Types.STRING) {
+            return "\"" + value.asString() + "\"";
+        }
+        return value.toString();
     }
 }

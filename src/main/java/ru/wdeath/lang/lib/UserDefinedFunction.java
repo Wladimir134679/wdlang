@@ -6,7 +6,7 @@ import ru.wdeath.lang.ast.ReturnStatement;
 import ru.wdeath.lang.ast.Statement;
 import ru.wdeath.lang.exception.ArgumentsMismatchException;
 
-public class UserDefinedFunction implements Function{
+public class UserDefinedFunction implements Function {
 
     private final Arguments arguments;
     private final Statement body;
@@ -21,13 +21,13 @@ public class UserDefinedFunction implements Function{
     }
 
     public String getArgsName(int index) {
-        if(index >= arguments.size() || index < 0)
+        if (index >= arguments.size() || index < 0)
             return "";
         return arguments.get(index).getName();
     }
 
     @Override
-    public Value execute(Value... values) {
+    public Value execute(Value[] values) {
         final int size = values.length;
 
         final int requiredArgsCount = arguments.getRequiredArgumentsCount();
@@ -51,18 +51,15 @@ public class UserDefinedFunction implements Function{
             }
             body.execute();
             return NumberValue.ZERO;
-        }catch (ReturnStatement rs){
+        } catch (ReturnStatement rs) {
             return rs.getResult();
-        }finally {
+        } finally {
             ScopeHandler.pop();
         }
     }
 
     @Override
     public String toString() {
-        return "UserDefineFunction{" +
-                "a=" + arguments +
-                ", b=" + body +
-                '}';
+        return arguments.toString();
     }
 }

@@ -1,11 +1,10 @@
-package ru.wdeath.lang.stages.impl;
+package ru.wdeath.lang.stages.util;
 
 import ru.wdeath.lang.exception.WdlRuntimeException;
 import ru.wdeath.lang.stages.Stage;
 import ru.wdeath.lang.stages.StagesData;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 

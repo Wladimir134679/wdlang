@@ -81,9 +81,7 @@ public class ArrayValue implements Value, Iterable<Value>{
 
     @Override
     public String toString() {
-        return "ArrayValue{" +
-                "e=" + Arrays.toString(elements) +
-                '}';
+        return asString();
     }
 
     @Override
