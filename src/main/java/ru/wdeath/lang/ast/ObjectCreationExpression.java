@@ -42,7 +42,7 @@ public class ObjectCreationExpression implements Expression, SourceLocation {
             instance.addField(fieldName, f.eval());
         }
         for (FunctionDefineStatement m : cd.methods) {
-            instance.addMethod(m.name, new ClassMethod(m.arguments, m.body, instance));
+            instance.addMethod(m.name, new ClassMethod(m.arguments, m.body, instance, m.getRange()));
         }
 
         // Call a constructor

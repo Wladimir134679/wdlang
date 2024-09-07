@@ -1,37 +1,26 @@
-package ru.wdeath.lang.stages.impl;
+package ru.wdeath.lang.stages.util;
 
+import ru.wdeath.lang.stages.Stage;
+import ru.wdeath.lang.stages.StagesData;
 import ru.wdeath.lang.utils.Input.SourceLoaderStage;
 import ru.wdeath.lang.utils.Pos;
 import ru.wdeath.lang.utils.Range;
-import ru.wdeath.lang.parser.error.ParseError;
-import ru.wdeath.lang.parser.error.ParseErrors;
-import ru.wdeath.lang.stages.Stage;
-import ru.wdeath.lang.stages.StagesData;
 
-public class ParseErrorsFormatterStage implements Stage<ParseErrors, String> {
+import static ru.wdeath.lang.stages.util.ErrorsLocationFormatterStage.newline;
 
+public class SourceLocationFormatterStage implements Stage<Range, String> {
 
-    public String perform(StagesData stagesData, ParseErrors input) {
-        final var sb = new StringBuilder();
+    @Override
+    public String perform(StagesData stagesData, Range input) {
         final var lines = stagesData.getOrDefault(SourceLoaderStage.TAG_SOURCE_LINES, new String[0]);
-        for (ParseError parseError : input) {
-            sb.append(newline());
-            sb.append(parseError);
-            sb.append(newline());
-            final Range range = parseError.range().normalize();
-            printPosition(sb, range, lines);
-            if (parseError.hasStackTrace()) {
-                sb.append("Stack trace:");
-                sb.append(newline());
-                for (StackTraceElement el : parseError.stackTraceElements()) {
-                    sb.append("    ").append(el).append(newline());
-                }
-            }
+        final var sb = new StringBuilder();
+        if (input != null && lines.length > 0) {
+            printPosition(sb, input.normalize(), lines);
         }
         return sb.toString();
     }
 
-    private static void printPosition(StringBuilder sb, Range range, String[] lines) {
+    static void printPosition(StringBuilder sb, Range range, String[] lines) {
         final Pos start = range.start();
         final int linesCount = lines.length;;
         if (range.isOnSameLine()) {
@@ -59,9 +48,5 @@ public class ParseErrorsFormatterStage implements Stage<ParseErrors, String> {
                 sb.append(newline());
             }
         }
-    }
-    
-    private static String newline(){
-        return "\n";
     }
 }

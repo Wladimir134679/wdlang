@@ -5,15 +5,24 @@ import ru.wdeath.lang.ast.Arguments;
 import ru.wdeath.lang.ast.ReturnStatement;
 import ru.wdeath.lang.ast.Statement;
 import ru.wdeath.lang.exception.ArgumentsMismatchException;
+import ru.wdeath.lang.utils.Range;
+import ru.wdeath.lang.utils.SourceLocation;
 
-public class UserDefinedFunction implements Function {
+public class UserDefinedFunction implements Function, SourceLocation {
 
-    private final Arguments arguments;
-    private final Statement body;
+    public final Arguments arguments;
+    public final Statement body;
+    private final Range range;
 
-    public UserDefinedFunction(Arguments arguments, Statement body) {
+    public UserDefinedFunction(Arguments arguments, Statement body, Range range) {
         this.arguments = arguments;
         this.body = body;
+        this.range = range;
+    }
+
+    @Override
+    public Range getRange() {
+        return range;
     }
 
     public int getArgsCount() {
@@ -32,11 +41,13 @@ public class UserDefinedFunction implements Function {
 
         final int requiredArgsCount = arguments.getRequiredArgumentsCount();
         if (size < requiredArgsCount) {
-            throw new ArgumentsMismatchException(String.format("Arguments count mismatch. %d < %d", size, requiredArgsCount));
+            String error = String.format("Arguments count mismatch. %d < %d", size, requiredArgsCount);
+            throw new ArgumentsMismatchException(error, arguments.getRange());
         }
         final int totalArgsCount = getArgsCount();
         if (size > totalArgsCount) {
-            throw new ArgumentsMismatchException(String.format("Arguments count mismatch. %d > %d", size, totalArgsCount));
+            String error = String.format("Arguments count mismatch. %d > %d", size, totalArgsCount);
+            throw new ArgumentsMismatchException(error, arguments.getRange());
         }
 
         try {

@@ -1,11 +1,14 @@
 package ru.wdeath.lang.exception;
 
-public class ArgumentsMismatchException extends WdlRuntimeException{
+import ru.wdeath.lang.utils.Range;
 
-    public ArgumentsMismatchException() {
-    }
+public class ArgumentsMismatchException extends WdlRuntimeException{
 
     public ArgumentsMismatchException(String message) {
         super(message);
+    }
+
+    public ArgumentsMismatchException(String message, Range range) {
+        super(message, range);
     }
 }

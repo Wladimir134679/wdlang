@@ -179,7 +179,7 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
     public Node visit(FunctionDefineStatement s, T t) {
         final Node body = s.body.accept(this, t);
         if (body != s.body) {
-            return new FunctionDefineStatement(s.name, s.arguments, consumeStatement(body));
+            return new FunctionDefineStatement(s.name, s.arguments, consumeStatement(body), s.getRange());
         }
         return s;
     }

@@ -10,13 +10,19 @@ import ru.wdeath.lang.stages.impl.*;
 import ru.wdeath.lang.stages.util.ErrorsLocationFormatterStage;
 import ru.wdeath.lang.stages.util.ExceptionConverterStage;
 import ru.wdeath.lang.stages.util.ExceptionStackTraceToStringStage;
+import ru.wdeath.lang.stages.util.SourceLocationFormatterStage;
 import ru.wdeath.lang.utils.Input.InputSourceFile;
 import ru.wdeath.lang.utils.Input.SourceLoaderStage;
 import ru.wdeath.lang.utils.TimeMeasurement;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.concurrent.TimeUnit;
+
+import static ru.wdeath.lang.stages.util.ErrorsLocationFormatterStage.TAG_POSITIONS;
 
 public class Main {
 
@@ -26,7 +32,7 @@ public class Main {
         final var input = new InputSourceFile("./examples/program1.wdl");
         final var stagesData = new StagesDataMap();
         try {
-            stagesData.put(SourceLoaderStage.TAG_SOURCE, input);
+            stagesData.put(SourceLoaderStage.TAG_SOURCE_LINES, input);
 
             scopedStages.create("Load source", new SourceLoaderStage())
                     .then(scopedStages
@@ -59,13 +65,28 @@ public class Main {
     }
 
     public static void handleException(StagesData stagesData, Thread thread, Exception exception) {
-        String mainError = new ExceptionConverterStage()
+        final var joiner = new StringJoiner("\n");
+        joiner.add(new ExceptionConverterStage()
                 .then((data, error) -> List.of(error))
                 .then(new ErrorsLocationFormatterStage())
-                .perform(stagesData, exception);
-        String callStack = CallStack.getFormattedCalls();
-        String stackTrace = new ExceptionStackTraceToStringStage()
-                .perform(stagesData, exception);
-        System.err.println(String.join("\n", mainError, "Thread: " + thread.getName(), callStack, stackTrace));
+                .perform(stagesData, exception));
+        final var processedPositions = stagesData.getOrDefault(TAG_POSITIONS, HashSet::new);
+        if (processedPositions.isEmpty()) {
+            // In case no source located errors were printed
+            // Find closest SourceLocated call stack frame
+            CallStack.getCalls().stream()
+                    .limit(4)
+                    .map(CallStack.CallInfo::range)
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .map(range -> new SourceLocationFormatterStage()
+                            .perform(stagesData, range))
+                    .ifPresent(joiner::add);
+        }
+        joiner.add("Thread: " + thread.getName());
+        joiner.add(CallStack.getFormattedCalls());
+        joiner.add(new ExceptionStackTraceToStringStage()
+                .perform(stagesData, exception));
+        System.err.println(joiner.toString());
     }
 }

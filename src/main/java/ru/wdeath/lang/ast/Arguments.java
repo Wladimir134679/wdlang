@@ -1,13 +1,17 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.utils.Range;
+import ru.wdeath.lang.utils.SourceLocation;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Arguments implements Iterable<Argument> {
+public class Arguments implements Iterable<Argument>, SourceLocation {
 
-    private final List<Argument> arguments;
-    private int requiredArgumentsCount;
+    public final List<Argument> arguments;
+    private Range range;
+    public int requiredArgumentsCount;
 
     public Arguments() {
         arguments = new ArrayList<>();
@@ -33,6 +37,15 @@ public class Arguments implements Iterable<Argument> {
 
     public int size() {
         return arguments.size();
+    }
+
+    public void setRange(Range range) {
+        this.range = range;
+    }
+
+    @Override
+    public Range getRange() {
+        return range;
     }
 
     @Override

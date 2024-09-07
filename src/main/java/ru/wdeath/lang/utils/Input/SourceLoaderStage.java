@@ -13,13 +13,16 @@ import java.nio.file.Path;
 
 public class SourceLoaderStage implements Stage<InputSource, String> {
 
-    public static final String TAG_SOURCE = "source";
+    public static final String TAG_SOURCE_LINES = "sourceLines";
 
     @Override
     public String perform(StagesData stagesData, InputSource inputSource) {
         try {
             String result = inputSource.load();
-            stagesData.put(TAG_SOURCE, result);
+            final var lines = (result == null || result.isEmpty())
+                    ? new String[0]
+                    : result.split("\r?\n");
+            stagesData.put(TAG_SOURCE_LINES, lines);
             return result;
         } catch (IOException e) {
             throw new WdlRuntimeException("Unable to read input " + inputSource, e);
