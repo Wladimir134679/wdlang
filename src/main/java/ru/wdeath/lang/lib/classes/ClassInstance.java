@@ -71,6 +71,11 @@ public class ClassInstance implements Value {
     }
 
     @Override
+    public Object asJavaObject() {
+        return thisMap.asJavaObject();
+    }
+
+    @Override
     public Object raw() {
         return thisMap;
     }

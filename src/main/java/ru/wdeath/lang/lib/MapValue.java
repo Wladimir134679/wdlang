@@ -59,6 +59,12 @@ public class MapValue implements Value, Iterable<Map.Entry<Value, Value>> {
         return false;
     }
 
+    @Override
+    public Object asJavaObject() {
+        Map<Object, Object> result = new HashMap<>(map.size());
+        map.forEach((k, v) -> result.put(k.asJavaObject(), v.asJavaObject()));
+        return result;
+    }
 
     @Override
     public Object raw() {

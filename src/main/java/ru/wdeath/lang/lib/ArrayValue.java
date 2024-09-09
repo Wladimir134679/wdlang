@@ -54,6 +54,11 @@ public class ArrayValue implements Value, Iterable<Value>{
     }
 
     @Override
+    public Object asJavaObject() {
+        return Arrays.stream(elements).map(Value::asJavaObject).toArray(Object[]::new);
+    }
+
+    @Override
     public Object raw() {
         return elements;
     }
