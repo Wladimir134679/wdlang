@@ -3,8 +3,10 @@ package ru.wdeath.lang.parser;
 public enum TokenType {
 
     NUMBER,
+    LONG_NUMBER,
     DECIMAL_NUMBER,
     HEX_NUMBER,
+    HEX_LONG_NUMBER,
     WORD,
     TEXT,
 

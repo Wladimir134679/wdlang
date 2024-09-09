@@ -38,6 +38,15 @@ public class Parser {
         assignOperator.put(TokenType.GTGTGTEQ, BinaryExpression.Operator.URSHIFT);
     }
 
+    private static final EnumSet<TokenType> NUMBER_TOKEN_TYPES = EnumSet.of(
+            TokenType.NUMBER,
+            TokenType.LONG_NUMBER,
+            TokenType.DECIMAL_NUMBER,
+            TokenType.HEX_NUMBER,
+            TokenType.HEX_LONG_NUMBER
+    );
+
+
     private final List<Token> tokens;
     private final int size;
     private int index;
@@ -217,18 +226,10 @@ public class Parser {
             consume(TokenType.CASE);
             MatchExpression.Pattern pattern = null;
             final Token current = peek(0);
-            if (match(TokenType.NUMBER)) {
+            if (isNumberToken(current.type())) {
+                // case 20: / case 0.5: / case #FF:
                 pattern = new MatchExpression.ConstantPattern(
-                        NumberValue.of(Double.parseDouble(current.text()))
-                );
-            } else if (match(TokenType.DECIMAL_NUMBER)) {
-                // case 0.5:
-                pattern = new MatchExpression.ConstantPattern(
-                        NumberValue.of(createDecimalNumber(current.text()))
-                );
-            } else if (match(TokenType.HEX_NUMBER)) {
-                pattern = new MatchExpression.ConstantPattern(
-                        NumberValue.of(Long.parseLong(current.text(), 16))
+                        NumberValue.of(getAsNumber(current))
                 );
             } else if (match(TokenType.TEXT)) {
                 pattern = new MatchExpression.ConstantPattern(
@@ -650,51 +651,6 @@ public class Parser {
         return value();
     }
 
-    private Node value() {
-        final var current = peek(0);
-        if (match(TokenType.TEXT)) {
-            final ValueExpression strExpr = new ValueExpression(current.text());
-            // "text".property || "text".func()
-            if (lookMatch(0, TokenType.DOT)) {
-                if (lookMatch(1, TokenType.WORD) && lookMatch(2, TokenType.LPAREN)) {
-                    match(TokenType.DOT);
-                    return functionChain(new ContainerAccessExpression(
-                            strExpr, Collections.singletonList(
-                            new ValueExpression(consume(TokenType.WORD).text())
-                    ), getRange()));
-                }
-                final List<Node> indices = variableSuffix();
-                if (indices.isEmpty()) {
-                    return strExpr;
-                }
-                return new ContainerAccessExpression(strExpr, indices, getRange());
-            }
-            return strExpr;
-        }
-        if (match(TokenType.DECIMAL_NUMBER)) {
-            return new ValueExpression(createDecimalNumber(current.text()));
-        }
-        if (match(TokenType.NUMBER))
-            return new ValueExpression(createNumber(current.text(), 10));
-        if (match(TokenType.HEX_NUMBER))
-            return new ValueExpression(createNumber(current.text(), 16));
-        throw error("Unknown expression: " + current);
-    }
-
-    private Node qualifiedName() {
-        final Token current = peek(0);
-        final var startTokenIndex = index;
-        if (!match(TokenType.WORD)) return null;
-
-        final List<Node> indices = variableSuffix();
-        if (indices.isEmpty()) {
-            final var variable = new VariableExpression(current.text());
-            variable.setRange(getRange(startTokenIndex, index - 1));
-            return variable;
-        }
-        return new ContainerAccessExpression(current.text(), indices, getRange());
-    }
-
     private List<Node> variableSuffix() {
         // .key1.arr1[expr1][expr2].key2
         if (!lookMatch(0, TokenType.DOT) && !lookMatch(0, TokenType.LBRACKET)) {
@@ -715,6 +671,74 @@ public class Parser {
         return indices;
     }
 
+    private Node value() {
+        final var current = peek(0);
+        if (match(TokenType.TEXT)) {
+            final ValueExpression strExpr = new ValueExpression(current.text());
+            // "text".property || "text".func()
+            if (lookMatch(0, TokenType.DOT)) {
+                return stringProperty(strExpr);
+            }
+            return strExpr;
+        }
+        if (isNumberToken(current.type()))
+            return new ValueExpression(getAsNumber(current));
+        throw error("Unknown expression: " + current);
+    }
+
+    private Node qualifiedName() {
+        final Token current = peek(0);
+        final var startTokenIndex = index;
+        if (!match(TokenType.WORD)) return null;
+
+        final List<Node> indices = variableSuffix();
+        if (indices.isEmpty()) {
+            final var variable = new VariableExpression(current.text());
+            variable.setRange(getRange(startTokenIndex, index - 1));
+            return variable;
+        }
+        return new ContainerAccessExpression(current.text(), indices, getRange());
+    }
+
+    private Node stringProperty(ValueExpression strExpr) {
+        if (lookMatch(1, TokenType.WORD) && lookMatch(2, TokenType.LPAREN)) {
+            match(TokenType.DOT);
+            return functionChain(new ContainerAccessExpression(
+                    strExpr,
+                    Collections.singletonList(new ValueExpression(consume(TokenType.WORD).text())),
+                    getRange()
+            ));
+        }
+        final List<Node> indices = variableSuffix();
+        if (indices.isEmpty()) {
+            return strExpr;
+        }
+        return new ContainerAccessExpression(strExpr, indices, getRange());
+    }
+
+    private boolean isNumberToken(TokenType type) {
+        return NUMBER_TOKEN_TYPES.contains(type);
+    }
+
+    private Number getAsNumber(Token current) {
+        if (match(TokenType.NUMBER)) {
+            return createNumber(current.text(), 10);
+        }
+        if (match(TokenType.LONG_NUMBER)) {
+            return createLongNumber(current.text(), 10);
+        }
+        if (match(TokenType.DECIMAL_NUMBER)) {
+            return createDecimalNumber(current.text());
+        }
+        if (match(TokenType.HEX_NUMBER)) {
+            return createNumber(current.text(), 16);
+        }
+        if (match(TokenType.HEX_LONG_NUMBER)) {
+            return createLongNumber(current.text(), 16);
+        }
+        throw error("Unknown number expression: " + current);
+    }
+
     private Number createNumber(String text, int radix) {
         // Double
         if (text.contains(".") || text.contains("e") || text.contains("E")) {
@@ -724,8 +748,12 @@ public class Parser {
         try {
             return Integer.parseInt(text, radix);
         } catch (NumberFormatException nfe) {
-            return Long.parseLong(text, radix);
+            return createLongNumber(text, radix);
         }
+    }
+
+    private Number createLongNumber(String text, int radix) {
+        return Long.parseLong(text, radix);
     }
 
     private Number createDecimalNumber(String text) {

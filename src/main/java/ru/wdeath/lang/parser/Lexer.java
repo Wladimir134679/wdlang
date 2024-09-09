@@ -168,6 +168,9 @@ public class Lexer {
         }
         if (decimal) {
             addToken(TokenType.DECIMAL_NUMBER, buffer.toString(), startPos);
+        } else if (current == 'L') {
+            next();
+            addToken(TokenType.LONG_NUMBER, buffer.toString(), startPos);
         } else {
             addToken(TokenType.NUMBER, buffer.toString(), startPos);
         }
@@ -219,8 +222,12 @@ public class Lexer {
         }
         if (buffer.isEmpty()) throw error("Empty HEX value", startPos);
         if (peek(-1) == '_') throw error("HEX value cannot end with _", startPos, markEndPos());
-        addToken(TokenType.HEX_NUMBER, buffer.toString(), startPos);
-
+        if (current == 'L') {
+            next();
+            addToken(TokenType.HEX_LONG_NUMBER, buffer.toString(), startPos);
+        } else {
+            addToken(TokenType.HEX_NUMBER, buffer.toString(), startPos);
+        }
     }
 
     private static boolean isNumber(char current) {
