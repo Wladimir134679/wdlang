@@ -1,10 +1,11 @@
 package ru.wdeath.lang.ast;
 
 import ru.wdeath.lang.lib.Value;
+import ru.wdeath.lang.lib.classes.EvaluableValue;
 import ru.wdeath.lang.utils.Range;
 import ru.wdeath.lang.utils.SourceLocation;
 
-public class AssignmentExpression implements Statement, SourceLocation {
+public class AssignmentExpression implements Statement, SourceLocation, EvaluableValue {
 
     public final Accessible target;
     public final BinaryExpression.Operator operation;

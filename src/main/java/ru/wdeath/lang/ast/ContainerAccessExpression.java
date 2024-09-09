@@ -2,6 +2,7 @@ package ru.wdeath.lang.ast;
 
 import ru.wdeath.lang.exception.TypeException;
 import ru.wdeath.lang.lib.*;
+import ru.wdeath.lang.lib.classes.ClassInstance;
 import ru.wdeath.lang.utils.Range;
 import ru.wdeath.lang.utils.SourceLocation;
 
@@ -59,7 +60,7 @@ public class ContainerAccessExpression implements Node, Accessible, SourceLocati
             }
             case Types.MAP -> ((MapValue) container).get(lastIndex);
             case Types.STRING -> ((StringValue) container).access(lastIndex);
-            case Types.CLASS -> ((ClassInstanceValue) container).access(lastIndex);
+            case Types.CLASS -> ((ClassInstance) container).access(lastIndex);
             default -> throw new TypeException("Array or map expected");
         };
     }
@@ -71,7 +72,7 @@ public class ContainerAccessExpression implements Node, Accessible, SourceLocati
         switch (container.type()) {
             case Types.ARRAY -> ((ArrayValue) container).set(lastIndex.asInt(), value);
             case Types.MAP -> ((MapValue) container).set(lastIndex, value);
-            case Types.CLASS -> ((ClassInstanceValue) container).set(lastIndex, value);
+            case Types.CLASS -> ((ClassInstance) container).set(lastIndex, value);
             default -> throw new TypeException("Array or map expected. Got " + container.type());
         }
         return value;

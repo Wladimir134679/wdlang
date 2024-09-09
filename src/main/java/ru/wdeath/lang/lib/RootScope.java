@@ -1,19 +1,38 @@
 package ru.wdeath.lang.lib;
 
+import ru.wdeath.lang.lib.classes.ClassDeclaration;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RootScope extends Scope {
 
     private final Map<String, Value> constants;
+    private final Map<String, ClassDeclaration> classDeclarations;
     private final Map<String, Function> functions;
 
     RootScope() {
         functions = new ConcurrentHashMap<>();
         constants = new ConcurrentHashMap<>();
+        classDeclarations = new ConcurrentHashMap<>();
         constants.put("true", NumberValue.ONE);
         constants.put("false", NumberValue.ZERO);
     }
+
+
+    public ClassDeclaration getClassDeclaration(String name) {
+        return classDeclarations.get(name);
+    }
+
+    public void setClassDeclaration(ClassDeclaration classDeclaration) {
+        classDeclarations.put(classDeclaration.name(), classDeclaration);
+    }
+
+    public Map<String, ClassDeclaration> getClassDeclarations() {
+        return classDeclarations;
+    }
+
+
 
     @Override
     public boolean isRoot() {

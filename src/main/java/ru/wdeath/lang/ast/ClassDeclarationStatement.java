@@ -1,8 +1,12 @@
 package ru.wdeath.lang.ast;
 
-import ru.wdeath.lang.lib.ClassDeclarations;
+import ru.wdeath.lang.lib.ScopeHandler;
+import ru.wdeath.lang.lib.UserDefinedFunction;
+import ru.wdeath.lang.lib.classes.ClassDeclaration;
 import ru.wdeath.lang.lib.NumberValue;
 import ru.wdeath.lang.lib.Value;
+import ru.wdeath.lang.lib.classes.ClassField;
+import ru.wdeath.lang.lib.classes.ClassMethod;
 import ru.wdeath.lang.utils.Range;
 import ru.wdeath.lang.utils.SourceLocation;
 
@@ -42,8 +46,25 @@ public class ClassDeclarationStatement implements Statement, SourceLocation {
 
     @Override
     public Value eval() {
-        ClassDeclarations.set(name, this);
+        final var classFields = fields.stream()
+                .map(this::toClassField)
+                .toList();
+        final var classMethods = methods.stream()
+                .map(this::toClassMethod)
+                .toList();
+        final var declaration = new ClassDeclaration(name, classFields, classMethods);
+        ScopeHandler.setClassDeclaration(declaration);
         return NumberValue.ZERO;
+    }
+    private ClassField toClassField(AssignmentExpression f) {
+        // TODO check only variable assignments
+        final String fieldName = ((VariableExpression) f.target).name;
+        return new ClassField(fieldName, f);
+    }
+
+    private ClassMethod toClassMethod(FunctionDefineStatement m) {
+        final var function = new UserDefinedFunction(m.arguments, m.body, m.getRange());
+        return new ClassMethod(m.name, function);
     }
 
     @Override

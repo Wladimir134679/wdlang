@@ -41,10 +41,9 @@ public class FunctionDefineStatement implements Statement, SourceLocation {
 
     @Override
     public String toString() {
-        return "FuncDefS{" +
-                "n='" + name + '\'' +
-                ", a=" + arguments +
-                ", b=" + body +
-                '}';
+        if (body instanceof ReturnStatement rs) {
+            return String.format("def %s%s = %s", name, arguments, rs.expression);
+        }
+        return String.format("def %s%s %s", name, arguments, body);
     }
 }

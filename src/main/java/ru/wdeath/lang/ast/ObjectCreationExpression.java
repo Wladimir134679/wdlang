@@ -2,6 +2,9 @@ package ru.wdeath.lang.ast;
 
 import ru.wdeath.lang.exception.UnknownClassException;
 import ru.wdeath.lang.lib.*;
+import ru.wdeath.lang.lib.classes.ClassDeclaration;
+import ru.wdeath.lang.lib.classes.ClassInstance;
+import ru.wdeath.lang.lib.classes.ClassMethod;
 import ru.wdeath.lang.utils.Range;
 import ru.wdeath.lang.utils.SourceLocation;
 
@@ -22,76 +25,30 @@ public class ObjectCreationExpression implements Node, SourceLocation {
 
     @Override
     public Value eval() {
-        final ClassDeclarationStatement cd = ClassDeclarations.get(className);
-        if (cd == null) {
-            // Is Instantiable?
-            if (ScopeHandler.isVariableOrConstantExists(className)) {
-                final Value variable = ScopeHandler.getVariable(className);
-                if (variable instanceof Instantiable) {
-                    return ((Instantiable) variable).newInstance(ctorArgs());
-                }
+        final ClassDeclaration cd = ScopeHandler.getClassDeclaration(className);
+        if (cd != null) {
+            return cd.newInstance(constructorArgs());
+        }
+        // Is Instantiable?
+        if (ScopeHandler.isVariableOrConstantExists(className)) {
+            final Value variable = ScopeHandler.getVariableOrConstant(className);
+            if (variable instanceof Instantiable instantiable) {
+                return instantiable.newInstance(constructorArgs());
             }
-            throw new UnknownClassException(className, getRange());
         }
 
-        // Create an instance and put evaluated fields with method declarations
-        final ClassInstanceValue instance = new ClassInstanceValue(className);
-        for (AssignmentExpression f : cd.fields) {
-            // TODO check only variable assignments
-            final String fieldName = ((VariableExpression) f.target).name;
-            instance.addField(fieldName, f.eval());
-        }
-        for (FunctionDefineStatement m : cd.methods) {
-            instance.addMethod(m.name, new ClassMethod(m.arguments, m.body, instance, m.getRange()));
-        }
-
-        // Call a constructor
-        instance.callConstructor(ctorArgs());
-        return instance;
+        throw new UnknownClassException(className, range);
     }
 
-    private Value[] ctorArgs() {
+    private Value[] constructorArgs() {
         final int argsSize = constructorArguments.size();
-        final Value[] ctorArgs = new Value[argsSize];
-        for (int i = 0; i < argsSize; i++) {
-            ctorArgs[i] = constructorArguments.get(i).eval();
+        final Value[] args = new Value[argsSize];
+        int i = 0;
+        for (Node argument : constructorArguments) {
+            args[i++] = argument.eval();
         }
-        return ctorArgs;
+        return args;
     }
-
-//    private Value newInstance(){
-//        final ClassDeclarationStatement cd = ClassDeclarations.get(className);
-//
-//        // Create an instance and put evaluated fields with method declarations
-//        final ClassInstanceValue instance = new ClassInstanceValue(className);
-//        for (AssignmentExpression f : cd.fields) {
-//            // TODO check only variable assignments
-//            final String fieldName = ((VariableExpression) f.target).name;
-//            instance.addField(fieldName, f.eval());
-//        }
-//        for (FunctionDefineStatement m : cd.methods) {
-//            instance.addMethod(m.name, new ClassMethod(m.arguments, m.body, instance));
-//        }
-//
-//        // Call a constructor
-//        final int argsSize = constructorArguments.size();
-//        final Value[] ctorArgs = new Value[argsSize];
-//        for (int i = 0; i < argsSize; i++) {
-//            ctorArgs[i] = constructorArguments.get(i).eval();
-//        }
-//        instance.callConstructor(ctorArgs);
-//
-//        return instance;
-//    }
-//
-//    private Value[] ctorArgs() {
-//        final int argsSize = constructorArguments.size();
-//        final Value[] ctorArgs = new Value[argsSize];
-//        for (int i = 0; i < argsSize; i++) {
-//            ctorArgs[i] = constructorArguments.get(i).eval();
-//        }
-//        return ctorArgs;
-//    }
 
     public void setRange(Range range) {
         this.range = range;

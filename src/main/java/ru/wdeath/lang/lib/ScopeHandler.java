@@ -2,6 +2,7 @@ package ru.wdeath.lang.lib;
 
 import ru.wdeath.lang.exception.UnknownFunctionException;
 import ru.wdeath.lang.lib.Scope.ScopeFindData;
+import ru.wdeath.lang.lib.classes.ClassDeclaration;
 
 import java.util.Map;
 
@@ -30,6 +31,10 @@ public class ScopeHandler {
 
     public static Map<String, Function> functions() {
         return rootScope.getFunctions();
+    }
+
+    public static Map<String, ClassDeclaration> classDeclarations() {
+        return rootScope.getClassDeclarations();
     }
 
     /**
@@ -78,6 +83,13 @@ public class ScopeHandler {
         rootScope.setFunction(name, function);
     }
 
+    public static ClassDeclaration getClassDeclaration(String name) {
+        return rootScope.getClassDeclaration(name);
+    }
+
+    public static void setClassDeclaration(ClassDeclaration classDeclaration) {
+        rootScope.setClassDeclaration(classDeclaration);
+    }
 
     public static boolean isVariableOrConstantExists(String name) {
         Value constant = rootScope().getConstant(name);

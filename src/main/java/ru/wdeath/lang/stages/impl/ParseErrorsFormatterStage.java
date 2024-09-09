@@ -1,15 +1,10 @@
 package ru.wdeath.lang.stages.impl;
 
+import ru.wdeath.lang.stages.Stage;
+import ru.wdeath.lang.stages.StagesData;
 import ru.wdeath.lang.stages.util.ErrorsLocationFormatterStage;
 import ru.wdeath.lang.stages.util.ErrorsStackTraceFormatterStage;
 import ru.wdeath.lang.stages.util.SourceLocatedError;
-import ru.wdeath.lang.utils.Input.SourceLoaderStage;
-import ru.wdeath.lang.utils.Pos;
-import ru.wdeath.lang.utils.Range;
-import ru.wdeath.lang.parser.error.ParseError;
-import ru.wdeath.lang.parser.error.ParseErrors;
-import ru.wdeath.lang.stages.Stage;
-import ru.wdeath.lang.stages.StagesData;
 
 import java.util.Collection;
 
