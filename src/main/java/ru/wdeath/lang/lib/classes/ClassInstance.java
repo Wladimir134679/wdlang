@@ -31,9 +31,9 @@ public class ClassInstance implements Value {
         thisMap.set(f.name(), f.evaluableValue().eval());
     }
 
-    public void addMethod(ClassMethod method) {
-        method.setClassInstance(this);
-        final String name = method.getName();
+    public void addMethod(ClassMethod m) {
+        final String name = m.name();
+        final var method = new ClassMethod(m, this);
         thisMap.set(name, method);
         if (name.equals(className)) {
             constructor = method;
@@ -92,13 +92,10 @@ public class ClassInstance implements Value {
 
     @Override
     public String asString() {
-        Value toString = thisMap.get(new StringValue("toString"));
         if (toString != null) {
-            if (toString instanceof ClassMethod cm) {
-                return cm.execute(new Value[0]).asString();
-            }
+            return toString.execute().asString();
         }
-        return className + "@" + thisMap;
+        return className + "@" + thisMap.asString();
     }
 
     @Override
