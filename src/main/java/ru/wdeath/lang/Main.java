@@ -12,6 +12,7 @@ import ru.wdeath.lang.stages.util.ErrorsLocationFormatterStage;
 import ru.wdeath.lang.stages.util.ExceptionConverterStage;
 import ru.wdeath.lang.stages.util.ExceptionStackTraceToStringStage;
 import ru.wdeath.lang.stages.util.SourceLocationFormatterStage;
+import ru.wdeath.lang.utils.Console;
 import ru.wdeath.lang.utils.Input.InputSourceFile;
 import ru.wdeath.lang.utils.Input.SourceLoaderStage;
 import ru.wdeath.lang.utils.TimeMeasurement;
@@ -54,8 +55,7 @@ public class Main {
                     .perform(stagesData, ex.getParseErrors());
             System.err.println(error);
         } catch (Exception ex) {
-            handleException(stagesData, Thread.currentThread(), ex);
-//            ex.printStackTrace();
+            Console.handleException(stagesData, Thread.currentThread(), ex);
         } finally {
             System.out.println();
             System.out.println(stagesData.getOrDefault(OptimizationStage.TAG_OPTIMIZATION_SUMMARY, ""));
@@ -63,31 +63,5 @@ public class Main {
 
         System.out.println("======================");
         System.out.println(measurement.summary(TimeUnit.MILLISECONDS, true));
-    }
-
-    public static void handleException(StagesData stagesData, Thread thread, Exception exception) {
-        final var joiner = new StringJoiner("\n");
-        joiner.add(new ExceptionConverterStage()
-                .then((data, error) -> List.of(error))
-                .then(new ErrorsLocationFormatterStage())
-                .perform(stagesData, exception));
-        final var processedPositions = stagesData.getOrDefault(TAG_POSITIONS, HashSet::new);
-        if (processedPositions.isEmpty()) {
-            // In case no source located errors were printed
-            // Find closest SourceLocated call stack frame
-            CallStack.getCalls().stream()
-                    .limit(4)
-                    .map(CallStack.CallInfo::range)
-                    .filter(Objects::nonNull)
-                    .findFirst()
-                    .map(range -> new SourceLocationFormatterStage()
-                            .perform(stagesData, range))
-                    .ifPresent(joiner::add);
-        }
-        joiner.add("Thread: " + thread.getName());
-        joiner.add(CallStack.getFormattedCalls());
-        joiner.add(new ExceptionStackTraceToStringStage()
-                .perform(stagesData, exception));
-        System.err.println(joiner.toString());
     }
 }
