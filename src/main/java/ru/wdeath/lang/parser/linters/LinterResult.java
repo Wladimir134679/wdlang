@@ -16,9 +16,19 @@ public record LinterResult(Severity severity, String message, Range range)
         return new LinterResult(Severity.WARNING, message);
     }
 
+    public static LinterResult warning(String message, Range range) {
+        return new LinterResult(Severity.WARNING, message, range);
+    }
+
+
     public static LinterResult error(String message) {
         return new LinterResult(Severity.ERROR, message);
     }
+
+    public static LinterResult error(String message, Range range) {
+        return new LinterResult(Severity.ERROR, message, range);
+    }
+
 
     public boolean isError() {
         return severity == Severity.ERROR;

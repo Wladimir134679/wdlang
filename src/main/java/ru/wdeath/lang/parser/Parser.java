@@ -682,11 +682,14 @@ public class Parser {
 
     private Node qualifiedName() {
         final Token current = peek(0);
+        final var startTokenIndex = index;
         if (!match(TokenType.WORD)) return null;
 
         final List<Node> indices = variableSuffix();
         if (indices.isEmpty()) {
-            return new VariableExpression(current.text());
+            final var variable = new VariableExpression(current.text());
+            variable.setRange(getRange(startTokenIndex, index - 1));
+            return variable;
         }
         return new ContainerAccessExpression(current.text(), indices, getRange());
     }
