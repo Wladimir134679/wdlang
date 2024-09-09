@@ -112,9 +112,9 @@ public class Parser {
         if (match(TokenType.FOR))
             return forStatement();
         if (match(TokenType.BREAK))
-            return new BreakStatement();
+            return new BreakStatement(getRange(index - 1, index - 1));
         if (match(TokenType.CONTINUE))
-            return new ContinueStatement();
+            return new ContinueStatement(getRange(index - 1, index - 1));
         if (match(TokenType.RETURN))
             return new ReturnStatement(expression());
         if (match(TokenType.MATCH))

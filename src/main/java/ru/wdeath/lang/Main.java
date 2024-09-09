@@ -31,7 +31,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         final var measurement = new TimeMeasurement();
         final var scopedStages = new ScopedStageFactory(measurement::start, measurement::stop);
-        final var input = new InputSourceFile("./examples/classes.wdl");
+        final var input = new InputSourceFile("./examples/program.wdl");
         final var stagesData = new StagesDataMap();
         try {
             stagesData.put(SourceLoaderStage.TAG_SOURCE_LINES, input);

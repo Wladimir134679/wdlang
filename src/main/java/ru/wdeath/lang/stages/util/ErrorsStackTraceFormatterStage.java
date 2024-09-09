@@ -2,8 +2,8 @@ package ru.wdeath.lang.stages.util;
 
 import ru.wdeath.lang.stages.Stage;
 import ru.wdeath.lang.stages.StagesData;
+import ru.wdeath.lang.utils.Console;
 
-import static ru.wdeath.lang.stages.util.ErrorsLocationFormatterStage.newline;
 
 public class ErrorsStackTraceFormatterStage implements Stage<Iterable<? extends SourceLocatedError>, String> {
 
@@ -13,7 +13,7 @@ public class ErrorsStackTraceFormatterStage implements Stage<Iterable<? extends 
         for (SourceLocatedError error : input) {
             if (!error.hasStackTrace()) continue;
             for (StackTraceElement el : error.getStackTrace()) {
-                sb.append("\t").append(el).append(newline());
+                sb.append("\t").append(el).append(Console.newline());
             }
         }
         return sb.toString();
