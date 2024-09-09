@@ -82,7 +82,7 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
             final AssignmentExpression newField;
             if (fieldExpr != field.expression) {
                 changed = true;
-                newField = new AssignmentExpression(field.operation, field.target, fieldExpr, field.getRange());
+                newField = new AssignmentExpression(field.operation, field.target, fieldExpr, field.range);
             } else {
                 newField = field;
             }

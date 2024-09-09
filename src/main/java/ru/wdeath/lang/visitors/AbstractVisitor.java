@@ -60,6 +60,17 @@ public abstract class AbstractVisitor implements Visitor {
 
     }
 
+
+    @Override
+    public void visit(ClassDeclarationStatement st) {
+        for (Node field : st.fields) {
+            field.accept(this);
+        }
+        for (Node method : st.methods) {
+            method.accept(this);
+        }
+    }
+
     @Override
     public void visit(DoWhileStatement st) {
         st.condition.accept(this);
@@ -161,10 +172,5 @@ public abstract class AbstractVisitor implements Visitor {
         for (Node argument : st.constructorArguments) {
             argument.accept(this);
         }
-    }
-
-    @Override
-    public void visit(ClassDeclarationStatement st) {
-
     }
 }
