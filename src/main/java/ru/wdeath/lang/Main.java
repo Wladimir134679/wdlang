@@ -2,6 +2,7 @@ package ru.wdeath.lang;
 
 import ru.wdeath.lang.exception.WdlParserException;
 import ru.wdeath.lang.lib.CallStack;
+import ru.wdeath.lang.parser.linters.LinterStage;
 import ru.wdeath.lang.parser.opttimization.OptimizationStage;
 import ru.wdeath.lang.stages.ScopedStageFactory;
 import ru.wdeath.lang.stages.StagesData;
@@ -29,7 +30,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         final var measurement = new TimeMeasurement();
         final var scopedStages = new ScopedStageFactory(measurement::start, measurement::stop);
-        final var input = new InputSourceFile("./examples/program1.wdl");
+        final var input = new InputSourceFile("./examples/program.wdl");
         final var stagesData = new StagesDataMap();
         try {
             stagesData.put(SourceLoaderStage.TAG_SOURCE_LINES, input);
@@ -42,7 +43,7 @@ public class Main {
                     .thenConditional(true, scopedStages
                             .create("Optimization", new OptimizationStage(10, true)))
                     .then(scopedStages
-                            .create("Linter", new LinterStage()))
+                            .create("Linter", new LinterStage(LinterStage.Mode.FULL)))
                     .then(scopedStages
                             .create("Function adding", new FunctionAddingStage()))
                     .then(scopedStages

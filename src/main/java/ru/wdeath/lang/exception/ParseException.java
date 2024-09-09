@@ -2,13 +2,16 @@ package ru.wdeath.lang.exception;
 
 import ru.wdeath.lang.utils.Range;
 
-public class ParseException extends BaseParserException {
+public class ParseException extends RuntimeException {
 
-    public ParseException(String message) {
-        super(message, Range.ZERO);
-    }
+    private final Range range;
 
     public ParseException(String message, Range range) {
-        super(message, range);
+        super(message);
+        this.range = range;
+    }
+
+    public Range getRange() {
+        return range;
     }
 }

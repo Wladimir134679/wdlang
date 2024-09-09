@@ -1,10 +1,11 @@
 package ru.wdeath.lang.parser.error;
 
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class ParseErrors implements Iterable<ParseError> {
+public class ParseErrors extends AbstractList<ParseError> {
 
     private final List<ParseError> errors;
 
@@ -16,8 +17,19 @@ public class ParseErrors implements Iterable<ParseError> {
         errors.clear();
     }
 
-    public void add(ParseError parseError) {
-        errors.add(parseError);
+    @Override
+    public boolean add(ParseError parseError) {
+        return errors.add(parseError);
+    }
+
+    @Override
+    public ParseError get(int index) {
+        return errors.get(index);
+    }
+
+    @Override
+    public int size() {
+        return errors.size();
     }
 
     public boolean hasErrors() {

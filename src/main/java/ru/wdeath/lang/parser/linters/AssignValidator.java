@@ -2,8 +2,6 @@ package ru.wdeath.lang.parser.linters;
 
 import ru.wdeath.lang.ast.AssignmentExpression;
 import ru.wdeath.lang.ast.VariableExpression;
-import ru.wdeath.lang.lib.ScopeHandler;
-import ru.wdeath.lang.stages.impl.LinterResult;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -13,7 +11,7 @@ public class AssignValidator extends LintVisitor {
 
     private final Set<String> moduleConstants = new HashSet<>();
 
-    public AssignValidator(Collection<LinterResult> results) {
+    public AssignValidator(LinterResults results) {
         super(results);
     }
 

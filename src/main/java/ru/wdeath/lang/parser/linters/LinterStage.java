@@ -1,12 +1,9 @@
-package ru.wdeath.lang.stages.impl;
+package ru.wdeath.lang.parser.linters;
 
 import ru.wdeath.lang.ast.Statement;
 import ru.wdeath.lang.ast.Visitor;
-import ru.wdeath.lang.lib.Function;
-import ru.wdeath.lang.lib.Functions;
+import ru.wdeath.lang.exception.WdlParserException;
 import ru.wdeath.lang.lib.ScopeHandler;
-import ru.wdeath.lang.parser.linters.AssignValidator;
-import ru.wdeath.lang.parser.linters.DefaultFunctionsOverrideValidator;
 import ru.wdeath.lang.stages.Stage;
 import ru.wdeath.lang.stages.StagesData;
 
@@ -16,13 +13,33 @@ import java.util.List;
 
 public class LinterStage implements Stage<Statement, Statement> {
 
+    public enum Mode { NONE, SEMANTIC, FULL }
+
+    private final Mode mode;
+
+    public LinterStage(Mode mode) {
+        this.mode = mode;
+    }
+
     @Override
     public Statement perform(StagesData stagesData, Statement input) {
-        final List<LinterResult> results = new ArrayList<>();
-        final Visitor[] validators = new Visitor[] {
-                new AssignValidator(results),
-                new DefaultFunctionsOverrideValidator(results)
-        };
+        if (mode == Mode.NONE) return input;
+
+        final LinterResults results = new LinterResults();
+        final List<Visitor> validators = new ArrayList<>();
+//        validators.add(new IncludeSourceValidator(results));
+
+        if (mode == Mode.SEMANTIC) {
+            validators.forEach(input::accept);
+            if (results.hasErrors()) {
+                throw new WdlParserException(results.errors().toList());
+            }
+            return input;
+        }
+
+        // Full lint validation with Console output
+        validators.add(new AssignValidator(results));
+        validators.add(new DefaultFunctionsOverrideValidator(results));
 
         ScopeHandler.resetScope();
         for (Visitor validator : validators) {

@@ -385,14 +385,6 @@ public class Lexer {
         return new Pos(row, Math.max(0, col - 1));
     }
 
-    private WdlParserException error(String text, Pos position) {
-        return error(text, position, position);
-    }
-
-    private WdlParserException error(String text, Pos startPos, Pos endPos) {
-        return new WdlParserException(new ParseError(text, new Range(startPos, endPos)));
-    }
-
     private StringBuilder createBuffer() {
         buffer.setLength(0);
         return buffer;
@@ -413,4 +405,13 @@ public class Lexer {
     private boolean isIdentifierPart(char current) {
         return (Character.isLetterOrDigit(current) || (current == '_') || (current == '$'));
     }
+
+    private WdlParserException error(String text, Pos position) {
+        return error(text, position, position);
+    }
+
+    private WdlParserException error(String text, Pos startPos, Pos endPos) {
+        return new WdlParserException(new ParseError(text, new Range(startPos, endPos)));
+    }
+
 }

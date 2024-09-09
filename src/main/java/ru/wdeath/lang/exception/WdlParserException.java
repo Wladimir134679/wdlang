@@ -2,23 +2,26 @@ package ru.wdeath.lang.exception;
 
 import ru.wdeath.lang.parser.error.ParseError;
 import ru.wdeath.lang.parser.error.ParseErrors;
+import ru.wdeath.lang.stages.util.SourceLocatedError;
+
+import java.util.Collection;
+import java.util.List;
 
 public class WdlParserException extends RuntimeException{
 
-    private final ParseErrors parseErrors;
+    private final Collection<? extends SourceLocatedError> errors;
 
-    public WdlParserException(ParseError parseError) {
-        super(parseError.toString());
-        this.parseErrors = new ParseErrors();
-        parseErrors.add(parseError);;
+    public WdlParserException(SourceLocatedError error) {
+        super(error.toString());
+        errors = List.of(error);;
     }
 
-    public WdlParserException(ParseErrors parseErrors) {
-        super(parseErrors.toString());
-        this.parseErrors = parseErrors;
+    public WdlParserException(Collection<? extends SourceLocatedError> errors) {
+        super(errors.toString());
+        this.errors = errors;
     }
 
-    public ParseErrors getParseErrors() {
-        return parseErrors;
+    public Collection<? extends SourceLocatedError> getParseErrors() {
+        return errors;
     }
 }
