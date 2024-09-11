@@ -2,7 +2,7 @@ package ru.wdeath.lang.ast;
 
 import ru.wdeath.lang.lib.Value;
 
-public record Argument(String name, Node valueExpr) implements Node{
+public record Argument(String name, Node valueExpr) implements Node {
 
     public Argument(String name) {
         this(name, null);
@@ -10,6 +10,8 @@ public record Argument(String name, Node valueExpr) implements Node{
 
     @Override
     public Value eval() {
+        if (valueExpr != null)
+            return valueExpr.eval();
         return null;
     }
 

@@ -181,6 +181,11 @@ public abstract class AbstractVisitor implements Visitor {
     @Override
     public void visit(MatchExpression st) {
         st.expression.accept(this);
+        st.patterns.forEach(pattern -> {
+            if (pattern.optCondition != null)
+                pattern.optCondition.accept(this);
+            pattern.result.accept(this);
+        });
     }
 
     @Override

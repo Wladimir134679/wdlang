@@ -16,12 +16,12 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
 
-    public static final boolean GENERATE_MERMAID_TEXT = true;
+    public static final boolean GENERATE_MERMAID_TEXT = false;
 
     public static void main(String[] args) throws IOException {
         final var measurement = new TimeMeasurement();
         final var scopedStages = new ScopedStageFactory(measurement::start, measurement::stop);
-        final var input = new InputSourceFile("./examples/testTree_fun.wdl");
+        final var input = new InputSourceFile("./examples/program1.wdl");
         final var stagesData = new StagesDataMap();
         final var programContext = new ProgramContext();
         try {
@@ -58,5 +58,11 @@ public class Main {
 
         System.out.println("======================");
         System.out.println(measurement.summary(TimeUnit.MILLISECONDS, true));
+        System.out.println("=".repeat(20));
+        System.out.println(programContext.getScope().variables());
+        System.out.println("=".repeat(20));
+        System.out.println(programContext.getScope().functions());
+        System.out.println("=".repeat(20));
+        System.out.println(programContext.getScope().classDeclarations());
     }
 }

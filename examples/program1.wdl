@@ -113,7 +113,7 @@ class TestClass{
     def add(a, b) = a + b
     def assers(a, b) = assertEquals(a, b)
     def runTest(){
-        this.assers(4, this.add(2, 3))
+        this.assers(4, this.add(2, 2))
     }
 }
 
@@ -142,7 +142,7 @@ def testCallChain() {
 }
 
 def testBoth(a, b, c=23) {
-  f4()()().func().functions.as(-123, f4()()().func().functions.negate(-123).result)
+  f4()()().func().functions.as(-123, f4()()().func().functions.negate(123).result)
 }
 
 
