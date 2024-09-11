@@ -1,6 +1,7 @@
 package ru.wdeath.lang.utils;
 
 
+import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.lib.CallStack;
 import ru.wdeath.lang.outputsettings.ConsoleOutputSettings;
 import ru.wdeath.lang.outputsettings.OutputSettings;
@@ -24,59 +25,69 @@ import static ru.wdeath.lang.stages.util.ErrorsLocationFormatterStage.TAG_POSITI
 
 public class Console {
 
-    private Console() { }
-    
-    private static OutputSettings outputSettings = new ConsoleOutputSettings();
+    private OutputSettings outputSettings;
 
-    public static void useSettings(OutputSettings outputSettings) {
-        Console.outputSettings = outputSettings;
+    public Console() {
+        this(new ConsoleOutputSettings());
     }
 
-    public static OutputSettings getSettings() {
+    public Console(OutputSettings outputSettings) {
+        this.outputSettings = outputSettings;
+    }
+
+    public void useSettings(OutputSettings outputSettings) {
+        this.outputSettings = outputSettings;
+    }
+
+    public OutputSettings getSettings() {
         return outputSettings;
     }
 
-    public static String newline() {
+    public String newline() {
         return outputSettings.newline();
     }
 
-    public static void print(String value) {
+    public void print(String value) {
         outputSettings.print(value);
     }
 
-    public static void print(Object value) {
+    public void print(Object value) {
         outputSettings.print(value);
     }
 
-    public static void println() {
+    public void println() {
         outputSettings.println();
     }
 
-    public static void println(String value) {
+    public void println(String value) {
         outputSettings.println(value);
     }
 
-    public static void println(Object value) {
+    public void println(Object value) {
         outputSettings.println(value);
     }
 
-    public static String text() {
+    public String text() {
         return outputSettings.getText();
     }
 
-    public static void error(Throwable throwable) {
+    public void error(Throwable throwable) {
         outputSettings.error(throwable);
     }
 
-    public static void error(CharSequence value) {
+    public void error(CharSequence value) {
         outputSettings.error(value);
     }
 
-    public static void handleException(StagesData stagesData, Thread thread, Exception exception) {
+    public File fileInstance(String path) {
+        return outputSettings.fileInstance(path);
+    }
+
+    public static void handleException(ProgramContext programContext, StagesData stagesData, Thread thread, Exception exception) {
         final var joiner = new StringJoiner("\n");
         joiner.add(new ExceptionConverterStage()
                 .then((data, error) -> List.of(error))
-                .then(new ErrorsLocationFormatterStage())
+                .then(new ErrorsLocationFormatterStage(programContext))
                 .perform(stagesData, exception));
         final var processedPositions = stagesData.getOrDefault(TAG_POSITIONS, HashSet::new);
         if (processedPositions.isEmpty()) {
@@ -87,7 +98,7 @@ public class Console {
                     .map(CallStack.CallInfo::range)
                     .filter(Objects::nonNull)
                     .findFirst()
-                    .map(range -> new SourceLocationFormatterStage()
+                    .map(range -> new SourceLocationFormatterStage(programContext)
                             .perform(stagesData, range))
                     .ifPresent(joiner::add);
         }
@@ -95,12 +106,12 @@ public class Console {
         joiner.add(CallStack.getFormattedCalls());
         joiner.add(new ExceptionStackTraceToStringStage()
                 .perform(stagesData, exception));
-        error(joiner.toString());
+        programContext.getConsole().error(joiner.toString());
     }
 
-    public static void handleException(Thread thread, Throwable throwable) {
+    public static void handleException(ProgramContext programContext, Thread thread, Throwable throwable) {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try(final PrintStream ps = new PrintStream(baos)) {
+        try (final PrintStream ps = new PrintStream(baos)) {
             ps.printf("%s in %s%n", throwable.getMessage(), thread.getName());
             for (CallStack.CallInfo call : CallStack.getCalls()) {
                 ps.printf("\tat %s%n", call);
@@ -109,10 +120,6 @@ public class Console {
             throwable.printStackTrace(ps);
             ps.flush();
         }
-        error(baos.toString(StandardCharsets.UTF_8));
-    }
-
-    public static File fileInstance(String path) {
-        return outputSettings.fileInstance(path);
+        programContext.getConsole().error(baos.toString(StandardCharsets.UTF_8));
     }
 }

@@ -68,4 +68,12 @@ public non-sealed class StringOutputSettings implements OutputSettings {
     public File fileInstance(String path) {
         return new File(path);
     }
+
+    public StringBuffer getErr() {
+        return err;
+    }
+
+    public StringBuffer getOut() {
+        return out;
+    }
 }

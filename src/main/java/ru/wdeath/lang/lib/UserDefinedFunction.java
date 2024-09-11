@@ -70,6 +70,6 @@ public class UserDefinedFunction implements Function, SourceLocation {
 
     @Override
     public String toString() {
-        return arguments.toString();
+        return "func" + arguments.toString();
     }
 }

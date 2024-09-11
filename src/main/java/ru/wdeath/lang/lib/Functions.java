@@ -14,9 +14,9 @@ public class Functions {
         scope.setFunction("println", (pc, v) -> {
             ArgumentsUtil.checkOrOr(0, 1, v.length);
             if (v.length == 1)
-                System.out.println(v[0].asString());
+                pc.getConsole().println(v[0].asString());
             else
-                System.out.println();
+                pc.getConsole().println();
             return NumberValue.ZERO;
         });
         scope.setFunction("sin", (pc, v) -> {

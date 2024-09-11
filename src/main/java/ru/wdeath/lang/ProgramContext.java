@@ -2,12 +2,15 @@ package ru.wdeath.lang;
 
 import ru.wdeath.lang.lib.Functions;
 import ru.wdeath.lang.lib.ScopeHandler;
+import ru.wdeath.lang.utils.Console;
 
 public class ProgramContext {
 
-    private ScopeHandler scopeHandler;
+    private final ScopeHandler scopeHandler;
+    private final Console console;
 
     public ProgramContext(){
+        console = new Console();
         scopeHandler = new ScopeHandler();
     }
 
@@ -18,5 +21,9 @@ public class ProgramContext {
 
     public ScopeHandler getScope() {
         return scopeHandler;
+    }
+
+    public Console getConsole() {
+        return console;
     }
 }

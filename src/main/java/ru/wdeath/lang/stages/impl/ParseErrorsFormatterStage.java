@@ -1,5 +1,6 @@
 package ru.wdeath.lang.stages.impl;
 
+import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.stages.Stage;
 import ru.wdeath.lang.stages.StagesData;
 import ru.wdeath.lang.stages.util.ErrorsLocationFormatterStage;
@@ -10,11 +11,16 @@ import java.util.Collection;
 
 public class ParseErrorsFormatterStage implements Stage<Collection<? extends SourceLocatedError>, String> {
 
+    private final ProgramContext programContext;
+
+    public ParseErrorsFormatterStage(ProgramContext programContext) {
+        this.programContext = programContext;
+    }
 
     public String perform(StagesData stagesData, Collection<? extends SourceLocatedError> input) {
-        String error = new ErrorsLocationFormatterStage()
+        String error = new ErrorsLocationFormatterStage(programContext)
                 .perform(stagesData, input);
-        String stackTrace = new ErrorsStackTraceFormatterStage()
+        String stackTrace = new ErrorsStackTraceFormatterStage(programContext)
                 .perform(stagesData, input);
         return error + "\n" + stackTrace;
     }

@@ -1,10 +1,12 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.lib.NumberValue;
 import ru.wdeath.lang.lib.Value;
 
 public class PrintStatement implements Statement{
 
+    public ProgramContext programContext;
     public final Node expression;
 
     public PrintStatement(Node expression) {
@@ -13,7 +15,7 @@ public class PrintStatement implements Statement{
 
     @Override
     public Value eval() {
-        System.out.print(expression.eval().asString());
+        programContext.getConsole().print(expression.eval().asString());
         return NumberValue.ZERO;
     }
 
