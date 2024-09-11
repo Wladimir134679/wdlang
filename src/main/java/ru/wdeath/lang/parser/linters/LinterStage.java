@@ -1,5 +1,6 @@
 package ru.wdeath.lang.parser.linters;
 
+import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.ast.Statement;
 import ru.wdeath.lang.ast.Visitor;
 import ru.wdeath.lang.exception.WdlParserException;
@@ -17,8 +18,11 @@ public class LinterStage implements Stage<Statement, Statement> {
 
     private final Mode mode;
 
-    public LinterStage(Mode mode) {
+    public final ProgramContext programContext;
+
+    public LinterStage(Mode mode, ProgramContext programContext) {
         this.mode = mode;
+        this.programContext = programContext;
     }
 
     @Override
@@ -40,12 +44,12 @@ public class LinterStage implements Stage<Statement, Statement> {
 
         // Full lint validation with Console output
         validators.add(new AssignValidator(results));
-        validators.add(new DefaultFunctionsOverrideValidator(results));
+        validators.add(new DefaultFunctionsOverrideValidator(results, programContext));
 
-        ScopeHandler.resetScope();
+        programContext.reset();
         for (Visitor validator : validators) {
             input.accept(validator);
-            ScopeHandler.resetScope();
+            programContext.reset();
         }
 
         results.sort(Comparator.comparing(LinterResult::severity));

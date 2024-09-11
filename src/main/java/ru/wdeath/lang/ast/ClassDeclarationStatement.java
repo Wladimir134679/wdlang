@@ -1,5 +1,6 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.lib.ScopeHandler;
 import ru.wdeath.lang.lib.UserDefinedFunction;
 import ru.wdeath.lang.lib.classes.ClassDeclaration;
@@ -15,6 +16,7 @@ import java.util.List;
 
 public class ClassDeclarationStatement implements Statement, SourceLocation {
 
+    public ProgramContext programContext;
     public final String name;
     public final List<FunctionDefineStatement> methods;
     public final List<AssignmentExpression> fields;
@@ -53,7 +55,7 @@ public class ClassDeclarationStatement implements Statement, SourceLocation {
                 .map(this::toClassMethod)
                 .toList();
         final var declaration = new ClassDeclaration(name, classFields, classMethods);
-        ScopeHandler.setClassDeclaration(declaration);
+        programContext.getScope().setClassDeclaration(declaration);
         return NumberValue.ZERO;
     }
     private ClassField toClassField(AssignmentExpression f) {
@@ -79,6 +81,7 @@ public class ClassDeclarationStatement implements Statement, SourceLocation {
 
     @Override
     public String toString() {
-        return String.format("class %s {\n  %s  %s}", name, fields, methods);
+        return String.format("class %s", name);
+//        return String.format("class %s {\n  %s  %s}", name, fields, methods);
     }
 }

@@ -1,5 +1,6 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.exception.TypeException;
 import ru.wdeath.lang.lib.*;
 import ru.wdeath.lang.lib.classes.ClassInstance;
@@ -13,6 +14,7 @@ public class ContainerAccessExpression implements Node, Accessible, SourceLocati
 
     private static final Pattern PATTERN_SIMPLE_INDEX = Pattern.compile("^\"[a-zA-Z$_]\\w*\"");
 
+    public ProgramContext programContext;
     public final Node root;
     public final List<Node> indexes;
     private final boolean[] simpleIndices;
@@ -59,7 +61,7 @@ public class ContainerAccessExpression implements Node, Accessible, SourceLocati
                 yield ((ArrayValue) container).get(arrayIndex);
             }
             case Types.MAP -> ((MapValue) container).get(lastIndex);
-            case Types.STRING -> ((StringValue) container).access(lastIndex);
+            case Types.STRING -> ((StringValue) container).access(lastIndex, programContext);
             case Types.CLASS -> ((ClassInstance) container).access(lastIndex);
             default -> throw new TypeException("Array or map expected");
         };

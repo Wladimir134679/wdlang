@@ -1,5 +1,6 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.exception.PatternMatchingException;
 import ru.wdeath.lang.lib.NumberValue;
 import ru.wdeath.lang.lib.ScopeHandler;
@@ -9,7 +10,7 @@ import java.util.List;
 
 public class MatchExpression implements Statement {
 
-
+    public ProgramContext programContext;
     public final Node expression;
     public final List<Pattern> patterns;
 
@@ -30,13 +31,14 @@ public class MatchExpression implements Statement {
             if (p instanceof VariablePattern pattern) {
                 if (pattern.variable.equals("_")) return evalResult(p.result);
 
-                if (ScopeHandler.isVariableOrConstantExists(pattern.variable)) {
-                    if (match(value, ScopeHandler.getVariableOrConstant(pattern.variable)) && optMatches(p)) {
+                ScopeHandler scope = programContext.getScope();
+                if (scope.isVariableOrConstantExists(pattern.variable)) {
+                    if (match(value, scope.getVariableOrConstant(pattern.variable)) && optMatches(p)) {
                         return evalResult(p.result);
                     }
                 } else {
-                    try (final var ignored = ScopeHandler.closeableScope()) {
-                        ScopeHandler.defineVariableInCurrentScope(pattern.variable, value);
+                    try (final var ignored = scope.closeableScope()) {
+                        scope.defineVariableInCurrentScope(pattern.variable, value);
                         if (optMatches(p)) {
                             return evalResult(p.result);
                         }

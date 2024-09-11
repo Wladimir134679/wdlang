@@ -33,9 +33,6 @@ public class ReturnStatement extends RuntimeException implements Statement{
 
     @Override
     public String toString() {
-        return "RS{" +
-                "e=" + expression +
-                ", r=" + result +
-                '}';
+        return "return " + expression.toString();
     }
 }

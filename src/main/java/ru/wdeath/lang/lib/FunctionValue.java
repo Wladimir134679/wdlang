@@ -1,12 +1,13 @@
 package ru.wdeath.lang.lib;
 
+import ru.wdeath.lang.ast.Visitor;
 import ru.wdeath.lang.exception.TypeException;
 
 import java.util.Objects;
 
 public class FunctionValue implements Value{
 
-    private final Function function;
+    public final Function function;
 
     public FunctionValue(Function function) {
         this.function = function;

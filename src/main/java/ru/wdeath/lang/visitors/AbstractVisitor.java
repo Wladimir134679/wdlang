@@ -1,17 +1,30 @@
 package ru.wdeath.lang.visitors;
 
 import ru.wdeath.lang.ast.*;
+import ru.wdeath.lang.lib.FunctionValue;
+import ru.wdeath.lang.lib.Types;
+import ru.wdeath.lang.lib.UserDefinedFunction;
+import ru.wdeath.lang.lib.Value;
 
 public abstract class AbstractVisitor implements Visitor {
 
+
+    @Override
+    public void visit(Argument st) {
+        if (st.valueExpr() != null)
+            st.valueExpr().accept(this);
+    }
+
     @Override
     public void visit(AssignmentExpression st) {
+        st.target.accept(this);
         st.expression.accept(this);
     }
 
     @Override
     public void visit(FunctionDefineStatement st) {
         st.body.accept(this);
+        st.arguments.forEach(s -> s.accept(this));
     }
 
     @Override
@@ -87,8 +100,8 @@ public abstract class AbstractVisitor implements Visitor {
 
     @Override
     public void visit(FunctionExpression st) {
-        st.expression.accept(this);
         st.arguments.forEach(s -> s.accept(this));
+        st.expression.accept(this);
     }
 
     @Override
@@ -117,6 +130,10 @@ public abstract class AbstractVisitor implements Visitor {
 
     @Override
     public void visit(ValueExpression st) {
+        if (st.value instanceof FunctionValue fv &&
+                fv.getFunction() instanceof UserDefinedFunction udf) {
+            visit(udf);
+        }
     }
 
     @Override
@@ -147,7 +164,6 @@ public abstract class AbstractVisitor implements Visitor {
 
     @Override
     public void visit(FunctionReferenceExpression st) {
-
     }
 
     @Override
@@ -172,5 +188,10 @@ public abstract class AbstractVisitor implements Visitor {
         for (Node argument : st.constructorArguments) {
             argument.accept(this);
         }
+    }
+
+    public void visit(UserDefinedFunction userDefinedFunction) {
+        userDefinedFunction.body.accept(this);
+        userDefinedFunction.arguments.forEach(argument -> argument.accept(this));
     }
 }

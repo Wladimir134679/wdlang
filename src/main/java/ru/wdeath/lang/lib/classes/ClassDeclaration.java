@@ -1,5 +1,6 @@
 package ru.wdeath.lang.lib.classes;
 
+import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.ast.ClassDeclarationStatement;
 import ru.wdeath.lang.exception.UnknownFunctionException;
 import ru.wdeath.lang.lib.Instantiable;
@@ -17,14 +18,14 @@ public record ClassDeclaration(
 
 
     @Override
-    public Value newInstance(Value[] args) {
+    public Value newInstance(Value[] args, ProgramContext context) {
         final var instance = new ClassInstance(name);
         for (ClassField f : classFields) {
             instance.addField(f);
         }
         for (ClassMethod m : classMethods) {
-            instance.addMethod(m);
+            instance.addMethod(m, context);
         }
-        return instance.callConstructor(args);
+        return instance.callConstructor(args, context);
     }
 }

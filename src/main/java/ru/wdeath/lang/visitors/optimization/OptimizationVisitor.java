@@ -106,6 +106,15 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
     }
 
     @Override
+    public Node visit(Argument s, T t) {
+        final Node val = s.valueExpr().accept(this, t);
+        if (val != s.valueExpr()) {
+            return new Argument(s.name(), val);
+        }
+        return s;
+    }
+
+    @Override
     public Node visit(ConditionalExpression s, T t) {
         final Node expr1 = s.expr1.accept(this, t);
         final Node expr2 = s.expr2.accept(this, t);

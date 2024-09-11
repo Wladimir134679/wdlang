@@ -1,5 +1,6 @@
 package ru.wdeath.lang.lib.classes;
 
+import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.lib.Function;
 import ru.wdeath.lang.lib.ScopeHandler;
 import ru.wdeath.lang.lib.Value;
@@ -21,13 +22,13 @@ public record ClassMethod(
     }
 
     @Override
-    public Value execute(Value... args) {
-        try (final var ignored = ScopeHandler.closeableScope()) {
+    public Value execute(ProgramContext programContext, Value... args) {
+        try (final var ignored = programContext.getScope().closeableScope()) {
             if (classInstance != null) {
                 // non-static method
-                ScopeHandler.defineVariableInCurrentScope("this", classInstance.getThisMap());
+                programContext.getScope().defineVariableInCurrentScope("this", classInstance.getThisMap());
             }
-            return function.execute(args);
+            return function.execute(programContext, args);
         }
     }
 

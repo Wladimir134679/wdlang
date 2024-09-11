@@ -1,10 +1,9 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.exception.UnknownClassException;
 import ru.wdeath.lang.lib.*;
 import ru.wdeath.lang.lib.classes.ClassDeclaration;
-import ru.wdeath.lang.lib.classes.ClassInstance;
-import ru.wdeath.lang.lib.classes.ClassMethod;
 import ru.wdeath.lang.utils.Range;
 import ru.wdeath.lang.utils.SourceLocation;
 
@@ -13,6 +12,7 @@ import java.util.List;
 
 public class ObjectCreationExpression implements Node, SourceLocation {
 
+    public ProgramContext programContext;
     public final String className;
     public final List<Node> constructorArguments;
     private Range range;
@@ -25,15 +25,15 @@ public class ObjectCreationExpression implements Node, SourceLocation {
 
     @Override
     public Value eval() {
-        final ClassDeclaration cd = ScopeHandler.getClassDeclaration(className);
+        final ClassDeclaration cd = programContext.getScope().getClassDeclaration(className);
         if (cd != null) {
-            return cd.newInstance(constructorArgs());
+            return cd.newInstance(constructorArgs(), programContext);
         }
         // Is Instantiable?
-        if (ScopeHandler.isVariableOrConstantExists(className)) {
-            final Value variable = ScopeHandler.getVariableOrConstant(className);
+        if (programContext.getScope().isVariableOrConstantExists(className)) {
+            final Value variable = programContext.getScope().getVariableOrConstant(className);
             if (variable instanceof Instantiable instantiable) {
-                return instantiable.newInstance(constructorArgs());
+                return instantiable.newInstance(constructorArgs(), programContext);
             }
         }
 

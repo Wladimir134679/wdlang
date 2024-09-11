@@ -1,5 +1,7 @@
 package ru.wdeath.lang.lib;
 
+import ru.wdeath.lang.ast.Visitor;
+
 public interface Value extends Comparable<Value> {
 
     Object raw();

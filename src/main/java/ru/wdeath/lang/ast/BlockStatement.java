@@ -40,8 +40,6 @@ public class BlockStatement implements Statement{
 
     @Override
     public String toString() {
-        return "BS{" +
-                "s=" + statements +
-                '}';
+        return "BlockStatement";
     }
 }

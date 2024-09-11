@@ -1,5 +1,6 @@
 package ru.wdeath.lang.lib;
 
+import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.exception.UnknownFunctionException;
 import ru.wdeath.lang.exception.WdlRuntimeException;
 
@@ -8,8 +9,9 @@ import java.util.Map;
 
 public class Functions {
 
-    public static void clearAndInit(){
-        ScopeHandler.setFunction("println", v -> {
+    public static void clearAndInit(ProgramContext programContext){
+        ScopeHandler scope = programContext.getScope();
+        scope.setFunction("println", (pc, v) -> {
             ArgumentsUtil.checkOrOr(0, 1, v.length);
             if (v.length == 1)
                 System.out.println(v[0].asString());
@@ -17,18 +19,18 @@ public class Functions {
                 System.out.println();
             return NumberValue.ZERO;
         });
-        ScopeHandler.setFunction("sin", v -> {
+        scope.setFunction("sin", (pc, v) -> {
             ArgumentsUtil.check(1, v.length);
             return NumberValue.of(Math.sin(v[0].asDouble()));
         });
-        ScopeHandler.setFunction("cos", v -> {
+        scope.setFunction("cos", (pc, v) -> {
             ArgumentsUtil.check(1, v.length);
             return NumberValue.of(Math.sin(v[0].asDouble()));
         });
-        ScopeHandler.setFunction("newarray", v ->
+        scope.setFunction("newarray", (pc, v) ->
                 createArray(v, 0)
         );
-        ScopeHandler.setFunction("assertEquals", v -> {
+        scope.setFunction("assertEquals", (pc, v) -> {
             ArgumentsUtil.check(2, v.length);
             if(!v[0].equals(v[1]))
                 throw new WdlRuntimeException(v[0].asString() + " != " + v[1].asString());

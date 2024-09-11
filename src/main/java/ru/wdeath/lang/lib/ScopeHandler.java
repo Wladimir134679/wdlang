@@ -8,51 +8,30 @@ import java.util.Map;
 
 public class ScopeHandler {
 
-    private static final Object lock = new Object();
+    private final Object lock = new Object();
 
-    private static volatile RootScope rootScope;
-    private static volatile Scope scope;
+    private volatile RootScope rootScope;
+    private volatile Scope scope;
 
-    static {
-        ScopeHandler.resetScope();
-    }
-
-    static RootScope rootScope() {
-        return rootScope;
-    }
-
-    public static Map<String, Value> variables() {
-        return scope.getVariables();
-    }
-
-    public static Map<String, Value> constants() {
-        return rootScope.getConstants();
-    }
-
-    public static Map<String, Function> functions() {
-        return rootScope.getFunctions();
-    }
-
-    public static Map<String, ClassDeclaration> classDeclarations() {
-        return rootScope.getClassDeclarations();
+    public ScopeHandler(){
+        resetScope();
     }
 
     /**
      * Resets a scope for new program execution
      */
-    public static void resetScope() {
+    public void resetScope() {
         rootScope = new RootScope();
         scope = rootScope;
-        Functions.clearAndInit();
     }
 
-    public static void push() {
+    public void push() {
         synchronized (lock) {
             scope = new Scope(scope);
         }
     }
 
-    public static void pop() {
+    public void pop() {
         synchronized (lock) {
             if (!scope.isRoot()) {
                 scope = scope.parent;
@@ -60,39 +39,55 @@ public class ScopeHandler {
         }
     }
 
-    public static AutoCloseableScope closeableScope() {
+    public AutoCloseableScope closeableScope() {
         push();
-        return new AutoCloseableScope();
+        return new AutoCloseableScope(this);
     }
 
-    public static boolean isConstantExists(String name) {
+    public Map<String, Value> variables() {
+        return scope.getVariables();
+    }
+
+    public Map<String, Value> constants() {
+        return rootScope.getConstants();
+    }
+
+    public Map<String, Function> functions() {
+        return rootScope.getFunctions();
+    }
+
+    public Map<String, ClassDeclaration> classDeclarations() {
+        return rootScope.getClassDeclarations();
+    }
+
+    public boolean isConstantExists(String name) {
         return rootScope.containsConstant(name);
     }
 
-    public static boolean isFunctionExists(String name) {
+    public boolean isFunctionExists(String name) {
         return rootScope.containsFunction(name);
     }
 
-    public static Function getFunction(String name) {
+    public Function getFunction(String name) {
         final var function = rootScope.getFunction(name);
         if (function == null) throw new UnknownFunctionException(name);
         return function;
     }
 
-    public static void setFunction(String name, Function function) {
+    public void setFunction(String name, Function function) {
         rootScope.setFunction(name, function);
     }
 
-    public static ClassDeclaration getClassDeclaration(String name) {
+    public ClassDeclaration getClassDeclaration(String name) {
         return rootScope.getClassDeclaration(name);
     }
 
-    public static void setClassDeclaration(ClassDeclaration classDeclaration) {
+    public void setClassDeclaration(ClassDeclaration classDeclaration) {
         rootScope.setClassDeclaration(classDeclaration);
     }
 
-    public static boolean isVariableOrConstantExists(String name) {
-        Value constant = rootScope().getConstant(name);
+    public boolean isVariableOrConstantExists(String name) {
+        Value constant = rootScope.getConstant(name);
         if (constant != null) {
             return true;
         }
@@ -101,8 +96,8 @@ public class ScopeHandler {
         }
     }
 
-    public static Value getVariableOrConstant(String name) {
-        Value constant = rootScope().getConstant(name);
+    public Value getVariableOrConstant(String name) {
+        Value constant = rootScope.getConstant(name);
         if (constant != null) {
             return constant;
         }
@@ -115,7 +110,7 @@ public class ScopeHandler {
         return NumberValue.ZERO;
     }
 
-    public static Value getVariable(String name) {
+    public Value getVariable(String name) {
         synchronized (lock) {
             final ScopeFindData scopeData = findScope(name);
             if (scopeData.isFound) {
@@ -126,23 +121,23 @@ public class ScopeHandler {
         return NumberValue.ZERO;
     }
 
-    public static void setVariable(String name, Value value) {
+    public void setVariable(String name, Value value) {
         synchronized (lock) {
             findScope(name).scope.setVariable(name, value);
         }
     }
 
-    public static void setConstant(String name, Value value) {
+    public void setConstant(String name, Value value) {
         rootScope.setConstant(name, value);
     }
 
-    public static void defineVariableInCurrentScope(String name, Value value) {
+    public void defineVariableInCurrentScope(String name, Value value) {
         synchronized (lock) {
             scope.setVariable(name, value);
         }
     }
 
-    private static ScopeFindData findScope(String name) {
+    private ScopeFindData findScope(String name) {
         Scope current = scope;
         do {
             if (current.contains(name)) {

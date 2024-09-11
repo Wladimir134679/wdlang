@@ -1,11 +1,13 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.lib.FunctionValue;
 import ru.wdeath.lang.lib.Functions;
 import ru.wdeath.lang.lib.ScopeHandler;
 
 public class FunctionReferenceExpression implements Node {
 
+    public ProgramContext programContext;
     public final String name;
 
     public FunctionReferenceExpression(String name) {
@@ -14,7 +16,7 @@ public class FunctionReferenceExpression implements Node {
 
     @Override
     public FunctionValue eval() {
-        return new FunctionValue(ScopeHandler.getFunction(name));
+        return new FunctionValue(programContext.getScope().getFunction(name));
     }
 
     @Override

@@ -443,10 +443,6 @@ public class BinaryExpression implements Node {
 
     @Override
     public String toString() {
-        return "BE{" +
-                "e1=" + expr1 +
-                ", o=" + operation.name +
-                ", e2=" + expr2 +
-                '}';
+        return expr1.toString() + " " + operation + " " + expr2.toString();
     }
 }

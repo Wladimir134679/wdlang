@@ -1,5 +1,6 @@
 package ru.wdeath.lang.lib;
 
+import ru.wdeath.lang.ast.Visitor;
 import ru.wdeath.lang.exception.TypeException;
 
 import java.util.HashMap;

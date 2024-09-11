@@ -1,5 +1,10 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.lib.ArrayValue;
+import ru.wdeath.lang.lib.FunctionValue;
+import ru.wdeath.lang.lib.MapValue;
+import ru.wdeath.lang.lib.classes.ClassInstance;
+
 public interface Visitor {
 
     void visit(AssignmentExpression st);
@@ -57,4 +62,6 @@ public interface Visitor {
     void visit(ObjectCreationExpression st);
 
     void visit(ClassDeclarationStatement st);
+
+    void visit(Argument st);
 }

@@ -1,5 +1,6 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.exception.UnknownFunctionException;
 import ru.wdeath.lang.lib.*;
 import ru.wdeath.lang.utils.Range;
@@ -11,6 +12,7 @@ import java.util.List;
 
 public class FunctionExpression implements Node, Statement, SourceLocation {
 
+    public ProgramContext programContext;
     public final Node expression;
     public final List<Node> arguments;
     private Range range;
@@ -48,17 +50,18 @@ public class FunctionExpression implements Node, Statement, SourceLocation {
         }
         final Function f = consumeFunction(expression);
         CallStack.enter(expression.toString(), f, range);
-        final Value result = f.execute(values);
+        final Value result = f.execute(programContext, values);
         CallStack.exit();
         return result;
     }
 
     private Function getFunction(String name) {
-        if (ScopeHandler.isFunctionExists(name)) {
-            return ScopeHandler.getFunction(name);
+        ScopeHandler scope = programContext.getScope();
+        if (scope.isFunctionExists(name)) {
+            return scope.getFunction(name);
         }
-        if (ScopeHandler.isVariableOrConstantExists(name)) {
-            final Value value = ScopeHandler.getVariableOrConstant(name);
+        if (scope.isVariableOrConstantExists(name)) {
+            final Value value = scope.getVariableOrConstant(name);
             if (value.type() == Types.FUNCTION)
                 return ((FunctionValue) value).getFunction();
         }

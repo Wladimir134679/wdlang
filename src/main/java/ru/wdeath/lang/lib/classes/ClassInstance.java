@@ -1,5 +1,7 @@
 package ru.wdeath.lang.lib.classes;
 
+import ru.wdeath.lang.ProgramContext;
+import ru.wdeath.lang.ast.Visitor;
 import ru.wdeath.lang.exception.TypeException;
 import ru.wdeath.lang.exception.WdlRuntimeException;
 import ru.wdeath.lang.lib.*;
@@ -31,7 +33,7 @@ public class ClassInstance implements Value {
         thisMap.set(f.name(), f.evaluableValue().eval());
     }
 
-    public void addMethod(ClassMethod m) {
+    public void addMethod(ClassMethod m, ProgramContext context) {
         final String name = m.name();
         final var method = new ClassMethod(m, this);
         thisMap.set(name, method);
@@ -42,14 +44,14 @@ public class ClassInstance implements Value {
         }
     }
 
-    public ClassInstance callConstructor(Value[] args) {
+    public ClassInstance callConstructor(Value[] args, ProgramContext programContext) {
         if (isInstantiated) {
             throw new WdlRuntimeException(
                     "Class %s was already instantiated".formatted(className));
         }
         if (constructor != null) {
             CallStack.enter("class " + className, constructor, null);
-            constructor.execute(args);
+            constructor.execute(programContext, args);
             CallStack.exit();
         }
         isInstantiated = true;
@@ -92,9 +94,6 @@ public class ClassInstance implements Value {
 
     @Override
     public String asString() {
-        if (toString != null) {
-            return toString.execute().asString();
-        }
         return className + "@" + thisMap.asString();
     }
 

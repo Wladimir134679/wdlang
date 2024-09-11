@@ -1,5 +1,6 @@
 package ru.wdeath.lang.lib;
 
+import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.ast.Argument;
 import ru.wdeath.lang.ast.Arguments;
 import ru.wdeath.lang.ast.ReturnStatement;
@@ -32,11 +33,11 @@ public class UserDefinedFunction implements Function, SourceLocation {
     public String getArgsName(int index) {
         if (index >= arguments.size() || index < 0)
             return "";
-        return arguments.get(index).getName();
+        return arguments.get(index).name();
     }
 
     @Override
-    public Value execute(Value[] values) {
+    public Value execute(ProgramContext programContext, Value[] values) {
         final int size = values.length;
 
         final int requiredArgsCount = arguments.getRequiredArgumentsCount();
@@ -50,22 +51,20 @@ public class UserDefinedFunction implements Function, SourceLocation {
             throw new ArgumentsMismatchException(error, arguments.getRange());
         }
 
-        try {
-            ScopeHandler.push();
+        ScopeHandler handler = programContext.getScope();
+        try (final var ignored = handler.closeableScope()) {
             for (int i = 0; i < size; i++) {
-                ScopeHandler.defineVariableInCurrentScope(getArgsName(i), values[i]);
+                handler.defineVariableInCurrentScope(getArgsName(i), values[i]);
             }
             // Optional args if exists
             for (int i = size; i < totalArgsCount; i++) {
                 final Argument arg = arguments.get(i);
-                ScopeHandler.defineVariableInCurrentScope(arg.getName(), arg.getValueExpr().eval());
+                handler.defineVariableInCurrentScope(arg.name(), arg.eval());
             }
             body.eval();
             return NumberValue.ZERO;
         } catch (ReturnStatement rs) {
             return rs.getResult();
-        } finally {
-            ScopeHandler.pop();
         }
     }
 

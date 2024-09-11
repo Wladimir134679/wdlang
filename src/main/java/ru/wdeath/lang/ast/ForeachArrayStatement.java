@@ -1,5 +1,6 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.exception.TypeException;
 import ru.wdeath.lang.lib.*;
 
@@ -7,6 +8,7 @@ import java.util.Map;
 
 public class ForeachArrayStatement extends InterruptableNode implements Statement {
 
+    public ProgramContext context;
     public final String variable;
     public final Node container;
     public final Statement body;
@@ -20,7 +22,7 @@ public class ForeachArrayStatement extends InterruptableNode implements Statemen
     @Override
     public Value eval() {
         super.interruptionCheck();
-        try (final var ignored = ScopeHandler.closeableScope()) {
+        try (final var ignored = context.getScope().closeableScope()) {
             final Value containerValue = container.eval();
             switch (containerValue.type()) {
                 case Types.STRING -> iterateString(containerValue.asString());
@@ -34,7 +36,7 @@ public class ForeachArrayStatement extends InterruptableNode implements Statemen
 
     private void iterateString(String str) {
         for (char ch : str.toCharArray()) {
-            ScopeHandler.setVariable(variable, new StringValue(String.valueOf(ch)));
+            context.getScope().setVariable(variable, new StringValue(String.valueOf(ch)));
             try {
                 body.eval();
             } catch (BreakStatement bs) {
@@ -47,7 +49,7 @@ public class ForeachArrayStatement extends InterruptableNode implements Statemen
 
     private void iterateArray(ArrayValue containerValue) {
         for (Value value : containerValue) {
-            ScopeHandler.setVariable(variable, value);
+            context.getScope().setVariable(variable, value);
             try {
                 body.eval();
             } catch (BreakStatement bs) {
@@ -60,7 +62,7 @@ public class ForeachArrayStatement extends InterruptableNode implements Statemen
 
     private void iterateMap(MapValue containerValue) {
         for (Map.Entry<Value, Value> entry : containerValue) {
-            ScopeHandler.setVariable(variable, new ArrayValue(new Value[]{
+            context.getScope().setVariable(variable, new ArrayValue(new Value[]{
                     entry.getKey(),
                     entry.getValue()
             }));

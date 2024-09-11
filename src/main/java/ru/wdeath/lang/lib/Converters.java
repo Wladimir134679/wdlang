@@ -96,46 +96,46 @@ public final class Converters {
 
 
     public static FunctionValue voidToVoid(VoidToVoidFunction f) {
-        return new FunctionValue(args -> {
+        return new FunctionValue((pc, args) -> {
             f.apply();
             return NumberValue.ZERO;
         });
     }
 
     public static FunctionValue voidToBoolean(VoidToBooleanFunction f) {
-        return new FunctionValue(args -> NumberValue.fromBoolean(f.apply()));
+        return new FunctionValue((pc, args) -> NumberValue.fromBoolean(f.apply()));
     }
 
     public static FunctionValue voidToInt(VoidToIntFunction f) {
-        return new FunctionValue(args -> NumberValue.of(f.apply()));
+        return new FunctionValue((pc, args) -> NumberValue.of(f.apply()));
     }
 
     public static FunctionValue voidToLong(VoidToLongFunction f) {
-        return new FunctionValue(args -> NumberValue.of(f.apply()));
+        return new FunctionValue((pc, args) -> NumberValue.of(f.apply()));
     }
 
     public static FunctionValue voidToFloat(VoidToFloatFunction f) {
-        return new FunctionValue(args -> NumberValue.of(f.apply()));
+        return new FunctionValue((pc, args) -> NumberValue.of(f.apply()));
     }
 
     public static FunctionValue voidToDouble(VoidToDoubleFunction f) {
-        return new FunctionValue(args -> NumberValue.of(f.apply()));
+        return new FunctionValue((pc, args) -> NumberValue.of(f.apply()));
     }
 
     public static FunctionValue voidToCharSequence(VoidToCharSequenceFunction f) {
-        return new FunctionValue(args -> new StringValue(f.apply().toString()));
+        return new FunctionValue((pc, args) -> new StringValue(f.apply().toString()));
     }
     
     public static FunctionValue voidToString(VoidToStringFunction f) {
-        return new FunctionValue(args -> new StringValue(f.apply()));
+        return new FunctionValue((pc, args) -> new StringValue(f.apply()));
     }
 
     public static <E extends Enum<E>> FunctionValue enumOrdinal(VoidToEnumFunction<E> f) {
-        return new FunctionValue(args -> NumberValue.of(f.apply().ordinal()));
+        return new FunctionValue((pc, args) -> NumberValue.of(f.apply().ordinal()));
     }
 
     public static FunctionValue booleanToVoid(BooleanToVoidFunction f) {
-        return new FunctionValue(args -> {
+        return new FunctionValue((pc, args) -> {
             ArgumentsUtil.check(1, args.length);
             f.apply(args[0].asInt() != 0);
             return NumberValue.ZERO;
@@ -146,7 +146,7 @@ public final class Converters {
         return booleanOptToVoid(f, true);
     }
     public static FunctionValue booleanOptToVoid(BooleanToVoidFunction f, final boolean def) {
-        return new FunctionValue(args -> {
+        return new FunctionValue((pc, args) -> {
             ArgumentsUtil.checkOrOr(0, 1, args.length);
             f.apply( (args.length == 1) ? (args[0].asInt() != 0) : def );
             return NumberValue.ZERO;
@@ -154,7 +154,7 @@ public final class Converters {
     }
 
     public static FunctionValue intToVoid(IntToVoidFunction f) {
-        return new FunctionValue(args -> {
+        return new FunctionValue((pc, args) -> {
             ArgumentsUtil.check(1, args.length);
             f.apply(args[0].asInt());
             return NumberValue.ZERO;
@@ -162,7 +162,7 @@ public final class Converters {
     }
     
     public static FunctionValue intOptToVoid(VoidToVoidFunction f1, IntToVoidFunction f2) {
-        return new FunctionValue(args -> {
+        return new FunctionValue((pc, args) -> {
             ArgumentsUtil.checkOrOr(0, 1, args.length);
             if (args.length == 0) {
                 f1.apply();
@@ -174,14 +174,14 @@ public final class Converters {
     }
 
     public static FunctionValue intToLong(IntToLongFunction f) {
-        return new FunctionValue(args -> {
+        return new FunctionValue((pc, args) -> {
             ArgumentsUtil.check(1, args.length);
             return NumberValue.of(f.apply(args[0].asInt()));
         });
     }
 
     public static FunctionValue int2ToVoid(Int2ToVoidFunction f) {
-        return new FunctionValue(args -> {
+        return new FunctionValue((pc, args) -> {
             ArgumentsUtil.check(2, args.length);
             f.apply(args[0].asInt(),
                     args[1].asInt());
@@ -190,7 +190,7 @@ public final class Converters {
     }
 
     public static FunctionValue int4ToVoid(Int4ToVoidFunction f) {
-        return new FunctionValue(args -> {
+        return new FunctionValue((pc, args) -> {
             ArgumentsUtil.check(4, args.length);
             f.apply(args[0].asInt(),
                     args[1].asInt(),
@@ -201,7 +201,7 @@ public final class Converters {
     }
 
     public static FunctionValue floatToVoid(FloatToVoidFunction f) {
-        return new FunctionValue(args -> {
+        return new FunctionValue((pc, args) -> {
             ArgumentsUtil.check(1, args.length);
             f.apply(getFloatNumber(args[0]));
             return NumberValue.ZERO;
@@ -209,7 +209,7 @@ public final class Converters {
     }
 
     public static FunctionValue float4ToVoid(Float4ToVoidFunction f) {
-        return new FunctionValue(args -> {
+        return new FunctionValue((pc, args) -> {
             ArgumentsUtil.check(4, args.length);
             f.apply(getFloatNumber(args[0]),
                     getFloatNumber(args[1]),
@@ -220,7 +220,7 @@ public final class Converters {
     }
 
     public static FunctionValue doubleToVoid(DoubleToVoidFunction f) {
-        return new FunctionValue(args -> {
+        return new FunctionValue((pc, args) -> {
             ArgumentsUtil.check(1, args.length);
             f.apply(args[0].asDouble());
             return NumberValue.ZERO;
@@ -228,7 +228,7 @@ public final class Converters {
     }
 
     public static FunctionValue double2ToVoid(Double2ToVoidFunction f) {
-        return new FunctionValue(args -> {
+        return new FunctionValue((pc, args) -> {
             ArgumentsUtil.check(2, args.length);
             f.apply(args[0].asDouble(), args[1].asDouble());
             return NumberValue.ZERO;
@@ -236,7 +236,7 @@ public final class Converters {
     }
 
     public static FunctionValue double4ToVoid(Double4ToVoidFunction f) {
-        return new FunctionValue(args -> {
+        return new FunctionValue((pc, args) -> {
             ArgumentsUtil.check(4, args.length);
             f.apply(args[0].asDouble(), args[1].asDouble(),
                     args[2].asDouble(), args[3].asDouble());
@@ -249,7 +249,7 @@ public final class Converters {
     }
 
     public static FunctionValue charSequenceToVoid(CharSequenceToVoidFunction f, boolean emptyAsNull) {
-        return new FunctionValue(args -> {
+        return new FunctionValue((pc, args) -> {
             ArgumentsUtil.check(1, args.length);
             final String text = args[0].asString();
             if (emptyAsNull && (text != null) && (text.isEmpty())) {
@@ -262,7 +262,7 @@ public final class Converters {
     }
 
     public static FunctionValue stringToVoid(StringToVoidFunction f) {
-        return new FunctionValue(args -> {
+        return new FunctionValue((pc, args) -> {
             ArgumentsUtil.check(1, args.length);
             f.apply(args[0].asString());
             return NumberValue.ZERO;
@@ -270,14 +270,14 @@ public final class Converters {
     }
 
     public static FunctionValue stringToBoolean(Predicate<String> f) {
-        return new FunctionValue(args -> {
+        return new FunctionValue((pc, args) -> {
             ArgumentsUtil.check(1, args.length);
             return NumberValue.fromBoolean(f.test(args[0].asString()));
         });
     }
 
     public static FunctionValue stringToString(UnaryOperator<String> f) {
-        return new FunctionValue(args -> {
+        return new FunctionValue((pc, args) -> {
             ArgumentsUtil.check(1, args.length);
             return new StringValue(f.apply(args[0].asString()));
         });

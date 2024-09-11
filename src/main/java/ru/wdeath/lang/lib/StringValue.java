@@ -1,5 +1,6 @@
 package ru.wdeath.lang.lib;
 
+import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.exception.TypeException;
 import ru.wdeath.lang.exception.UnknownPropertyException;
 
@@ -36,7 +37,7 @@ public class StringValue implements Value {
         }
     }
 
-    public Value access(Value propertyValue) {
+    public Value access(Value propertyValue, ProgramContext programContext) {
         final String prop = propertyValue.asString();
         return switch (prop) {
             // Properties
@@ -53,7 +54,7 @@ public class StringValue implements Value {
             }
             // Functions
             case "trim" -> Converters.voidToString(value::trim);
-            case "startsWith" -> new FunctionValue(args -> {
+            case "startsWith" -> new FunctionValue((pc, args) -> {
                 ArgumentsUtil.checkOrOr(1, 2, args.length);
                 int offset = (args.length == 2) ? args[1].asInt() : 0;
                 return NumberValue.fromBoolean(value.startsWith(args[0].asString(), offset));
@@ -66,13 +67,13 @@ public class StringValue implements Value {
 
 
             default -> {
-                if (ScopeHandler.isFunctionExists(prop)) {
-                    final Function f = ScopeHandler.getFunction(prop);
-                    yield new FunctionValue(args -> {
+                if (programContext.getScope().isFunctionExists(prop)) {
+                    final Function f = programContext.getScope().getFunction(prop);
+                    yield new FunctionValue((pc, args) -> {
                         final Value[] newArgs = new Value[args.length + 1];
                         newArgs[0] = this;
                         System.arraycopy(args, 0, newArgs, 1, args.length);
-                        return f.execute(newArgs);
+                        return f.execute(programContext, newArgs);
                     });
                 }
                 throw new UnknownPropertyException(prop);

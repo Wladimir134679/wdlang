@@ -1,11 +1,13 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.lib.*;
 import ru.wdeath.lang.utils.Range;
 import ru.wdeath.lang.utils.SourceLocation;
 
 public class FunctionDefineStatement implements Statement, SourceLocation {
 
+    public ProgramContext programContext;
     public final String name;
     public final Arguments arguments;
     public final Statement body;
@@ -25,7 +27,7 @@ public class FunctionDefineStatement implements Statement, SourceLocation {
 
     @Override
     public Value eval() {
-        ScopeHandler.setFunction(name, new UserDefinedFunction(arguments, body, range));
+        programContext.getScope().setFunction(name, new UserDefinedFunction(arguments, body, range));
         return NumberValue.ZERO;
     }
 
@@ -42,7 +44,7 @@ public class FunctionDefineStatement implements Statement, SourceLocation {
     @Override
     public String toString() {
         if (body instanceof ReturnStatement rs) {
-            return String.format("def %s%s = %s", name, arguments, rs.expression);
+            return String.format("def %s%s return %s", name, arguments, rs.expression);
         }
         return String.format("def %s%s %s", name, arguments, body);
     }

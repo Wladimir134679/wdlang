@@ -61,4 +61,6 @@ public interface ResultVisitor<R, T> {
     R visit(ObjectCreationExpression s, T t);
 
     R visit(ClassDeclarationStatement s, T t);
+
+    R visit(Argument s, T t);
 }

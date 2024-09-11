@@ -1,5 +1,6 @@
 package ru.wdeath.lang.ast;
 
+import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.exception.VariableDoesNotExistsException;
 import ru.wdeath.lang.lib.ScopeHandler;
 import ru.wdeath.lang.lib.Value;
@@ -8,6 +9,7 @@ import ru.wdeath.lang.utils.SourceLocation;
 
 public class VariableExpression implements Accessible, SourceLocation {
 
+    public ProgramContext programContext;
     public final String name;
     private Range range;
 
@@ -31,13 +33,14 @@ public class VariableExpression implements Accessible, SourceLocation {
 
     @Override
     public Value get() {
-        if (!ScopeHandler.isVariableOrConstantExists(name)) throw new VariableDoesNotExistsException(name, getRange());
-        return ScopeHandler.getVariableOrConstant(name);
+        ScopeHandler scope = programContext.getScope();
+        if (!scope.isVariableOrConstantExists(name)) throw new VariableDoesNotExistsException(name, getRange());
+        return scope.getVariableOrConstant(name);
     }
 
     @Override
     public Value set(Value value) {
-        ScopeHandler.setVariable(name, value);
+        programContext.getScope().setVariable(name, value);
         return value;
     }
 

@@ -1,8 +1,9 @@
 package ru.wdeath.lang.lib;
 
-public class AutoCloseableScope implements AutoCloseable {
+public record AutoCloseableScope(ScopeHandler scopeHandler) implements AutoCloseable {
+
     @Override
     public void close() {
-        ScopeHandler.pop();
+        scopeHandler.pop();
     }
 }

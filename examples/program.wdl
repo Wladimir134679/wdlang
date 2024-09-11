@@ -22,14 +22,14 @@ print sin(3/2)
 if(40 < 50 && 50 <= 60) {
     print "true \n"
     print "block\n"
-    i = 0
-    while (i < 10) {
-        println("i = " + i)
-        i = i + 1
+    iaw = 0
+    while (iaw < 10) {
+        println("iaw = " + iaw)
+        iaw = iaw + 1
     }
-    for i = 0, i < 10, i = i + 1 {
-        if i == 4 continue
-        println("i = " + i)
+    for iaw = 0, iaw < 10, iaw = iaw + 1 {
+        if iaw == 4 continue
+        println("iaw = " + iaw)
     }
 }
 i = 0
