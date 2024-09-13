@@ -42,9 +42,12 @@ public class ProgramRunner {
         return programRunnerConfig;
     }
 
+    public ProgramContext getContext() {
+        return programContext;
+    }
+
     public void init() {
         try {
-            stagesData.put(SourceLoaderStage.TAG_SOURCE_LINES, input);
             statementProgramInit = scopedStages.create("Load source", new SourceLoaderStage())
                     .then(scopedStages
                             .create("Lexer", new LexerStage()))

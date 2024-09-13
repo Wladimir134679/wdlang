@@ -18,6 +18,12 @@ public record ParseError(String message, Range range, List<StackTraceElement> st
         return message;
     }
 
+    @Override
+    public StackTraceElement[] getStackTrace() {
+        return stackTraceElements.toArray(new StackTraceElement[0]);
+    }
+
+    @Override
     public boolean hasStackTrace() {
         return !stackTraceElements.isEmpty();
     }

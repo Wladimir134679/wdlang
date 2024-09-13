@@ -76,4 +76,10 @@ public class ProgramContextInjectVisitor extends AbstractVisitor {
         st.programContext = programContext;
         super.visit(st);
     }
+
+    @Override
+    public void visit(ImportStatement st) {
+        st.programContext = programContext;
+        super.visit(st);
+    }
 }

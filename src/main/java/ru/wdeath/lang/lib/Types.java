@@ -10,12 +10,13 @@ public class Types {
             ARRAY = 3,
             MAP = 4,
             FUNCTION = 5,
-            CLASS = 6;
+            CLASS = 6,
+            IMPORT = 7;
 
 
     private static final int FIRST = OBJECT;
-    private static final int LAST = CLASS;
-    private static final String[] NAMES = {"object", "number", "string", "array", "map", "function", "class"};
+    private static final int LAST = IMPORT;
+    private static final String[] NAMES = {"object", "number", "string", "array", "map", "function", "class", "import"};
 
     public static String typeToString(int type) {
         if (FIRST <= type && type <= LAST) {

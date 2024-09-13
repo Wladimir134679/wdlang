@@ -16,6 +16,10 @@ public abstract class AbstractVisitor implements Visitor {
     }
 
     @Override
+    public void visit(ImportStatement st) {
+    }
+
+    @Override
     public void visit(AssignmentExpression st) {
         st.target.accept(this);
         st.expression.accept(this);

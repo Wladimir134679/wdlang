@@ -19,6 +19,7 @@ public class ErrorsStackTraceFormatterStage implements Stage<Iterable<? extends 
         final var sb = new StringBuilder();
         for (SourceLocatedError error : input) {
             if (!error.hasStackTrace()) continue;
+            sb.append("=".repeat(20)).append("\n");
             for (StackTraceElement el : error.getStackTrace()) {
                 sb.append("\t").append(el).append(programContext.getConsole().newline());
             }

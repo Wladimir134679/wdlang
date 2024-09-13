@@ -70,7 +70,8 @@ public class Parser {
             try {
                 result.addStatement(statement());
             } catch (ParseException ex) {
-                parseErrors.add(new ParseError(ex.getMessage(), ex.getRange()));
+                parseErrors.add(new ParseError(ex.getMessage(), getRange(), List.of(ex.getStackTrace())));
+//                parseErrors.add(new ParseError(ex.getMessage(), ex.getRange()));
                 recover();
             } catch (Exception ex) {
                 parseErrors.add(new ParseError(ex.getMessage(), getRange(), List.of(ex.getStackTrace())));
@@ -134,8 +135,42 @@ public class Parser {
             return functionCallStatement();
         if (match(TokenType.DEF))
             return functionDefine();
+        if (match(TokenType.IMPORT))
+            return importStatement();
 
         return assignmentStatement();
+    }
+
+    private Statement importStatement() {
+        final var startTokenIndex = index - 1;
+        List<ImportStatement.ImportDetails> details = new ArrayList<>();
+        List<String> words = new ArrayList<>();
+        do {
+            Token word = consume(TokenType.WORD);
+            words.add(word.text());
+            if (match(TokenType.COMMA)) {
+                ImportStatement.ImportDetails importDetails = new ImportStatement.ImportDetails();
+                importDetails.words = new ArrayList<>(words);
+                details.add(importDetails);
+                words.clear();
+            }
+            if (match(TokenType.AS)) {
+                String asName = consume(TokenType.WORD).text();
+
+                ImportStatement.ImportDetails importDetails = new ImportStatement.ImportDetails();
+                importDetails.words = new ArrayList<>(words);
+                importDetails.asName = asName;
+                details.add(importDetails);
+                words.clear();
+            }
+        } while (match(TokenType.DOT) || match(TokenType.COMMA));
+        if(!words.isEmpty()){
+            ImportStatement.ImportDetails importDetails = new ImportStatement.ImportDetails();
+            importDetails.words = new ArrayList<>(words);
+            details.add(importDetails);
+        }
+
+        return new ImportStatement(details, getRange(startTokenIndex, index - 1));
     }
 
     private ExprStatement functionCallStatement() {

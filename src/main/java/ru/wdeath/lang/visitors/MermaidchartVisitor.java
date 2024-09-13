@@ -2,6 +2,7 @@ package ru.wdeath.lang.visitors;
 
 import ru.wdeath.lang.ast.*;
 import ru.wdeath.lang.lib.FunctionValue;
+import ru.wdeath.lang.lib.StringValue;
 import ru.wdeath.lang.lib.UserDefinedFunction;
 
 import java.util.ArrayList;
@@ -249,7 +250,13 @@ public class MermaidchartVisitor extends AbstractVisitor {
         add(st.expression);
         st.patterns.forEach(pattern -> {
             add(st, pattern.optCondition);
-            add(pattern.optCondition, pattern.result);
+            if (pattern.optCondition == null) {
+                if (pattern instanceof MatchExpression.VariablePattern vp)
+                    add(new ValueExpression(new StringValue(vp.variable)));
+                if (pattern instanceof MatchExpression.ConstantPattern vp)
+                    add(new ValueExpression(new StringValue(vp.constant.asString())));
+            } else
+                add(pattern.optCondition, pattern.result);
         });
         super.visit(st);
     }

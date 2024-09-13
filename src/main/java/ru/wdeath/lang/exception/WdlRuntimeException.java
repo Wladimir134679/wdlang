@@ -26,9 +26,15 @@ public class WdlRuntimeException extends RuntimeException implements SourceLocat
         this.range = range;
     }
 
+
     public WdlRuntimeException(String message, Throwable ex) {
+        this(message, ex, null);
+    }
+
+
+    public WdlRuntimeException(String message, Throwable ex, Range range) {
         super(message, ex);
-        this.range = null;
+        this.range = range;
     }
 
     @Override

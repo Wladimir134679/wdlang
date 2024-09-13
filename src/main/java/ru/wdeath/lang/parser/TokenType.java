@@ -24,6 +24,8 @@ public enum TokenType {
     MATCH, CASE,
     CLASS,
     NEW,
+    IMPORT,
+    AS,
 
     PLUS, // +
     MINUS, // -

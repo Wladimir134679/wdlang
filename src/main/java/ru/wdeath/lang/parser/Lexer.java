@@ -97,6 +97,8 @@ public class Lexer {
         keywords.put("case", TokenType.CASE);
         keywords.put("class", TokenType.CLASS);
         keywords.put("new", TokenType.NEW);
+        keywords.put("import", TokenType.IMPORT);
+        keywords.put("as", TokenType.AS);
         KEYWORDS = Map.copyOf(keywords);
     }
 

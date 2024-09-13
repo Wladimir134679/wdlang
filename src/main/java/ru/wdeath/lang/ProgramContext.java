@@ -7,7 +7,7 @@ import ru.wdeath.lang.utils.Console;
 public class ProgramContext {
 
     private final ScopeHandler scopeHandler;
-    private final Console console;
+    private Console console;
 
     public ProgramContext(){
         console = new Console();
@@ -25,5 +25,9 @@ public class ProgramContext {
 
     public Console getConsole() {
         return console;
+    }
+
+    public void setConsole(Console console) {
+        this.console = console;
     }
 }

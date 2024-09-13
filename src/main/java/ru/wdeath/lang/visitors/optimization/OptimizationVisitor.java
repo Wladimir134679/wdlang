@@ -115,6 +115,11 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
     }
 
     @Override
+    public Node visit(ImportStatement statement, T t) {
+        return statement;
+    }
+
+    @Override
     public Node visit(ConditionalExpression s, T t) {
         final Node expr1 = s.expr1.accept(this, t);
         final Node expr2 = s.expr2.accept(this, t);

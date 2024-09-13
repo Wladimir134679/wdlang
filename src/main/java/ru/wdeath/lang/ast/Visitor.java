@@ -64,4 +64,6 @@ public interface Visitor {
     void visit(ClassDeclarationStatement st);
 
     void visit(Argument st);
+
+    void visit(ImportStatement st);
 }

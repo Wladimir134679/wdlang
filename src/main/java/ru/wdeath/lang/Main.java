@@ -19,13 +19,17 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
-        ProgramRunnerConfig config = new ProgramRunnerConfig();
-//        config.levelOptimization = 20;
-//        config.optimization = true;
-//        config.showOptimization = false;
+    public static void main(String[] args) throws IOException, InterruptedException {
+        //"./examples/testImport.wdl"
+        extracted("./examples/testImport.wdl");
+    }
 
-        final var runner = new ProgramRunner(config, new InputSourceFile("./examples/classes.wdl"));
+    private static void extracted(String path) {
+        ProgramRunnerConfig config = new ProgramRunnerConfig();
+//        config.showProgramContext = true;
+//        config.generateMermaidText = true;
+
+        final var runner = new ProgramRunner(config, new InputSourceFile(path));
         runner.init();
         runner.run();
         runner.resultAndPrint();
