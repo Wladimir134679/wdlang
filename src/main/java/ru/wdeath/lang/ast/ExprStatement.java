@@ -27,8 +27,6 @@ public class ExprStatement implements Node, Statement{
 
     @Override
     public String toString() {
-        return "FuncS{" +
-                "f=" + expr +
-                '}';
+        return "ExprStatement " + expr;
     }
 }

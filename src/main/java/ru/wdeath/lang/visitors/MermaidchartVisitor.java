@@ -1,5 +1,6 @@
 package ru.wdeath.lang.visitors;
 
+import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.ast.*;
 import ru.wdeath.lang.lib.FunctionValue;
 import ru.wdeath.lang.lib.StringValue;
@@ -11,47 +12,13 @@ import java.util.List;
 
 public class MermaidchartVisitor extends AbstractVisitor {
 
-    public static int INDEX = 0;
 
-    private static class MermaidLine {
-        public String subname1;
-        public String subname2;
+    public final List<MermaidLine> lines = new ArrayList<>();
+    private final ProgramContext programContext;
 
-        public MermaidLine(Node node1) {
-            this.subname1 = node1.getClass().getSimpleName() + hash(node1) + "(\"" + node1.toString().replace("\"", "'").replace("\n", "") + "\")";
-        }
-
-        public MermaidLine(Node node1, Node node2) {
-            this.subname1 = node1.getClass().getSimpleName() + hash(node1) + "(\"" + node1.toString().replace("\"", "'").replace("\n", "") + "\")";
-            this.subname2 = node2.getClass().getSimpleName() + hash(node2) + "(\"" + node2.toString().replace("\"", "'").replace("\n", "") + "\")";
-//            this.subname2 = node2.toString();
-        }
-
-        public String hash(Node n) {
-            return String.valueOf(n.hashCode());
-        }
-
-        public String index() {
-            INDEX++;
-            return String.valueOf(INDEX);
-        }
-
-        public MermaidLine(String subname1, String subname2) {
-            this.subname1 = subname1;
-            this.subname2 = subname2;
-        }
-
-        public String format() {
-            if (subname2 != null)
-                return subname1 + " --> " + subname2;
-            return subname1;
-//            return "\t\"" + subname1 + "\" --> \"" + subname2 + "\"";
-//            return "\t\"" + subname1 + "\" --> \"" + subname2 + "\"";
-        }
+    public MermaidchartVisitor(ProgramContext programContext) {
+        this.programContext = programContext;
     }
-
-
-    public final List<MermaidLine> lines = new ArrayList<MermaidLine>();
 
     public void print() {
         for (MermaidLine line : lines) {
@@ -64,6 +31,10 @@ public class MermaidchartVisitor extends AbstractVisitor {
             add(n1);
         else
             lines.add(new MermaidLine(n1, n2));
+    }
+
+    public void add(Object n1, Object n2) {
+        lines.add(new MermaidLine(n1, n2));
     }
 
 
@@ -80,8 +51,8 @@ public class MermaidchartVisitor extends AbstractVisitor {
 
     @Override
     public void visit(FunctionDefineStatement st) {
-        add(st, st.body);
         st.arguments.forEach(argument -> add(st, argument));
+        add(st, st.body);
         super.visit(st);
     }
 
@@ -156,6 +127,11 @@ public class MermaidchartVisitor extends AbstractVisitor {
     public void visit(FunctionExpression st) {
         add(st, st.expression);
         st.arguments.forEach(argument -> add(st, argument));
+//        if (st.expression instanceof ValueExpression ve) {
+//            if (ve.value instanceof StringValue) {
+//                add(st.expression, programContext.getScope().getFunction(ve.value.asString()).getClass().getSimpleName());
+//            }
+//        }
         super.visit(st);
     }
 
@@ -281,4 +257,39 @@ public class MermaidchartVisitor extends AbstractVisitor {
         super.visit(st);
     }
 
+
+
+    private static class MermaidLine {
+        public String subname1;
+        public String subname2;
+
+        public MermaidLine(Node node1) {
+            this.subname1 = getTitleNode(node1);
+        }
+
+        public MermaidLine(Node node1, Node node2) {
+            this.subname1 = getTitleNode(node1);
+            this.subname2 = getTitleNode(node2);
+        }
+
+        public MermaidLine(Object node1, Object node2) {
+            this.subname1 = getTitleNode(node1);
+            if (node2 != null)
+                this.subname2 = getTitleNode(node2);
+        }
+
+        private String getTitleNode(Object node1) {
+            return node1.getClass().getSimpleName() + hash(node1) + "(\"" + node1.toString().replace("\"", "'").replace("\n", "") + "\")";
+        }
+
+        public String hash(Object n) {
+            return String.valueOf(n.hashCode());
+        }
+
+        public String format() {
+            if (subname2 != null)
+                return subname1 + " --> " + subname2;
+            return subname1;
+        }
+    }
 }

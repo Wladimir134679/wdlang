@@ -53,7 +53,9 @@ public class LinterStage implements Stage<Statement, Statement> {
         }
 
         results.sort(Comparator.comparing(LinterResult::severity));
-        System.out.println(String.format("Lint validation completed. %d results found!", results.size()));
+        if(results.hasErrors()) {
+            programContext.getConsole().println("Lint validation completed. %d results found!".formatted(results.size()));
+        }
         for (LinterResult r : results) {
             switch (r.severity()) {
                 case ERROR -> System.err.println(r);

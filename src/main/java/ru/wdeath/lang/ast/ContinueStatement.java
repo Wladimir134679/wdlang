@@ -34,6 +34,6 @@ public class ContinueStatement extends RuntimeException implements Statement, So
 
     @Override
     public String toString() {
-        return "CS{}";
+        return "ContinueStatement";
     }
 }

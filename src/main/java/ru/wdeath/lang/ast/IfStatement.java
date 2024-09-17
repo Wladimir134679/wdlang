@@ -36,10 +36,6 @@ public class IfStatement implements Statement {
 
     @Override
     public String toString() {
-        return "IF{" +
-                "c=" + condition +
-                ", if=" + ifStatement +
-                ", else=" + elseStatement +
-                '}';
+        return "IF " + condition;
     }
 }

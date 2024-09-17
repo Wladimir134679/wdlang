@@ -27,7 +27,7 @@ public class Main {
     private static void extracted(String path) {
         ProgramRunnerConfig config = new ProgramRunnerConfig();
 //        config.showProgramContext = true;
-//        config.generateMermaidText = true;
+        config.generateMermaidText = true;
 
         final var runner = new ProgramRunner(config, new InputSourceFile(path));
         runner.init();

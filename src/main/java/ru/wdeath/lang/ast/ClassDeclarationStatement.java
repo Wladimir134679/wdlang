@@ -82,6 +82,5 @@ public class ClassDeclarationStatement implements Statement, SourceLocation {
     @Override
     public String toString() {
         return String.format("class %s", name);
-//        return String.format("class %s {\n  %s  %s}", name, fields, methods);
     }
 }

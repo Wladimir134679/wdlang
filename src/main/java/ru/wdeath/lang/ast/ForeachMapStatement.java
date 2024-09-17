@@ -88,5 +88,8 @@ public class ForeachMapStatement extends InterruptableNode implements Statement 
         visitor.visit(this);
     }
 
-
+    @Override
+    public String toString() {
+        return "ForeachMapStatement";
+    }
 }

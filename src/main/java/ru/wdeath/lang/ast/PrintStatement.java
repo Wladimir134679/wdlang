@@ -32,8 +32,6 @@ public class PrintStatement implements Statement{
 
     @Override
     public String toString() {
-        return "print{" +
-                "e=" + expression +
-                '}';
+        return "print " + expression;
     }
 }

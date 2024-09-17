@@ -158,9 +158,6 @@ public class UnaryExpression implements Node, Statement {
 
     @Override
     public String toString() {
-        return "UE{" +
-                "p=" + operation +
-                ", e=" + expr +
-                '}';
+        return "unary " + operation + " " + expr;
     }
 }

@@ -31,8 +31,6 @@ public class FunctionReferenceExpression implements Node {
 
     @Override
     public String toString() {
-        return "FunctionReferenceExpression{" +
-                "n='" + name + '\'' +
-                '}';
+        return "FunctionReferenceExpression " + name;
     }
 }

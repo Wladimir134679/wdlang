@@ -37,16 +37,12 @@ public class ImportStatement implements Statement, SourceLocation {
         for (ImportDetails listImport : listImports) {
             try{
                 ProgramContext importContext = inputAndIncludeProgram(listImport);
-                programContext.getScope().defineVariableInCurrentScope(getAsName(listImport), importContextToValue(importContext));
+                programContext.getScope().defineVariableInCurrentScope(listImport.getWordAsName(), importContextToValue(importContext));
             } catch (Exception e) {
                 throw new WdlRuntimeException("Error import file", e, getRange());
             }
         }
         return NumberValue.ZERO;
-    }
-
-    private static String getAsName(ImportDetails listImport) {
-        return listImport.asName == null ? listImport.words.getLast() : listImport.asName;
     }
 
     public Value importContextToValue(ProgramContext importContext) {
@@ -83,5 +79,20 @@ public class ImportStatement implements Statement, SourceLocation {
     public static class ImportDetails {
         public List<String> words = new ArrayList<>();
         public String asName;
+
+
+        public String getWordAsName() {
+            return asName == null ? words.getLast() : asName;
+        }
+
+        @Override
+        public String toString() {
+            return words.toString() + " AS " + getWordAsName();
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Import " + listImports;
     }
 }

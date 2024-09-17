@@ -34,6 +34,6 @@ public class BreakStatement extends RuntimeException implements Statement, Sourc
 
     @Override
     public String toString() {
-        return "BS{}";
+        return "BreakStatement";
     }
 }

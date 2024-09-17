@@ -62,7 +62,7 @@ public class ProgramRunner {
                     .then(scopedStages
                             .create("Function adding", new FunctionAddingStage()))
                     .thenConditional(getConfig().generateMermaidText, scopedStages
-                            .create("Mermaid", new MermaidStage()))
+                            .create("Mermaid", new MermaidStage(programContext)))
                     .perform(stagesData, input);
         } catch (WdlParserException ex) {
             final var error = new ParseErrorsFormatterStage(programContext)

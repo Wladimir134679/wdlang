@@ -56,7 +56,7 @@ public class VariableExpression implements Accessible, SourceLocation {
 
     @Override
     public String toString() {
-        return name;
+        return "var " + name;
     }
 
 }

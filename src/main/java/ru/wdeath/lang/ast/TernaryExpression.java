@@ -31,4 +31,9 @@ public class TernaryExpression implements Node{
     public void accept(Visitor visitor) {
         visitor.visit(this);
     }
+
+    @Override
+    public String toString() {
+        return condition.toString() + " ? " + trueExpr.toString() + " : " + falseExpr.toString();
+    }
 }

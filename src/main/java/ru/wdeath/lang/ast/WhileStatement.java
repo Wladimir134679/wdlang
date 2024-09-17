@@ -39,9 +39,6 @@ public class WhileStatement implements Statement {
 
     @Override
     public String toString() {
-        return "WS{" +
-                "c=" + condition +
-                ", b=" + body +
-                '}';
+        return "while " + condition;
     }
 }
