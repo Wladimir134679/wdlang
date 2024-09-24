@@ -1,9 +1,16 @@
 plugins {
     id 'java'
+    id 'application'
 }
+
 
 group = 'ru.wdeath.lang'
 version = '0.5'
+
+application {
+    mainClass = 'ru.wdeath.lang.Main'
+}
+
 
 repositories {
     mavenCentral()

@@ -82,7 +82,7 @@ public class ImportStatement implements Statement, SourceLocation {
 
 
         public String getWordAsName() {
-            return asName == null ? words.getLast() : asName;
+            return asName == null ? words.get(words.size() - 1) : asName;
         }
 
         @Override

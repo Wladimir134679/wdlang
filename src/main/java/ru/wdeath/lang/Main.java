@@ -21,7 +21,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         //"./examples/testImport.wdl"
-        extracted("./examples/testImport.wdl");
+        extracted("./tests/run.wdl");
     }
 
     private static void extracted(String path) {
