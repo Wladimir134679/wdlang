@@ -7,7 +7,13 @@ def testImport() {
     println("PG = ")
     println(pg)
     println("CLASSES = ")
-    println(classes)
+    println(classes.p2)
+    println(classes.p2.toString())
+
+    println()
+    println("Проверка создания класса")
+    p3 = new classes.Point(-5, -5)
+    println("p3 = " + p3)
 }
 
 testImport()

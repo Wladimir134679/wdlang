@@ -48,4 +48,9 @@ public class ImportValue implements Value {
     public String toString() {
         return asString();
     }
+
+    public Value access(Value lastIndex) {
+        Value variableOrConstant = context.getScope().getVariableOrConstant(lastIndex.asString());
+        return variableOrConstant;
+    }
 }

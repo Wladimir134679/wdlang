@@ -1,3 +1,5 @@
+VAR_POP = "Эта переменная из classes"
+
 class Point {
 
   def Point(x = 0, y = 0) {
@@ -10,7 +12,7 @@ class Point {
     this.y += dy
   }
 
-  def toString() = "(" + this.x + ", " + this.y + ")"
+  def toString() = "(" + this.x + ", " + this.y + ")" + VAR_POP
 }
 
 p = new Point(20, 30)

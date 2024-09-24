@@ -64,6 +64,7 @@ public class ContainerAccessExpression implements Node, Accessible, SourceLocati
             case Types.MAP -> ((MapValue) container).get(lastIndex);
             case Types.STRING -> ((StringValue) container).access(lastIndex, programContext);
             case Types.CLASS -> ((ClassInstance) container).access(lastIndex);
+            case Types.IMPORT -> ((ImportValue) container).access(lastIndex);
             default -> throw new TypeException("Array or map expected");
         };
     }
@@ -92,6 +93,7 @@ public class ContainerAccessExpression implements Node, Accessible, SourceLocati
                     yield ((ArrayValue) container).get(arrayIndex);
                 }
                 case Types.MAP -> ((MapValue) container).get(index);
+                case Types.IMPORT -> ((ImportValue) container).access(index);
                 default -> throw new TypeException("Array or map expected");
             };
         }
