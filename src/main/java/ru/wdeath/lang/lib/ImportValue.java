@@ -8,7 +8,7 @@ import javax.lang.model.type.UnknownTypeException;
 
 public class ImportValue implements Value {
 
-    private final ProgramContext context;
+    public final ProgramContext context;
 
     public ImportValue(ProgramContext context) {
         this.context = context;

@@ -3,6 +3,7 @@ package ru.wdeath.lang.lib.classes;
 import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.lib.Function;
 import ru.wdeath.lang.lib.ScopeHandler;
+import ru.wdeath.lang.lib.UserDefinedFunction;
 import ru.wdeath.lang.lib.Value;
 
 import java.util.Objects;
@@ -24,13 +25,22 @@ public record ClassMethod(
 
     @Override
     public Value execute(Value... args) {
-        try (final var ignored = programContext.getScope().closeableScope()) {
+        ProgramContext context = findProgramContext(function);
+        try (final var ignored = context.getScope().closeableScope()) {
             if (classInstance != null) {
                 // non-static method
-                programContext.getScope().defineVariableInCurrentScope("this", classInstance.getThisMap());
+                context.getScope().defineVariableInCurrentScope("this", classInstance.getThisMap());
             }
             return function.execute(args);
         }
+    }
+
+    private ProgramContext findProgramContext(Function function) {
+        if(function instanceof ClassMethod)
+            return ((ClassMethod) function).programContext;
+        if(function instanceof UserDefinedFunction)
+            return ((UserDefinedFunction) function).programContext;
+        return programContext;
     }
 
     @Override

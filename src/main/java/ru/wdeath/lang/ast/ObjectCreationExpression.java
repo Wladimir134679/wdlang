@@ -13,33 +13,50 @@ import java.util.List;
 public class ObjectCreationExpression implements Node, SourceLocation {
 
     public final ProgramContext programContext;
-    public final String className;
+    public final List<String> classNames;
     public final List<Node> constructorArguments;
     private Range range;
 
-    public ObjectCreationExpression(ProgramContext programContext, String className, List<Node> constructorArguments, Range range) {
+    public ObjectCreationExpression(ProgramContext programContext, List<String> classNames, List<Node> constructorArguments, Range range) {
         this.programContext = programContext;
-        this.className = className;
+        this.classNames = classNames;
         this.constructorArguments = constructorArguments;
         this.range = range;
     }
 
     @Override
     public Value eval() {
-        final ClassDeclaration cd = programContext.getScope().getClassDeclaration(className);
+        final ClassDeclaration cd = getDeclaration();
         if (cd != null) {
             return cd.newInstance(constructorArgs(), programContext);
         }
-        // Is Instantiable?
-        if (programContext.getScope().isVariableOrConstantExists(className)) {
-            final Value variable = programContext.getScope().getVariableOrConstant(className);
-            if (variable instanceof Instantiable instantiable) {
-                return instantiable.newInstance(constructorArgs(), programContext);
+        throw new UnknownClassException(String.join(",", classNames), range);
+
+        // Legacy code ownLang
+//        // Is Instantiable?
+//        if (programContext.getScope().isVariableOrConstantExists(className)) {
+//            final Value variable = programContext.getScope().getVariableOrConstant(className);
+//            if (variable instanceof Instantiable instantiable) {
+//                return instantiable.newInstance(constructorArgs(), programContext);
+//            }
+//        }
+    }
+
+    private ClassDeclaration getDeclaration() {
+        ProgramContext context = this.programContext;
+        final var last = classNames.size() - 1;
+        for (int i = 0; i < last; i++) {
+            Value variable = context.getScope().getVariable(classNames.get(i));
+            if (variable.type() == Types.IMPORT) {
+                context = ((ImportValue) variable).context;
+            } else {
+                throw new UnknownClassException(String.join(",", classNames), range);
             }
         }
 
-        throw new UnknownClassException(className, range);
+        return context.getScope().getClassDeclaration(classNames.get(last));
     }
+
 
     private Value[] constructorArgs() {
         final int argsSize = constructorArguments.size();
@@ -73,7 +90,7 @@ public class ObjectCreationExpression implements Node, SourceLocation {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
-        sb.append("new ").append(className).append(' ');
+        sb.append("new ").append(classNames).append(' ');
         final Iterator<Node> it = constructorArguments.iterator();
         if (it.hasNext()) {
             sb.append(it.next());

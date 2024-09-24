@@ -333,7 +333,7 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
         }
 
         if (changed) {
-            return new ObjectCreationExpression(s.programContext, s.className, args, s.getRange());
+            return new ObjectCreationExpression(s.programContext, s.classNames, args, s.getRange());
         }
         return s;
     }

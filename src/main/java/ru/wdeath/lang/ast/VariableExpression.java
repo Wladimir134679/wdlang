@@ -35,7 +35,8 @@ public class VariableExpression implements Accessible, SourceLocation {
     @Override
     public Value get() {
         ScopeHandler scope = programContext.getScope();
-        if (!scope.isVariableOrConstantExists(name)) throw new VariableDoesNotExistsException(name, getRange());
+        if (!scope.isVariableOrConstantExists(name))
+            throw new VariableDoesNotExistsException(name, getRange());
         return scope.getVariableOrConstant(name);
     }
 

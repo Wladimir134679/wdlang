@@ -607,14 +607,19 @@ public class Parser {
     private Node objectCreation() {
         if (match(TokenType.NEW)) {
             final var startTokenIndex = index - 1;
-            final String className = consume(TokenType.WORD).text();
+            final List<String> classNames = new ArrayList<>();
+            do {
+                String name = consume(TokenType.WORD).text();
+                classNames.add(name);
+            } while (match(TokenType.DOT));
+
             final List<Node> args = new ArrayList<>();
             consume(TokenType.LPAREN);
             while (!match(TokenType.RPAREN)) {
                 args.add(expression());
                 match(TokenType.COMMA);
             }
-            return new ObjectCreationExpression(context, className, args, getRange(startTokenIndex, index - 1));
+            return new ObjectCreationExpression(context, classNames, args, getRange(startTokenIndex, index - 1));
         }
 
         return unary();
