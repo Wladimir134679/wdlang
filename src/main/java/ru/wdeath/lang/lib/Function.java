@@ -4,7 +4,7 @@ import ru.wdeath.lang.ProgramContext;
 
 public interface Function {
 
-    Value execute(ProgramContext programContext, Value... v);
+    Value execute(Value... v);
 
     default int getArgsCount() {
         return 0;

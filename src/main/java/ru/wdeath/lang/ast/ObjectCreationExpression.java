@@ -12,12 +12,13 @@ import java.util.List;
 
 public class ObjectCreationExpression implements Node, SourceLocation {
 
-    public ProgramContext programContext;
+    public final ProgramContext programContext;
     public final String className;
     public final List<Node> constructorArguments;
     private Range range;
 
-    public ObjectCreationExpression(String className, List<Node> constructorArguments, Range range) {
+    public ObjectCreationExpression(ProgramContext programContext, String className, List<Node> constructorArguments, Range range) {
+        this.programContext = programContext;
         this.className = className;
         this.constructorArguments = constructorArguments;
         this.range = range;

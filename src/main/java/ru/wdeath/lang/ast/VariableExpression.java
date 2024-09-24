@@ -9,11 +9,12 @@ import ru.wdeath.lang.utils.SourceLocation;
 
 public class VariableExpression implements Accessible, SourceLocation {
 
-    public ProgramContext programContext;
+    public final ProgramContext programContext;
     public final String name;
     private Range range;
 
-    public VariableExpression(String name) {
+    public VariableExpression(ProgramContext programContext, String name) {
+        this.programContext = programContext;
         this.name = name;
     }
 

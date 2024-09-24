@@ -54,11 +54,11 @@ public class StringValue implements Value {
             }
             // Functions
             case "trim" -> Converters.voidToString(value::trim);
-            case "startsWith" -> new FunctionValue((pc, args) -> {
+            case "startsWith" -> new FunctionValue(new ProgramLibFunction((pc, args) -> {
                 ArgumentsUtil.checkOrOr(1, 2, args.length);
                 int offset = (args.length == 2) ? args[1].asInt() : 0;
                 return NumberValue.fromBoolean(value.startsWith(args[0].asString(), offset));
-            });
+            }));
             case "endsWith" -> Converters.stringToBoolean(value::endsWith);
             case "matches" -> Converters.stringToBoolean(value::matches);
             case "contains" -> Converters.stringToBoolean(value::contains);
@@ -69,12 +69,12 @@ public class StringValue implements Value {
             default -> {
                 if (programContext.getScope().isFunctionExists(prop)) {
                     final Function f = programContext.getScope().getFunction(prop);
-                    yield new FunctionValue((pc, args) -> {
+                    yield new FunctionValue(new ProgramLibFunction((pc, args) -> {
                         final Value[] newArgs = new Value[args.length + 1];
                         newArgs[0] = this;
                         System.arraycopy(args, 0, newArgs, 1, args.length);
-                        return f.execute(programContext, newArgs);
-                    });
+                        return f.execute(newArgs);
+                    }));
                 }
                 throw new UnknownPropertyException(prop);
             }

@@ -12,17 +12,19 @@ import java.util.List;
 
 public class FunctionExpression implements Node, Statement, SourceLocation {
 
-    public ProgramContext programContext;
+    public final ProgramContext programContext;
     public final Node expression;
     public final List<Node> arguments;
     private Range range;
 
-    public FunctionExpression(Node expression) {
+    public FunctionExpression(ProgramContext programContext, Node expression) {
+        this.programContext = programContext;
         this.expression = expression;
         this.arguments = new ArrayList<>();
     }
 
-    public FunctionExpression(Node expression, List<Node> arguments) {
+    public FunctionExpression(ProgramContext programContext, Node expression, List<Node> arguments) {
+        this.programContext = programContext;
         this.expression = expression;
         this.arguments = arguments;
     }
@@ -50,7 +52,7 @@ public class FunctionExpression implements Node, Statement, SourceLocation {
         }
         final Function f = consumeFunction(expression);
         CallStack.enter(expression.toString(), f, range);
-        final Value result = f.execute(programContext, values);
+        final Value result = f.execute(values);
         CallStack.exit();
         return result;
     }

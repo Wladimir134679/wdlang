@@ -75,7 +75,7 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
 
     @Override
     public Node visit(ClassDeclarationStatement s, T t) {
-        final var newClassDeclaration = new ClassDeclarationStatement(s.name);
+        final var newClassDeclaration = new ClassDeclarationStatement(s.programContext, s.name);
         boolean changed = false;
         for (AssignmentExpression field : s.fields) {
             final Node fieldExpr = field.expression.accept(this, t);
@@ -143,7 +143,7 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
             indices.add(node);
         }
         if (changed) {
-            return new ContainerAccessExpression(root, indices, s.getRange());
+            return new ContainerAccessExpression(s.programContext, root, indices, s.getRange());
         }
         return s;
     }
@@ -183,7 +183,7 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
         final Node container = s.container.accept(this, t);
         final Node body = s.body.accept(this, t);
         if (container != s.container || body != s.body) {
-            return new ForeachArrayStatement(s.variable, container, consumeStatement(body));
+            return new ForeachArrayStatement(s.programContext, s.variable, container, consumeStatement(body));
         }
         return s;
     }
@@ -193,7 +193,7 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
         final Node container = s.container.accept(this, t);
         final Node body = s.body.accept(this, t);
         if (container != s.container || body != s.body) {
-            return new ForeachMapStatement(s.key, s.value, container, consumeStatement(body));
+            return new ForeachMapStatement(s.programContext, s.key, s.value, container, consumeStatement(body));
         }
         return s;
     }
@@ -205,7 +205,7 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
 
         final Node body = s.body.accept(this, t);
         if (changed || body != s.body) {
-            return new FunctionDefineStatement(s.name, newArgs, consumeStatement(body), s.getRange());
+            return new FunctionDefineStatement(s.programContext, s.name, newArgs, consumeStatement(body), s.getRange());
         }
         return s;
     }
@@ -227,7 +227,7 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
     @Override
     public Node visit(FunctionExpression s, T t) {
         final Node functionExpr = s.expression.accept(this, t);
-        final FunctionExpression result = new FunctionExpression(functionExpr);
+        final FunctionExpression result = new FunctionExpression(s.programContext, functionExpr);
         boolean changed = functionExpr != s.expression;
         for (Node argument : s.arguments) {
             final Node expr = argument.accept(this, t);
@@ -285,7 +285,7 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
         for (MatchExpression.Pattern pattern : s.patterns) {
             if (pattern instanceof MatchExpression.VariablePattern varPattern) {
                 final String variable = varPattern.variable;
-                final VariableExpression expr = new VariableExpression(variable);
+                final VariableExpression expr = new VariableExpression(s.programContext, variable);
                 final Node node = expr.accept(this, t);
                 if ((node != expr) && isValue(node)) {
                     changed = true;
@@ -315,7 +315,7 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
             patterns.add(pattern);
         }
         if (changed) {
-            return new MatchExpression(expression, patterns);
+            return new MatchExpression(s.programContext, expression, patterns);
         }
         return s;
     }
@@ -333,7 +333,7 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
         }
 
         if (changed) {
-            return new ObjectCreationExpression(s.className, args, s.getRange());
+            return new ObjectCreationExpression(s.programContext, s.className, args, s.getRange());
         }
         return s;
     }
@@ -342,7 +342,7 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
     public Node visit(PrintStatement s, T t) {
         final Node expression = s.expression.accept(this, t);
         if (expression != s.expression) {
-            return new PrintStatement(expression);
+            return new PrintStatement(s.programContext, expression);
         }
         return s;
     }
@@ -410,7 +410,7 @@ public class OptimizationVisitor<T> implements ResultVisitor<Node, T> {
 
         final Node body = s.body.accept(this, t);
         if (changed || body != s.body) {
-            return new UserDefinedFunction(newArgs, consumeStatement(body), s.getRange());
+            return new UserDefinedFunction(s.programContext, newArgs, consumeStatement(body), s.getRange());
         }
         return s;
     }

@@ -52,13 +52,13 @@ public class ProgramRunner {
                     .then(scopedStages
                             .create("Lexer", new LexerStage()))
                     .then(scopedStages
-                            .create("Parser", new ParserStage()))
+                            .create("Parser", new ParserStage(programContext)))
                     .thenConditional(getConfig().optimization, scopedStages
                             .create("Optimization", new OptimizationStage(programRunnerConfig.levelOptimization, programRunnerConfig.showOptimization)))
                     .then(scopedStages
                             .create("Linter", new LinterStage(LinterStage.Mode.FULL, programContext)))
-                    .then(scopedStages
-                            .create("Inject ProgramContext", new ProgramContextInjectStage(programContext)))
+//                    .then(scopedStages
+//                            .create("Inject ProgramContext", new ProgramContextInjectStage(programContext)))
                     .then(scopedStages
                             .create("Function adding", new FunctionAddingStage()))
                     .thenConditional(getConfig().generateMermaidText, scopedStages

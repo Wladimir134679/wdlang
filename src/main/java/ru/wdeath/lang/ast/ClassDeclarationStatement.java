@@ -16,17 +16,18 @@ import java.util.List;
 
 public class ClassDeclarationStatement implements Statement, SourceLocation {
 
-    public ProgramContext programContext;
+    public final ProgramContext programContext;
     public final String name;
     public final List<FunctionDefineStatement> methods;
     public final List<AssignmentExpression> fields;
     private final Range range;
 
-    public ClassDeclarationStatement(String name) {
-        this(name, Range.ZERO);
+    public ClassDeclarationStatement(ProgramContext programContext, String name) {
+        this(programContext, name, Range.ZERO);
     }
 
-    public ClassDeclarationStatement(String name, Range range) {
+    public ClassDeclarationStatement(ProgramContext programContext, String name, Range range) {
+        this.programContext = programContext;
         this.name = name;
         this.range = range;
         methods = new ArrayList<>();
@@ -58,6 +59,7 @@ public class ClassDeclarationStatement implements Statement, SourceLocation {
         programContext.getScope().setClassDeclaration(declaration);
         return NumberValue.ZERO;
     }
+
     private ClassField toClassField(AssignmentExpression f) {
         // TODO check only variable assignments
         final String fieldName = ((VariableExpression) f.target).name;
@@ -65,8 +67,8 @@ public class ClassDeclarationStatement implements Statement, SourceLocation {
     }
 
     private ClassMethod toClassMethod(FunctionDefineStatement m) {
-        final var function = new UserDefinedFunction(m.arguments, m.body, m.getRange());
-        return new ClassMethod(m.name, function);
+        final var function = new UserDefinedFunction(programContext, m.arguments, m.body, m.getRange());
+        return new ClassMethod(programContext, m.name, function);
     }
 
     @Override

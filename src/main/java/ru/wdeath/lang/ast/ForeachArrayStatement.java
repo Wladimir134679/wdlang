@@ -8,12 +8,13 @@ import java.util.Map;
 
 public class ForeachArrayStatement extends InterruptableNode implements Statement {
 
-    public ProgramContext context;
+    public final ProgramContext programContext;
     public final String variable;
     public final Node container;
     public final Statement body;
 
-    public ForeachArrayStatement(String variable, Node container, Statement body) {
+    public ForeachArrayStatement(ProgramContext programContext, String variable, Node container, Statement body) {
+        this.programContext = programContext;
         this.variable = variable;
         this.container = container;
         this.body = body;
@@ -22,7 +23,7 @@ public class ForeachArrayStatement extends InterruptableNode implements Statemen
     @Override
     public Value eval() {
         super.interruptionCheck();
-        try (final var ignored = context.getScope().closeableScope()) {
+        try (final var ignored = programContext.getScope().closeableScope()) {
             final Value containerValue = container.eval();
             switch (containerValue.type()) {
                 case Types.STRING -> iterateString(containerValue.asString());
@@ -36,7 +37,7 @@ public class ForeachArrayStatement extends InterruptableNode implements Statemen
 
     private void iterateString(String str) {
         for (char ch : str.toCharArray()) {
-            context.getScope().setVariable(variable, new StringValue(String.valueOf(ch)));
+            programContext.getScope().setVariable(variable, new StringValue(String.valueOf(ch)));
             try {
                 body.eval();
             } catch (BreakStatement bs) {
@@ -49,7 +50,7 @@ public class ForeachArrayStatement extends InterruptableNode implements Statemen
 
     private void iterateArray(ArrayValue containerValue) {
         for (Value value : containerValue) {
-            context.getScope().setVariable(variable, value);
+            programContext.getScope().setVariable(variable, value);
             try {
                 body.eval();
             } catch (BreakStatement bs) {
@@ -62,7 +63,7 @@ public class ForeachArrayStatement extends InterruptableNode implements Statemen
 
     private void iterateMap(MapValue containerValue) {
         for (Map.Entry<Value, Value> entry : containerValue) {
-            context.getScope().setVariable(variable, new ArrayValue(new Value[]{
+            programContext.getScope().setVariable(variable, new ArrayValue(new Value[]{
                     entry.getKey(),
                     entry.getValue()
             }));

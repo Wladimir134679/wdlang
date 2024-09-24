@@ -9,33 +9,33 @@ import java.util.Map;
 
 public class Functions {
 
-    public static void clearAndInit(ProgramContext programContext){
+    public static void clearAndInit(ProgramContext programContext) {
         ScopeHandler scope = programContext.getScope();
-        scope.setFunction("println", (pc, v) -> {
+        scope.setFunction("println", new ProgramLibFunction((pc, v) -> {
             ArgumentsUtil.checkOrOr(0, 1, v.length);
             if (v.length == 1)
                 pc.getConsole().println(v[0].asString());
             else
                 pc.getConsole().println();
             return NumberValue.ZERO;
-        });
-        scope.setFunction("sin", (pc, v) -> {
+        }));
+        scope.setFunction("sin", new ProgramLibFunction((pc, v) -> {
             ArgumentsUtil.check(1, v.length);
             return NumberValue.of(Math.sin(v[0].asDouble()));
-        });
-        scope.setFunction("cos", (pc, v) -> {
+        }));
+        scope.setFunction("cos", new ProgramLibFunction((pc, v) -> {
             ArgumentsUtil.check(1, v.length);
             return NumberValue.of(Math.sin(v[0].asDouble()));
-        });
-        scope.setFunction("newarray", (pc, v) ->
+        }));
+        scope.setFunction("newarray", new ProgramLibFunction((pc, v) ->
                 createArray(v, 0)
-        );
-        scope.setFunction("assertEquals", (pc, v) -> {
+        ));
+        scope.setFunction("assertEquals", new ProgramLibFunction((pc, v) -> {
             ArgumentsUtil.check(2, v.length);
-            if(!v[0].equals(v[1]))
+            if (!v[0].equals(v[1]))
                 throw new WdlRuntimeException(v[0].asString() + " != " + v[1].asString());
             return NumberValue.ZERO;
-        });
+        }));
     }
 
     public static ArrayValue createArray(Value[] args, int index) {

@@ -6,10 +6,15 @@ import ru.wdeath.lang.utils.Console;
 
 public class ProgramContext {
 
+    public static ProgramContext GLOBAL = null;
+
     private final ScopeHandler scopeHandler;
     private Console console;
 
     public ProgramContext(){
+        if(GLOBAL == null){
+            GLOBAL = this;
+        }
         console = new Console();
         scopeHandler = new ScopeHandler();
     }

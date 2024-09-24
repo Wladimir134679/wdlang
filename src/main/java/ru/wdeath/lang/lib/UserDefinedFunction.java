@@ -11,11 +11,13 @@ import ru.wdeath.lang.utils.SourceLocation;
 
 public class UserDefinedFunction implements Function, SourceLocation {
 
+    public final ProgramContext programContext;
     public final Arguments arguments;
     public final Statement body;
     private final Range range;
 
-    public UserDefinedFunction(Arguments arguments, Statement body, Range range) {
+    public UserDefinedFunction(ProgramContext programContext, Arguments arguments, Statement body, Range range) {
+        this.programContext = programContext;
         this.arguments = arguments;
         this.body = body;
         this.range = range;
@@ -37,7 +39,7 @@ public class UserDefinedFunction implements Function, SourceLocation {
     }
 
     @Override
-    public Value execute(ProgramContext programContext, Value[] values) {
+    public Value execute(Value[] values) {
         final int size = values.length;
 
         final int requiredArgsCount = arguments.getRequiredArgumentsCount();

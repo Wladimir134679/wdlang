@@ -8,12 +8,13 @@ import java.util.Map;
 
 public class ForeachMapStatement extends InterruptableNode implements Statement {
 
-    public ProgramContext programContext;
+    public final ProgramContext programContext;
     public final String key, value;
     public final Node container;
     public final Statement body;
 
-    public ForeachMapStatement(String key, String value, Node container, Statement body) {
+    public ForeachMapStatement(ProgramContext programContext, String key, String value, Node container, Statement body) {
+        this.programContext = programContext;
         this.key = key;
         this.value = value;
         this.container = container;

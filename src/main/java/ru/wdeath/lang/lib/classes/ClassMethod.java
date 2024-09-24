@@ -8,27 +8,28 @@ import ru.wdeath.lang.lib.Value;
 import java.util.Objects;
 
 public record ClassMethod(
+        ProgramContext programContext,
         String name,
         Function function,
         ClassInstance classInstance
 ) implements Function {
 
-    public ClassMethod(String name, Function function) {
-        this(name, function, null);
+    public ClassMethod(ProgramContext programContext, String name, Function function) {
+        this(programContext, name, function, null);
     }
 
-    public ClassMethod(ClassMethod m, ClassInstance instance) {
-        this(m.name, m.function, instance);
+    public ClassMethod(ProgramContext programContext, ClassMethod m, ClassInstance instance) {
+        this(programContext, m.name, m.function, instance);
     }
 
     @Override
-    public Value execute(ProgramContext programContext, Value... args) {
+    public Value execute(Value... args) {
         try (final var ignored = programContext.getScope().closeableScope()) {
             if (classInstance != null) {
                 // non-static method
                 programContext.getScope().defineVariableInCurrentScope("this", classInstance.getThisMap());
             }
-            return function.execute(programContext, args);
+            return function.execute(args);
         }
     }
 

@@ -7,13 +7,14 @@ import ru.wdeath.lang.utils.SourceLocation;
 
 public class FunctionDefineStatement implements Statement, SourceLocation {
 
-    public ProgramContext programContext;
+    public final ProgramContext programContext;
     public final String name;
     public final Arguments arguments;
     public final Statement body;
     private final Range range;
 
-    public FunctionDefineStatement(String name, Arguments arguments, Statement body, Range range) {
+    public FunctionDefineStatement(ProgramContext programContext, String name, Arguments arguments, Statement body, Range range) {
+        this.programContext = programContext;
         this.name = name;
         this.arguments = arguments;
         this.body = body;
@@ -27,7 +28,7 @@ public class FunctionDefineStatement implements Statement, SourceLocation {
 
     @Override
     public Value eval() {
-        programContext.getScope().setFunction(name, new UserDefinedFunction(arguments, body, range));
+        programContext.getScope().setFunction(name, new UserDefinedFunction(programContext, arguments, body, range));
         return NumberValue.ZERO;
     }
 

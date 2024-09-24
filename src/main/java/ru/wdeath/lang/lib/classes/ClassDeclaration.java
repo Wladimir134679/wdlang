@@ -19,13 +19,13 @@ public record ClassDeclaration(
 
     @Override
     public Value newInstance(Value[] args, ProgramContext context) {
-        final var instance = new ClassInstance(name);
+        final var instance = new ClassInstance(context, name);
         for (ClassField f : classFields) {
             instance.addField(f);
         }
         for (ClassMethod m : classMethods) {
-            instance.addMethod(m, context);
+            instance.addMethod(m);
         }
-        return instance.callConstructor(args, context);
+        return instance.callConstructor(args);
     }
 }

@@ -18,11 +18,12 @@ import java.util.List;
 
 public class ImportStatement implements Statement, SourceLocation {
 
-    public ProgramContext programContext;
+    public final ProgramContext programContext;
     public final Range range;
     public final List<ImportDetails> listImports;
 
-    public ImportStatement(List<ImportDetails> listImports, Range range) {
+    public ImportStatement(ProgramContext programContext, List<ImportDetails> listImports, Range range) {
+        this.programContext = programContext;
         this.range = range;
         this.listImports = listImports;
     }

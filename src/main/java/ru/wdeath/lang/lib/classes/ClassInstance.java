@@ -10,13 +10,15 @@ import java.util.Objects;
 
 public class ClassInstance implements Value {
 
+    private final ProgramContext programContext;
     private final String className;
     private final MapValue thisMap;
     private ClassMethod constructor;
     private ClassMethod toString;
     private boolean isInstantiated;
 
-    public ClassInstance(String name) {
+    public ClassInstance(ProgramContext programContext, String name) {
+        this.programContext = programContext;
         this.className = name;
         thisMap = new MapValue(10);
     }
@@ -33,9 +35,9 @@ public class ClassInstance implements Value {
         thisMap.set(f.name(), f.evaluableValue().eval());
     }
 
-    public void addMethod(ClassMethod m, ProgramContext context) {
+    public void addMethod(ClassMethod m) {
         final String name = m.name();
-        final var method = new ClassMethod(m, this);
+        final var method = new ClassMethod(programContext, m, this);
         thisMap.set(name, method);
         if (name.equals(className)) {
             constructor = method;
@@ -44,14 +46,14 @@ public class ClassInstance implements Value {
         }
     }
 
-    public ClassInstance callConstructor(Value[] args, ProgramContext programContext) {
+    public ClassInstance callConstructor(Value[] args) {
         if (isInstantiated) {
             throw new WdlRuntimeException(
                     "Class %s was already instantiated".formatted(className));
         }
         if (constructor != null) {
             CallStack.enter("class " + className, constructor, null);
-            constructor.execute(programContext, args);
+            constructor.execute(args);
             CallStack.exit();
         }
         isInstantiated = true;

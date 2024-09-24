@@ -6,10 +6,11 @@ import ru.wdeath.lang.lib.Value;
 
 public class PrintStatement implements Statement{
 
-    public ProgramContext programContext;
+    public final ProgramContext programContext;
     public final Node expression;
 
-    public PrintStatement(Node expression) {
+    public PrintStatement(ProgramContext programContext, Node expression) {
+        this.programContext = programContext;
         this.expression = expression;
     }
 

@@ -1,5 +1,6 @@
 package ru.wdeath.lang.parser;
 
+import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.ast.*;
 import ru.wdeath.lang.exception.ParseException;
 import ru.wdeath.lang.lib.NumberValue;
@@ -47,12 +48,14 @@ public class Parser {
     );
 
 
+    private final ProgramContext context;
     private final List<Token> tokens;
     private final int size;
     private int index;
     private final ParseErrors parseErrors;
 
-    public Parser(List<Token> tokens) {
+    public Parser(ProgramContext context, List<Token> tokens) {
+        this.context = context;
         this.tokens = tokens;
         this.size = tokens.size();
         this.index = 0;
@@ -112,7 +115,7 @@ public class Parser {
 
     private Statement statement() {
         if (match(TokenType.PRINT))
-            return new PrintStatement(expression());
+            return new PrintStatement(context, expression());
         if (match(TokenType.IF))
             return isElse();
         if (match(TokenType.WHILE))
@@ -164,13 +167,13 @@ public class Parser {
                 words.clear();
             }
         } while (match(TokenType.DOT) || match(TokenType.COMMA));
-        if(!words.isEmpty()){
+        if (!words.isEmpty()) {
             ImportStatement.ImportDetails importDetails = new ImportStatement.ImportDetails();
             importDetails.words = new ArrayList<>(words);
             details.add(importDetails);
         }
 
-        return new ImportStatement(details, getRange(startTokenIndex, index - 1));
+        return new ImportStatement(context, details, getRange(startTokenIndex, index - 1));
     }
 
     private ExprStatement functionCallStatement() {
@@ -224,7 +227,7 @@ public class Parser {
         final Node container = expression();
         if (openParen) consume(TokenType.RPAREN); // скобки
         final Statement statement = statementOrBlock();
-        return new ForeachArrayStatement(variable, container, statement);
+        return new ForeachArrayStatement(context, variable, container, statement);
     }
 
     private ForeachMapStatement foreachMapStatement() {
@@ -236,7 +239,7 @@ public class Parser {
         final Node container = expression();
         if (openParen) consume(TokenType.RPAREN); // скобки
         final Statement statement = statementOrBlock();
-        return new ForeachMapStatement(key, value, container, statement);
+        return new ForeachMapStatement(context, key, value, container, statement);
     }
 
     private Statement isElse() {
@@ -290,7 +293,7 @@ public class Parser {
             patterns.add(pattern);
         } while (!match(TokenType.RBRACE));
 
-        return new MatchExpression(expression, patterns);
+        return new MatchExpression(context, expression, patterns);
     }
 
     private Statement classDeclaration() {
@@ -300,7 +303,7 @@ public class Parser {
         //   def method() = str
         // }
         final String name = consume(TokenType.WORD).text();
-        final ClassDeclarationStatement classDeclaration = new ClassDeclarationStatement(name);
+        final ClassDeclarationStatement classDeclaration = new ClassDeclarationStatement(context, name);
         consume(TokenType.LBRACE);
         do {
             if (match(TokenType.DEF)) {
@@ -329,7 +332,7 @@ public class Parser {
     private FunctionExpression function(Node qualifiedName) {
         final var startTokenIndex = index - 1;
         consume(TokenType.LPAREN);
-        final var functionExpression = new FunctionExpression(qualifiedName);
+        final var functionExpression = new FunctionExpression(context, qualifiedName);
         while (!match(TokenType.RPAREN)) {
             functionExpression.addArgument(expression());
             match(TokenType.COMMA);
@@ -350,10 +353,10 @@ public class Parser {
 
             if (lookMatch(0, TokenType.LPAREN)) {
                 // next function call
-                return functionChain(new ContainerAccessExpression(expr, indices, getRange()));
+                return functionChain(new ContainerAccessExpression(context, expr, indices, getRange()));
             }
             // container access
-            return new ContainerAccessExpression(expr, indices, getRange());
+            return new ContainerAccessExpression(context, expr, indices, getRange());
         }
         return expr;
     }
@@ -387,7 +390,7 @@ public class Parser {
         final String name = consume(TokenType.WORD).text();
         final Arguments arguments = arguments();
         final Statement body = statementBody();
-        return new FunctionDefineStatement(name, arguments, body, getRange(startTokenIndex, index - 1));
+        return new FunctionDefineStatement(context, name, arguments, body, getRange(startTokenIndex, index - 1));
     }
 
 
@@ -611,7 +614,7 @@ public class Parser {
                 args.add(expression());
                 match(TokenType.COMMA);
             }
-            return new ObjectCreationExpression(className, args, getRange(startTokenIndex, index - 1));
+            return new ObjectCreationExpression(context, className, args, getRange(startTokenIndex, index - 1));
         }
 
         return unary();
@@ -641,7 +644,7 @@ public class Parser {
         }
         if (match(TokenType.COLONCOLON)) {
             final String functionName = consume(TokenType.WORD).text();
-            return new FunctionReferenceExpression(functionName);
+            return new FunctionReferenceExpression(context, functionName);
         }
         if (match(TokenType.MATCH))
             return match();
@@ -650,7 +653,7 @@ public class Parser {
             final Arguments arguments = arguments();
             final Statement statement = statementBody();
             Range range = getRange(startTokenIndex, index - 1);
-            return new ValueExpression(new UserDefinedFunction(arguments, statement, range));
+            return new ValueExpression(new UserDefinedFunction(context, arguments, statement, range));
         }
         return variable();
     }
@@ -728,17 +731,18 @@ public class Parser {
 
         final List<Node> indices = variableSuffix();
         if (indices.isEmpty()) {
-            final var variable = new VariableExpression(current.text());
+            final var variable = new VariableExpression(context, current.text());
             variable.setRange(getRange(startTokenIndex, index - 1));
             return variable;
         }
-        return new ContainerAccessExpression(current.text(), indices, getRange());
+        return new ContainerAccessExpression(context, current.text(), indices, getRange());
     }
 
     private Node stringProperty(ValueExpression strExpr) {
         if (lookMatch(1, TokenType.WORD) && lookMatch(2, TokenType.LPAREN)) {
             match(TokenType.DOT);
             return functionChain(new ContainerAccessExpression(
+                    context,
                     strExpr,
                     Collections.singletonList(new ValueExpression(consume(TokenType.WORD).text())),
                     getRange()
@@ -748,7 +752,7 @@ public class Parser {
         if (indices.isEmpty()) {
             return strExpr;
         }
-        return new ContainerAccessExpression(strExpr, indices, getRange());
+        return new ContainerAccessExpression(context, strExpr, indices, getRange());
     }
 
     private boolean isNumberToken(TokenType type) {

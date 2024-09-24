@@ -7,10 +7,11 @@ import ru.wdeath.lang.lib.ScopeHandler;
 
 public class FunctionReferenceExpression implements Node {
 
-    public ProgramContext programContext;
+    public final ProgramContext programContext;
     public final String name;
 
-    public FunctionReferenceExpression(String name) {
+    public FunctionReferenceExpression(ProgramContext programContext, String name) {
+        this.programContext = programContext;
         this.name = name;
     }
 

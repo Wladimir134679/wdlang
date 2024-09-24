@@ -14,18 +14,19 @@ public class ContainerAccessExpression implements Node, Accessible, SourceLocati
 
     private static final Pattern PATTERN_SIMPLE_INDEX = Pattern.compile("^\"[a-zA-Z$_]\\w*\"");
 
-    public ProgramContext programContext;
+    public final ProgramContext programContext;
     public final Node root;
     public final List<Node> indexes;
     private final boolean[] simpleIndices;
     private final boolean rootIsVariable;
     private final Range range;
 
-    public ContainerAccessExpression(String variable, List<Node> indexes, Range range) {
-        this(new VariableExpression(variable), indexes, range);
+    public ContainerAccessExpression(ProgramContext programContext, String variable, List<Node> indexes, Range range) {
+        this(programContext, new VariableExpression(programContext, variable), indexes, range);
     }
 
-    public ContainerAccessExpression(Node root, List<Node> indices, Range range) {
+    public ContainerAccessExpression(ProgramContext programContext, Node root, List<Node> indices, Range range) {
+        this.programContext = programContext;
         this.rootIsVariable = root instanceof VariableExpression;
         this.root = root;
         this.indexes = indices;
@@ -108,7 +109,7 @@ public class ContainerAccessExpression implements Node, Accessible, SourceLocati
         return result;
     }
 
-    public Value lastIndex(){
+    public Value lastIndex() {
         return index(indexes.size() - 1);
     }
 

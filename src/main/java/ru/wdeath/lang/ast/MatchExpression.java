@@ -10,11 +10,12 @@ import java.util.List;
 
 public class MatchExpression implements Statement {
 
-    public ProgramContext programContext;
+    public final ProgramContext programContext;
     public final Node expression;
     public final List<Pattern> patterns;
 
-    public MatchExpression(Node expression, List<Pattern> patterns) {
+    public MatchExpression(ProgramContext programContext, Node expression, List<Pattern> patterns) {
+        this.programContext = programContext;
         this.expression = expression;
         this.patterns = patterns;
     }
