@@ -8,10 +8,12 @@ public class ProgramContext {
 
     public static ProgramContext GLOBAL = null;
 
+    private final String name;
     private final ScopeHandler scopeHandler;
     private Console console;
 
-    public ProgramContext(){
+    public ProgramContext(String name){
+        this.name = name;
         if(GLOBAL == null){
             GLOBAL = this;
         }
@@ -34,5 +36,9 @@ public class ProgramContext {
 
     public void setConsole(Console console) {
         this.console = console;
+    }
+
+    public String getName() {
+        return name;
     }
 }

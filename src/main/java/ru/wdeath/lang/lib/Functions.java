@@ -27,9 +27,7 @@ public class Functions {
             ArgumentsUtil.check(1, v.length);
             return NumberValue.of(Math.sin(v[0].asDouble()));
         }));
-        scope.setFunction("newarray", new ProgramLibFunction((pc, v) ->
-                createArray(v, 0)
-        ));
+        scope.setFunction("newarray", new ProgramLibFunction((pc, v) -> createArray(v, 0)));
         scope.setFunction("assertEquals", new ProgramLibFunction((pc, v) -> {
             ArgumentsUtil.check(2, v.length);
             if (!v[0].equals(v[1]))

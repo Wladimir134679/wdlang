@@ -55,7 +55,7 @@ public class ImportStatement implements Statement, SourceLocation {
         InputSource inputSource = new InputSourceFile(pathToFileImport);
 
         ProgramRunnerConfig config = new ProgramRunnerConfig();
-        ProgramRunner runner = new ProgramRunner(config, inputSource);
+        ProgramRunner runner = new ProgramRunner(config, inputSource, importDetails.toValue());
         runner.getContext().setConsole(programContext.getConsole());
         runner.init();
         runner.run();
@@ -88,12 +88,16 @@ public class ImportStatement implements Statement, SourceLocation {
 
         @Override
         public String toString() {
-            return words.toString() + " AS " + getWordAsName();
+            return toValue();
+        }
+
+        public String toValue(){
+            return String.join(".", words) + " as " + getWordAsName();
         }
     }
 
     @Override
     public String toString() {
-        return "Import " + listImports;
+        return "import " + listImports;
     }
 }

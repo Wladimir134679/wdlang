@@ -23,11 +23,17 @@ public class ProgramRunner {
     private Statement statementProgramInit;
     private InputSource input;
     private final ProgramRunnerConfig programRunnerConfig;
+    private final String name;
 
     public ProgramRunner(ProgramRunnerConfig programRunnerConfig, InputSource input) {
+        this(programRunnerConfig, input, "main");
+    }
+
+    public ProgramRunner(ProgramRunnerConfig programRunnerConfig, InputSource input, String name) {
         this.input = input;
         this.programRunnerConfig = programRunnerConfig;
-        this.programContext = new ProgramContext();
+        this.name = name;
+        this.programContext = new ProgramContext(this.name);
     }
 
     public InputSource getInput() {
@@ -44,6 +50,10 @@ public class ProgramRunner {
 
     public ProgramContext getContext() {
         return programContext;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void init() {
