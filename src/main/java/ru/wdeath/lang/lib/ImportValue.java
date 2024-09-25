@@ -50,7 +50,14 @@ public class ImportValue implements Value {
     }
 
     public Value access(Value lastIndex) {
-        Value variableOrConstant = context.getScope().getVariableOrConstant(lastIndex.asString());
-        return variableOrConstant;
+        String nameKey = lastIndex.asString();
+        ScopeHandler scope = context.getScope();
+        if (scope.isVariableOrConstantExists(nameKey)) {
+            return scope.getVariableOrConstant(nameKey);
+        }
+        if (scope.isFunctionExists(nameKey)) {
+            return new FunctionValue(scope.getFunction(nameKey));
+        }
+        return null;
     }
 }

@@ -14,6 +14,9 @@ def testImport() {
     println("Проверка создания класса")
     p3 = new classes.Point(-5, -5)
     println("p3 = " + p3)
+
+    println()
+    println("pg func = " + pg.testFunc("ARGVal", 2))
 }
 
 testImport()
