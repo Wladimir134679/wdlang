@@ -66,4 +66,6 @@ public interface Visitor {
     void visit(Argument st);
 
     void visit(ImportStatement st);
+
+    void visit(ExpansionStatement st);
 }

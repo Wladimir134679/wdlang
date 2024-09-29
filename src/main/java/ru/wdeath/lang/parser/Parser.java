@@ -140,8 +140,20 @@ public class Parser {
             return functionDefine();
         if (match(TokenType.IMPORT))
             return importStatement();
+        if (match(TokenType.EXPANSION))
+            return expansionStatement();
 
         return assignmentStatement();
+    }
+
+    private Statement expansionStatement() {
+        final var startTokenIndex = index - 1;
+        List<String> names = new ArrayList<>();
+        do {
+            names.add(consume(TokenType.WORD).text());
+        } while (match(TokenType.COMMA));
+
+        return new ExpansionStatement(context, names, getRange(startTokenIndex, index - 1));
     }
 
     private Statement importStatement() {

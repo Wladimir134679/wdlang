@@ -26,6 +26,7 @@ public enum TokenType {
     NEW,
     IMPORT,
     AS,
+    EXPANSION,
 
     PLUS, // +
     MINUS, // -

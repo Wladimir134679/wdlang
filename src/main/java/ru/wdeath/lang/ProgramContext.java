@@ -1,6 +1,5 @@
 package ru.wdeath.lang;
 
-import ru.wdeath.lang.lib.Functions;
 import ru.wdeath.lang.lib.ScopeHandler;
 import ru.wdeath.lang.utils.Console;
 
@@ -23,7 +22,6 @@ public class ProgramContext {
 
     public void reset(){
         scopeHandler.resetScope();
-        Functions.clearAndInit(this);
     }
 
     public ScopeHandler getScope() {

@@ -99,6 +99,7 @@ public class Lexer {
         keywords.put("new", TokenType.NEW);
         keywords.put("import", TokenType.IMPORT);
         keywords.put("as", TokenType.AS);
+        keywords.put("expansion", TokenType.EXPANSION);
         KEYWORDS = Map.copyOf(keywords);
     }
 

@@ -1,5 +1,6 @@
 println("==== Import classes")
 import tests.classes
+
 def testImport() {
     println("==== Import other")
     import tests.other_program as pg
@@ -19,5 +20,13 @@ def testImport() {
     println()
     println("pg func = " + pg.testFunc("ARGVal", 2))
 }
+
+expansion std, math
+STR = "123456789"
+AAA = PI
+println("Len STR = " + len(STR))
+println("AAA = " + AAA)
+println("Sin AAA = " + sin(AAA))
+println("Cos AAA = " + cos(AAA))
 
 testImport()

@@ -17,6 +17,16 @@ public class RootScope extends Scope {
         classDeclarations = new ConcurrentHashMap<>();
         constants.put("true", NumberValue.ONE);
         constants.put("false", NumberValue.ZERO);
+
+
+        setFunction("println", new ProgramLibFunction((pc, v) -> {
+            ArgumentsUtil.checkOrOr(0, 1, v.length);
+            if (v.length == 1)
+                pc.getConsole().println(v[0].asString());
+            else
+                pc.getConsole().println();
+            return NumberValue.ZERO;
+        }));
     }
 
 

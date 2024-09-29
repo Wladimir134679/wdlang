@@ -20,6 +20,11 @@ public abstract class AbstractVisitor implements Visitor {
     }
 
     @Override
+    public void visit(ExpansionStatement st) {
+
+    }
+
+    @Override
     public void visit(AssignmentExpression st) {
         st.target.accept(this);
         st.expression.accept(this);

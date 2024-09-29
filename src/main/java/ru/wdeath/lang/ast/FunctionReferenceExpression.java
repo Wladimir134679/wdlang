@@ -2,8 +2,6 @@ package ru.wdeath.lang.ast;
 
 import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.lib.FunctionValue;
-import ru.wdeath.lang.lib.Functions;
-import ru.wdeath.lang.lib.ScopeHandler;
 
 public class FunctionReferenceExpression implements Node {
 
