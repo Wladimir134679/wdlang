@@ -3,12 +3,13 @@ package ru.wdeath.lang.module.impl;
 import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.lib.*;
 import ru.wdeath.lang.module.ExpansionModule;
+import ru.wdeath.lang.module.InitModule;
 
 public class STDModule implements ExpansionModule {
 
     @Override
-    public void init(ProgramContext context, ScopeHandler scope) {
-        scope.setFunction("len", new ProgramLibFunction(STDModule::len));
+    public void init(InitModule init) {
+        init.add("len", STDModule::len);
     }
 
     private static Value len(ProgramContext pc, Value[] args) {

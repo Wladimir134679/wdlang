@@ -3,15 +3,16 @@ package ru.wdeath.lang.module.impl;
 import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.lib.*;
 import ru.wdeath.lang.module.ExpansionModule;
+import ru.wdeath.lang.module.InitModule;
 
 public class MathModule implements ExpansionModule {
 
     @Override
-    public void init(ProgramContext context, ScopeHandler scope) {
-        scope.setFunction("sin", new ProgramLibFunction(MathModule::sin));
-        scope.setFunction("cos", new ProgramLibFunction(MathModule::cos));
-
-        scope.setConstant("PI", NumberValue.of(Math.PI));
+    public void init(InitModule init) {
+        init
+                .add("sin", MathModule::sin)
+                .add("cos", MathModule::cos)
+                .addConst("PI", NumberValue.of(Math.PI));
     }
 
     private static Value sin(ProgramContext pc, Value[] args) {

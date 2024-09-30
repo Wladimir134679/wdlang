@@ -6,5 +6,5 @@ import ru.wdeath.lang.lib.ScopeHandler;
 
 public interface ExpansionModule {
 
-    void init(ProgramContext context, ScopeHandler scope);
+    void init(InitModule init);
 }

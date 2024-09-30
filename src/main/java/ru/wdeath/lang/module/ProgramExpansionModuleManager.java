@@ -28,9 +28,14 @@ public class ProgramExpansionModuleManager {
     public static ProgramContext expansion(String name, ProgramContext currentContext) {
         if (!isExists(name)) throw new WdlRuntimeException("Not find \"" + name + "\" module");
         ExpansionModule expansion = getExpansion(name);
+        InitModule initModule = new InitModule(createProgramContextModule(currentContext, expansion));
+        expansion.init(initModule);
+        return initModule.programContext();
+    }
+
+    private static ProgramContext createProgramContextModule(ProgramContext currentContext, ExpansionModule expansion) {
         ProgramContext programContext = new ProgramContext("import " + expansion.getClass().getName());
         programContext.setConsole(currentContext.getConsole());
-        expansion.init(programContext, programContext.getScope());
         return programContext;
     }
 }
