@@ -39,6 +39,13 @@ public class ScopeHandler {
         }
     }
 
+    public void expansionScope(ScopeHandler other){
+        rootScope.getFunctions().putAll(other.functions());
+        rootScope.getConstants().putAll(other.constants());
+        rootScope.getVariables().putAll(other.variables());
+        rootScope.getClassDeclarations().putAll(other.classDeclarations());
+    }
+
     public AutoCloseableScope closeableScope() {
         push();
         return new AutoCloseableScope(this);

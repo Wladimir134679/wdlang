@@ -8,6 +8,8 @@ import ru.wdeath.lang.exception.WdlRuntimeException;
 import ru.wdeath.lang.lib.ImportValue;
 import ru.wdeath.lang.lib.NumberValue;
 import ru.wdeath.lang.lib.Value;
+import ru.wdeath.lang.module.ExpansionModule;
+import ru.wdeath.lang.module.ProgramExpansionModuleManager;
 import ru.wdeath.lang.utils.Input.InputSource;
 import ru.wdeath.lang.utils.Input.InputSourceFile;
 import ru.wdeath.lang.utils.Range;
@@ -36,14 +38,41 @@ public class ImportStatement implements Statement, SourceLocation {
     @Override
     public Value eval() {
         for (ImportDetails listImport : listImports) {
-            try{
-                ProgramContext importContext = inputAndIncludeProgram(listImport);
-                programContext.getScope().defineVariableInCurrentScope(listImport.getWordAsName(), importContextToValue(importContext));
-            } catch (Exception e) {
-                throw new WdlRuntimeException("Error import file", e, getRange());
-            }
+            String nameModule = listImport.joinPath();
+            if (isExpansionModule(nameModule))
+                expansionModule(listImport, nameModule);
+            else
+                includeFile(listImport);
         }
         return NumberValue.ZERO;
+    }
+
+    private void expansionModule(ImportDetails listImport, String nameModule) {
+        if (!ProgramExpansionModuleManager.isExists(nameModule))
+            throw new WdlRuntimeException("Not find \"" + nameModule + "\" module", range);
+        ProgramContext expansion = ProgramExpansionModuleManager.expansion(nameModule, programContext);
+        extract(listImport, expansion);
+    }
+
+    private void includeFile(ImportDetails listImport) {
+        try {
+            ProgramContext importContext = inputAndIncludeProgram(listImport);
+            extract(listImport, importContext);
+        } catch (Exception e) {
+            throw new WdlRuntimeException("Error import file", e, getRange());
+        }
+    }
+
+    private void extract(ImportDetails listImport, ProgramContext importContext) {
+        if (listImport.isExpansion()) {
+            programContext.getScope().expansionScope(importContext.getScope());
+        } else {
+            programContext.getScope().defineVariableInCurrentScope(listImport.getWordAsName(), importContextToValue(importContext));
+        }
+    }
+
+    public boolean isExpansionModule(String nameModule) {
+        return ProgramExpansionModuleManager.isExists(nameModule);
     }
 
     public Value importContextToValue(ProgramContext importContext) {
@@ -86,13 +115,21 @@ public class ImportStatement implements Statement, SourceLocation {
             return asName == null ? words.get(words.size() - 1) : asName;
         }
 
+        public boolean isExpansion() {
+            return getWordAsName().equals("*");
+        }
+
         @Override
         public String toString() {
             return toValue();
         }
 
-        public String toValue(){
-            return String.join(".", words) + " as " + getWordAsName();
+        public String joinPath() {
+            return String.join(".", words);
+        }
+
+        public String toValue() {
+            return joinPath() + " as " + getWordAsName();
         }
     }
 

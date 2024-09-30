@@ -7,7 +7,7 @@ import ru.wdeath.lang.module.ExpansionModule;
 public class MathModule implements ExpansionModule {
 
     @Override
-    public void init(ScopeHandler scope) {
+    public void init(ProgramContext context, ScopeHandler scope) {
         scope.setFunction("sin", new ProgramLibFunction(MathModule::sin));
         scope.setFunction("cos", new ProgramLibFunction(MathModule::cos));
 

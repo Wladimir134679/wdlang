@@ -66,5 +66,4 @@ public interface ResultVisitor<R, T> {
 
     R visit(ImportStatement s, T t);
 
-    R visit(ExpansionStatement s, T t);
 }

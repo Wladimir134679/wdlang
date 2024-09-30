@@ -7,7 +7,7 @@ import ru.wdeath.lang.module.ExpansionModule;
 public class STDModule implements ExpansionModule {
 
     @Override
-    public void init(ScopeHandler scope) {
+    public void init(ProgramContext context, ScopeHandler scope) {
         scope.setFunction("len", new ProgramLibFunction(STDModule::len));
     }
 
