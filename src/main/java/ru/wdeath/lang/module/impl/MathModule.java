@@ -4,8 +4,14 @@ import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.lib.*;
 import ru.wdeath.lang.module.ExpansionModule;
 import ru.wdeath.lang.module.InitModule;
+import ru.wdeath.lang.module.NameExpansionModule;
 
-public class MathModule implements ExpansionModule {
+public class MathModule implements NameExpansionModule {
+
+    @Override
+    public String name() {
+        return "math";
+    }
 
     @Override
     public void init(InitModule init) {

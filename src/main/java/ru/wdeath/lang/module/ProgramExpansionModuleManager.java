@@ -14,12 +14,17 @@ public class ProgramExpansionModuleManager {
 
     public ProgramExpansionModuleManager() {
         this
-                .add("std", new STDModule())
-                .add("math", new MathModule());
+                .add(new STDModule())
+                .add(new MathModule());
     }
 
     public ProgramExpansionModuleManager add(String name, ExpansionModule module) {
         modules.put(name, module);
+        return this;
+    }
+
+    public ProgramExpansionModuleManager add(NameExpansionModule module) {
+        modules.put(module.name(), module);
         return this;
     }
 
