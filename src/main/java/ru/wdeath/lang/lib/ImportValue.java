@@ -31,7 +31,7 @@ public class ImportValue implements Value {
 
     @Override
     public String asString() {
-        return "import " + context.getName();
+        return context.getName();
     }
 
     @Override

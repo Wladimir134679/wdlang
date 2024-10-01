@@ -1,6 +1,7 @@
 package ru.wdeath.lang;
 
 import ru.wdeath.lang.exception.WdlParserException;
+import ru.wdeath.lang.module.impl.LoggerModule;
 import ru.wdeath.lang.outputsettings.OutputSettings;
 import ru.wdeath.lang.outputsettings.StringOutputSettings;
 import ru.wdeath.lang.parser.linters.LinterStage;
@@ -33,6 +34,7 @@ public class Main {
         config.showMeasurement = true;
 
         final var runner = new ProgramRunner(config, new InputSourceFile(path));
+        runner.getContext().getModuleManager().add(new LoggerModule());
         runner.init();
         runner.run();
         runner.resultAndPrint();

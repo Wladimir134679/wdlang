@@ -39,7 +39,7 @@ public class ProgramExpansionModuleManager {
     public ProgramContext expansion(String name, ProgramContext currentContext) {
         if (!isExists(name)) throw new WdlRuntimeException("Not find \"" + name + "\" module");
         ExpansionModule expansion = getExpansion(name);
-        InitModule initModule = new InitModule(createProgramContextModule(currentContext, expansion));
+        InitModule initModule = new InitModule(createProgramContextModule(currentContext, expansion), currentContext);
         expansion.init(initModule);
         return initModule.programContext();
     }

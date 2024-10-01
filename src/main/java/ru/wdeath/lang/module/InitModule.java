@@ -7,9 +7,11 @@ import ru.wdeath.lang.lib.classes.ClassDeclaration;
 public class InitModule {
 
     private final ProgramContext programContext;
+    private final ProgramContext rootContext;
 
-    public InitModule(ProgramContext programContext) {
+    public InitModule(ProgramContext programContext, ProgramContext rootContext) {
         this.programContext = programContext;
+        this.rootContext = rootContext;
     }
 
     public InitModule add(String name, ProgramLibFunction.FuncProgram func){
@@ -42,5 +44,9 @@ public class InitModule {
 
     public ScopeHandler scope(){
         return programContext.getScope();
+    }
+
+    public ProgramContext rootContext() {
+        return rootContext;
     }
 }

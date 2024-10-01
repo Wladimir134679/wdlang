@@ -1,10 +1,14 @@
-println ("Start test other program")
+import logger as log
 
-println("Create function")
+log.init("other program", "${date} - ${message}")
+
+log.info("Start test other program")
+
+log.info("Create function")
 def testFunc(args, a = 10, b = 15){
-    println("Вызов функции: testFunc, args = " + args + " a = " + a + " b = " + b)
+    log.info("Вызов функции: testFunc, args = " + args + " a = " + a + " b = " + b)
     return a * b
 }
-println("Execute function testFunc = " + testFunc("ARGSSTRING", 2))
+log.info("Execute function testFunc = " + testFunc("ARGSSTRING", 2))
 
-println("End test other program")
+log.info("End test other program")
