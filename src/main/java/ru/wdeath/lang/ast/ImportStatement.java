@@ -48,9 +48,9 @@ public class ImportStatement implements Statement, SourceLocation {
     }
 
     private void expansionModule(ImportDetails listImport, String nameModule) {
-        if (!ProgramExpansionModuleManager.isExists(nameModule))
+        if (!getModuleManager().isExists(nameModule))
             throw new WdlRuntimeException("Not find \"" + nameModule + "\" module", range);
-        ProgramContext expansion = ProgramExpansionModuleManager.expansion(nameModule, programContext);
+        ProgramContext expansion = getModuleManager().expansion(nameModule, programContext);
         extract(listImport, expansion);
     }
 
@@ -72,7 +72,7 @@ public class ImportStatement implements Statement, SourceLocation {
     }
 
     public boolean isExpansionModule(String nameModule) {
-        return ProgramExpansionModuleManager.isExists(nameModule);
+        return getModuleManager().isExists(nameModule);
     }
 
     public Value importContextToValue(ProgramContext importContext) {
@@ -84,8 +84,8 @@ public class ImportStatement implements Statement, SourceLocation {
         InputSource inputSource = new InputSourceFile(pathToFileImport);
 
         ProgramRunnerConfig config = new ProgramRunnerConfig();
-        ProgramRunner runner = new ProgramRunner(config, inputSource, importDetails.toValue());
-        runner.getContext().setConsole(programContext.getConsole());
+        ProgramContext newContext = new ProgramContext(importDetails.toValue(), programContext);
+        ProgramRunner runner = new ProgramRunner(config, inputSource, newContext);
         runner.init();
         runner.run();
         return runner.getContext();
@@ -95,6 +95,9 @@ public class ImportStatement implements Statement, SourceLocation {
         return "./" + String.join("/", words) + ".wdl";
     }
 
+    private ProgramExpansionModuleManager getModuleManager(){
+        return programContext.getModuleManager();
+    }
 
     @Override
     public void accept(Visitor visitor) {

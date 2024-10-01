@@ -30,10 +30,14 @@ public class ProgramRunner {
     }
 
     public ProgramRunner(ProgramRunnerConfig programRunnerConfig, InputSource input, String name) {
+        this(programRunnerConfig, input, new ProgramContext(name));
+    }
+
+    public ProgramRunner(ProgramRunnerConfig programRunnerConfig, InputSource input, ProgramContext context) {
         this.input = input;
         this.programRunnerConfig = programRunnerConfig;
-        this.name = name;
-        this.programContext = new ProgramContext(this.name);
+        this.name = context.getName();
+        this.programContext = context;
     }
 
     public InputSource getInput() {

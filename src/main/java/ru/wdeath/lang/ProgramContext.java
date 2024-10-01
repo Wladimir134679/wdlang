@@ -1,6 +1,7 @@
 package ru.wdeath.lang;
 
 import ru.wdeath.lang.lib.ScopeHandler;
+import ru.wdeath.lang.module.ProgramExpansionModuleManager;
 import ru.wdeath.lang.utils.Console;
 
 public class ProgramContext {
@@ -9,6 +10,7 @@ public class ProgramContext {
 
     private final String name;
     private final ScopeHandler scopeHandler;
+    private final ProgramExpansionModuleManager moduleManager;
     private Console console;
 
     public ProgramContext(String name){
@@ -16,7 +18,18 @@ public class ProgramContext {
         if(GLOBAL == null){
             GLOBAL = this;
         }
+        moduleManager = new ProgramExpansionModuleManager();
         console = new Console();
+        scopeHandler = new ScopeHandler();
+    }
+
+    public ProgramContext(String name, ProgramContext context){
+        this.name = name;
+        if(GLOBAL == null){
+            GLOBAL = this;
+        }
+        moduleManager = context.getModuleManager();
+        console = context.getConsole();
         scopeHandler = new ScopeHandler();
     }
 
@@ -39,4 +52,9 @@ public class ProgramContext {
     public String getName() {
         return name;
     }
+
+    public ProgramExpansionModuleManager getModuleManager() {
+        return moduleManager;
+    }
+
 }
