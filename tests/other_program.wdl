@@ -1,6 +1,6 @@
 import logger as log
 
-log.init("other program", "${date} - ${message}")
+log.init("other program", "${date} [${thread}] ${level} ${module} - \t ${message}")
 
 log.info("Start test other program")
 

@@ -3,6 +3,7 @@ package ru.wdeath.lang.module;
 import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.exception.WdlRuntimeException;
 import ru.wdeath.lang.lib.ImportValue;
+import ru.wdeath.lang.module.impl.FilesModule;
 import ru.wdeath.lang.module.impl.MathModule;
 import ru.wdeath.lang.module.impl.STDModule;
 
@@ -15,6 +16,7 @@ public class ProgramExpansionModuleManager {
     public ProgramExpansionModuleManager() {
         this
                 .add(new STDModule())
+                .add(new FilesModule())
                 .add(new MathModule());
     }
 

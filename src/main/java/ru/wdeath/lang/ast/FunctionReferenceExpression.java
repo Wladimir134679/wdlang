@@ -1,7 +1,10 @@
 package ru.wdeath.lang.ast;
 
 import ru.wdeath.lang.ProgramContext;
+import ru.wdeath.lang.lib.Function;
 import ru.wdeath.lang.lib.FunctionValue;
+import ru.wdeath.lang.lib.Types;
+import ru.wdeath.lang.lib.Value;
 
 public class FunctionReferenceExpression implements Node {
 

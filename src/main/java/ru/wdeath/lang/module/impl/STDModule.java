@@ -15,8 +15,26 @@ public class STDModule implements NameExpansionModule {
 
     @Override
     public void init(InitModule init) {
-        init.add("len", STDModule::len);
+        init
+                .add("len", STDModule::len)
+                .add("try", STDModule::tryFunc);
     }
+
+    private static Value tryFunc(ProgramContext pc, Value[] args) {
+        ArgumentsUtil.checkOrOr(1, 2, args.length);
+        try {
+            return ValueUtils.consumeFunction(args[0], 0).execute();
+        } catch (Exception e) {
+            if (args.length == 2 && args[1].type() == Types.FUNCTION) {
+                String message = e.getMessage();
+                return ((FunctionValue) args[1]).getFunction()
+                        .execute(new StringValue(e.getClass().getName()),
+                                new StringValue(message));
+            }
+            return NumberValue.MINUS_ONE;
+        }
+    }
+
 
     private static Value len(ProgramContext pc, Value[] args) {
         ArgumentsUtil.check(1, args.length);
