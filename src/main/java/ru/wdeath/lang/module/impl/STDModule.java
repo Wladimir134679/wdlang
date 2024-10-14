@@ -2,9 +2,10 @@ package ru.wdeath.lang.module.impl;
 
 import ru.wdeath.lang.ProgramContext;
 import ru.wdeath.lang.lib.*;
-import ru.wdeath.lang.module.ExpansionModule;
 import ru.wdeath.lang.module.InitModule;
 import ru.wdeath.lang.module.NameExpansionModule;
+
+import java.text.MessageFormat;
 
 public class STDModule implements NameExpansionModule {
 
@@ -17,7 +18,20 @@ public class STDModule implements NameExpansionModule {
     public void init(InitModule init) {
         init
                 .add("len", STDModule::len)
+                .add("format", STDModule::messageFormat)
                 .add("try", STDModule::tryFunc);
+    }
+
+    private static Value messageFormat(ProgramContext context, Value[] args) {
+        ArgumentsUtil.checkAtLeast(1, args.length);
+        String string = args[0].asString();
+
+        MessageFormat messageFormat = new MessageFormat(string);
+        String[] values = new String[args.length - 1];
+        for (int i = 1; i < args.length; i++) {
+            values[i - 1] = args[i].asString();
+        }
+        return new StringValue(messageFormat.format(values));
     }
 
     private static Value tryFunc(ProgramContext pc, Value[] args) {

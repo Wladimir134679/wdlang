@@ -1,6 +1,23 @@
+import logger as log
+
+import std as st
+log.info("Проверка преобразования строки")
+a = 10
+b = 20
+varName = "TUTS"
+
+stringFormat = st.format("Переменная sum = {0} varName = \"{1}\"", a + b, varName)
+stringFormat1 = st.format("Переменная f = {0}, для проверки используется {0} {1}", a)
+stringFormat2 = st.format("Переменная f = {0}, для проверки
+dadas read
+asdad используется {0} {1}")
+log.info("SRINGFORMAT = " + stringFormat)
+log.info("SRINGFORMAT = " + stringFormat1)
+log.info("SRINGFORMAT = " + stringFormat2)
+
+
 println("==== Import classes")
 import tests.classes as *, math as *, std
-import logger as log
 
 log.init("run.wdl")
 
